@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style type="text/css">
+p {
+  text-align: center;
+  margin: 0;
+}
+a {
+  display: inline-block;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+  background: #e7e7e7;
+  padding: 3px 3px;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: 'Montserrat', sans-serif;
+  transition: 0.4s ease-in-out;
+}
+.help a {
+  color: black;
+  border-radius: 3px;
+  border: 1px solid #bbb;
+  margin: 0;
+}
+.help a:hover {
+  color: black;
+  background: #e7e7e7;
+  margin: 0;
+}
+.help a span {
+  opacity: 0;
+  padding-left: 1px; 
+  padding-right: 1px;
+  font-weight: bold;
+  transition: 0.4s ease-in-out;
+}
+.help a:hover span {
+  opacity: 1;
+  padding-left: 2px; 
+  padding-right: 2px;
+  color: #BDB9AB;
+}
+
+</style>
+<script src="help/js/jquery-1.12.4.min.js"></script>
+<script src="help/jQuery.scrollSpeed.js"></script>
+<!-- The script for the panel on the right.
+  This script takes care of scrolling. 
+  If this script does not exist, then at random scrolling 
+  with the mouse wheel the program will lagging.-->
+</head>
+<body>
+        <script language="javascript">
+        $(function() {  
+            // Default
+            jQuery.scrollSpeed(100, 800);
+        
+            // Custom Easing
+            jQuery.scrollSpeed(100, 800, 'easeOutCubic');
+        });
+        </script>
+  <hr><br>
+    <p class="help"><a href="help/General.html" target="_blank"><span>&#8594;</span>Help<span>&#8592;</span></a></p><br>
+    <p class="help"><a href="bk.html" target="_self"><span>&#8594;</span>Basic keys<span>&#8592;</span></a></p>
+    <br><hr> <p><font size="2">The program was ported to different OS by CEBA77.</font></p>
+</body>
+</html>
