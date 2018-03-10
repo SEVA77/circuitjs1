@@ -16,7 +16,7 @@ After compiling the web application, you can then compile it into the local exec
 
 The compiled program has a large size. To reduce the size of executable files of the program, you can use to **Ultimate Packer for eXecutables** (UPX). You can download it by following the link: https://upx.github.io/.
 
-> ***Warning! Not all executable files need to be compressed. In Windows, you can compress everything, except for the file d3dcompiler_47.dll. In Linux, you can compress only those files that are in the 'lib' folder. Otherwise, the program does not work.***
+> ***Warning! Not all executable files need to be compressed. For Windows, you can compress everything, except for the file d3dcompiler_47.dll. For Linux, you can compress only those files that are in the 'lib' folder. Otherwise, the program does not work.***
 >> ***Therefore, I do not recommend the use of compression settings in Web2Executable.***
 
 # Downloads:
