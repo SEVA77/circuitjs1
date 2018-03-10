@@ -1,4 +1,4 @@
-# ![](//raw.githubusercontent.com/CEBA77/circuitjs1/master/English%20version/icon.png) Circuit Simulator (CircuitJS1)
+# Circuit Simulator (CircuitJS1)
 The source code of the electronic circuit simulator program. It was originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT. It was ported to Windows (x32, x64), Linux (x32, x64) and MacOS (x64) by Usevalad Khatkevich.
 
 This program is distributed by me as a program for education. It is not recommended to use the program for modeling real circuits, since many components in the program are idealized.
