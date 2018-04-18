@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style type="text/css">
+div.fix_block {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+ h4 {
+  padding: 0;
+  margin: 0;
+}
+ b {
+   color: black;
+   border-width: 2px;
+   border-style:outset;
+   background: #d8d8d8;
+   margin: 0;
+   }
+h5 {
+  border: 3px solid #bbb;
+  border-style:ridge;
+  margin: 0;   
+  padding:7px 0px;
+}
+p {
+  text-align: center;
+  margin: 0;
+}
+footer {
+  position:  sticky;
+}
+</style>
+    <script src="help/js/jquery-1.12.4.min.js"></script>
+    <script src="help/js/jquery.nicescroll.min.js"></script>
+</head>
+<body>
+  <script>
+  $(document).ready(function() {
+	var nice = $("html").niceScroll();  // The document page (body)
+  });
+</script>
+  <h4>Basic keys:</h4>
+  <h5>&nbsp;<b>&nbsp;SPACE&nbsp;</b> or <b>&nbsp;Esc&nbsp;</b><br>&nbsp;Select/Drag sel<hr>
+    &nbsp;<b>&nbsp;W&nbsp;</b> Add Wire<hr>
+    &nbsp;<b>&nbsp;R&nbsp;</b> Add Resistor<hr>
+    &nbsp;<b>&nbsp;C&nbsp;</b> Add Capatitor<hr>
+    &nbsp;<b>&nbsp;SHIFT&nbsp;</b> + <b>&nbsp;L&nbsp;</b><br>&nbsp;Add Inductor<hr>
+    &nbsp;<b>&nbsp;S&nbsp;</b> Add Switch<hr>
+    &nbsp;<b>&nbsp;SHIFT&nbsp;</b> + <b>&nbsp;S&nbsp;</b><br>&nbsp;Add SPDT Switch<hr>
+    &nbsp;<b>&nbsp;G&nbsp;</b> Add Ground<hr>
+    &nbsp;<b>&nbsp;V&nbsp;</b> Add Voltage Soorse (2-terminal)<hr>
+    &nbsp;<b>&nbsp;SHIFT&nbsp;</b> + <b>&nbsp;S&nbsp;</b><br>&nbsp;Add Voltage Soorse (1-terminal)<hr>
+    &nbsp;<b>&nbsp;L&nbsp;</b> Add LED<hr>
+    &nbsp;<b>&nbsp;T&nbsp;</b> Add Text<hr>
+    &nbsp;<b>&nbsp;D&nbsp;</b> Add Diode<hr>
+    &nbsp;<b>&nbsp;Z&nbsp;</b> Add Zender Diode<hr>
+    &nbsp;<b>&nbsp;N&nbsp;</b> Add Bipolar Tranzistor NPN<hr>
+    &nbsp;<b>&nbsp;P&nbsp;</b> Add Bipolar Tranzistor PNP<hr>
+    &nbsp;<b>&nbsp;SHIFT&nbsp;</b> + <b>&nbsp;N&nbsp;</b><br>&nbsp;Add MOSFET (N-Channel)<hr>
+    &nbsp;<b>&nbsp;SHIFT&nbsp;</b> + <b>&nbsp;P&nbsp;</b><br>&nbsp;Add MOSFET (P-Channel)
+  </h5>
+  <br>
+</body>
+</html>
