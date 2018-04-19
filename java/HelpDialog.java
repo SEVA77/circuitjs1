@@ -8,12 +8,15 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ScrollPanel;
 
 public class HelpDialog extends DialogBox {
 	
+    	HorizontalPanel hp;
 	VerticalPanel vp;
 	Button okButton;
 	ScrollPanel sp;
@@ -215,7 +218,12 @@ public class HelpDialog extends DialogBox {
 		vp.add(sp= new ScrollPanel(contents));
 		sp.setWidth("500px");
 		sp.setHeight("400px");
-		vp.add(okButton = new Button("OK"));
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.setWidth("100%");
+		hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+		hp.setStyleName("topSpace");
+		vp.add(hp);
+		hp.add(okButton = new Button("OK"));
 		okButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				closeDialog();
