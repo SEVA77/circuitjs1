@@ -1,4 +1,6 @@
 # Circuit Simulator (CircuitJS1)
+
+
 The source code of the **Circuit Simulator**. It was originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT. The program was ported to Windows (x32, x64), Linux (x32, x64) and MacOS (x64) by Usevalad Khatkevich.
 
 This program is distributed by me as a program for education. It is not recommended to use the program for modeling real circuits, since many components in the program are idealized.
@@ -21,13 +23,7 @@ The compiled program has a large size. To reduce the size of executable files of
 
 # Downloads:
 
-* Circuit Simulator version 2.1.14js (finalized): https://mega.nz/#F!c2hHxSQQ!cymp1tj0nEB9J3uskqzvLQ (18.04.2018)
-
-* Circuit Simulator version 2.1.14js: https://cloud.mail.ru/public/ANcp/HXYBVFpo2 (10.03.2018)
-https://mega.nz/#F!16xUjSRI!6aHHLfBqj_xraNiL8k2UeQ  
-
-* Circuit Simulator version 2.1.12js: https://cloud.mail.ru/public/ugeT/rJDQGh2Pr  
-(Version 2.1.12js was made before the creation of this repository.)
+https://github.com/CEBA77/circuitjs1/releases
 
 # License
 
