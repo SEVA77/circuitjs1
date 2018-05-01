@@ -36,9 +36,9 @@ public class AboutBox extends PopupPanel {
 		vp = new VerticalPanel();
 		setWidget(vp);
 		vp.setWidth("400px");
-		vp.add(new HTML("<p>Circuit Simulator version "+version+".</p>"+
+		vp.add(new HTML("<p>Circuit Simulator version 1.0.0</p>"+
 		"<p>Original by Paul Falstad.(http://www.falstad.com/)</p>"+
-		"<p>JavaScript conversion by Iain Sharp.(http://lushprojects.com/)</p>"+
+		"<p>JavaScript conversion by Iain Sharp (version "+version+" for JavaScript).(http://lushprojects.com/)</p>"+
 		"<p>The program was ported to Windows, MAC OS and Linux by Usevalad Khatkevich (NW.js version 0.17.0).</p>"+
 		"<p style=\"font-size:11px\">Thanks to: Edward Calver for 15 new components and other improvements; Rodrigo Hausen for file import/export and many other UI improvements; "+  
 		"J. Mike Rollins for the Zener diode code; Julius Schmidt for the spark gap code and some examples; Dustin Soodak for help with the user interface improvements; "+

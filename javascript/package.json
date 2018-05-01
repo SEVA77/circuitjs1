@@ -4,7 +4,7 @@
     "dependencies": {
         "nwjs-open-link-in-browser": "^1.0.3"
     },
-    "description": "Circuit Simulator version 2.1.14js",
+    "description": "Circuit Simulator version 1.0.0",
     "license": "GPL-2.0 AND MIT",
     "main": "public\\index.html",
     "name": "circuitjs1",
@@ -12,7 +12,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "version": "2.1.14",
+    "version": "1.0.0",
     "webexe_settings": {
         "blacklist": "",
         "custom_script": "",
