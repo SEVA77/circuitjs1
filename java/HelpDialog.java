@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TabPanel;
 
 public class HelpDialog extends DialogBox {
 	
@@ -20,6 +21,7 @@ public class HelpDialog extends DialogBox {
 	VerticalPanel vp;
 	Button okButton;
 	ScrollPanel sp;
+	ScrollPanel sp2;
 	CirSim sim;
 	
 	HelpDialog() {
@@ -27,7 +29,7 @@ public class HelpDialog extends DialogBox {
 		vp = new VerticalPanel();
 		setWidget(vp);
 		setText(sim.LS("Help"));
-		HTML contents = new HTML("<h3>Warning! If you work with the program using the keyboard, then after any interaction (except scrolling) with the sidebar, right-click on the empty area of the top panel. The disappearance of the functionality of the keys after interacting with the sidebar is a feature of the JavaScript interpreted by the NW.js shell.</h3>" +
+		HTML contentsEN = new HTML("<h3>Warning! If you work with the program using the keyboard, then after any interaction (except scrolling) with the sidebar, right-click on the empty area of the top panel. The disappearance of the functionality of the keys after interacting with the sidebar is a feature of the JavaScript interpreted by the NW.js shell.</h3>" +
 		"<h3>The program works only with the English keyboard layout.</h3><hr>" +
 		"<h2>Contents:</h2>\n" + 
 		"    <ol type=l>\n" + 
@@ -105,7 +107,7 @@ public class HelpDialog extends DialogBox {
 		"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Many components have adjustments that can be made using the edit function explained above. For resistors,\n" + 
 		"                    capacitors and inductors you can conveniently set the value from the E12 range by rolling the mouse wheel\n" + 
 		"                    when hovering over the component</p>\n" + 
-		"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">The File menu allows you to import or export circuit description files. See notes below on browser compatibility.</p>\n" + 
+		"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">The File menu allows you to import or export circuit description files.</p>\n" + 
 		"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">The Reset button resets the circuit to a reasonable state. If the simulation is paused then hitting the Reset\n" + 
 		"                    button twice will restart it. The Run/Stop button allows you to pause the simulation. The Simulation\n" + 
 		"                    Speed slider allows you to adjust the speed of the simulation. If the simulation isn&#39;t time-dependent\n" + 
@@ -207,21 +209,155 @@ public class HelpDialog extends DialogBox {
 		"                        the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General\n" + 
 		"                        Public License for more details.</p>\n" + 
 		"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">For details of licensing see http://www.gnu.org/licenses/.</p>\n" + 
-		"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\"> Original by Paul Falstad.</p>\n" + 
-		"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">http://www.falstad.com/</p> \n" + 
-		"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">JavaScript conversion by Iain Sharp.</p>\n" + 
-		"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">http://lushprojects.com/</p>   \n" + 
-		"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">The program was ported to Windows, MAC OS and Linux by Usevalad Khatkevich.</p>\n" + 
-		"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">https://github.com/CEBA77</p>\n" + 
+		"<br>\n" +
+		"<hr>\n" +
+		"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\"> Original by Paul Falstad. (http://www.falstad.com/)</p>\n" + 
+		"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">JavaScript conversion by Iain Sharp. (http://lushprojects.com/)</p>\n" + 
+		"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">The program was ported to Windows, MAC OS and Linux by Usevalad Khatkevich. (https://github.com/CEBA77)</p>\n" + 
 		"                </fieldset>" +
 		"<br />");
-		vp.add(sp= new ScrollPanel(contents));
+		
+		HTML contentsRU = new HTML("<h3>Предупреждение! Если вы работаете с программой с помощью клавиатуры, то после любого взаимодействия (кроме прокрутки) с боковой панелью щелкните левой (или правой) кнопкой мыши на пустой области верхней панели. Исчезновение функциональности клавиш после взаимодействия с боковой панелью является особенностью JavaScript, которая интерпретируется в оболочке NW.js.</h3>\n" + 
+			"<h3>Програма работает только с английской раскладкой клавиатуры.</h3><hr>\n" + 
+			"        <h2>Содержание:</h2>\n" + 
+			"    <ol type=l>\n" + 
+			"        <li>\n" + 
+			"            <p>\n" + 
+			"                <a href=\"#h1\">Как пользоваться программой</a>\n" + 
+			"            </p>\n" + 
+			"            <li>\n" + 
+			"                <p>\n" + 
+			"                    <a href=\"#h2\">Рисование и редактирование схем</a>\n" + 
+			"                </p>\n" + 
+			"                <li>\n" + 
+			"                    <p>\n" + 
+			"                        <a href=\"#h3\">Высокочастотные схемы</a>\n" + 
+			"                    </p>\n" + 
+			"                    <li>\n" + 
+			"                        <p>\n" + 
+			"                            <a href=\"#h4\">Моделирование - не реальность</a>\n" + 
+			"                        </p>\n" + 
+			"                        <li>\n" + 
+			"                            <p>\n" + 
+			"                                <a href=\"#h5\">Некоторые ошибки</a>\n" + 
+			"                            </p>\n" + 
+			"                            <li>\n" + 
+			"                                <p>\n" + 
+			"                                    <a href=\"#h6\">Лицензия</a>\n" + 
+			"                                </p>\n" + 
+			"    </ol>\n" + 
+			"    <h4>Основная часть информации взята из http://lushprojects.com/circuitjs/\n" + 
+			"    </h4>\n" + 
+			"    <form action=\"#\" method=\"GET\">\n" + 
+			"        <fieldset>\n" + 
+			"            <legend>\n" + 
+			"                <h2 id=\"h1\">Как пользоваться программой</h2>\n" + 
+			"            </legend>\n" + 
+			"            <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Когда программа запускается, на экране появляется анимированная схема LRC-контура. Зеленый цвет указывает на положительное напряжение. Серый цвет указывает на землю. Красный цвет показывает отрицательное напряжение. Движущиеся желтые точки указывают ток.</p>\n" + 
+			"            <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Чтобы включить или выключить переключатель, просто нажмите на него. Если вы переместите указатель мыши на любой компонент схемы, вы увидите краткое описание этого компонента и его текущее состояние в правом нижнем углу окна. Чтобы изменить компонент, наведите указатель мыши на него, щелкните правой кнопкой мыши (или нажмите &quot;Control&quot;, если у вас есть Mac) и выберите &quot;Изменить&quot;. Вы также можете получить доступ к функции редактирования, дважды щелкнув на компонент.</p>\n" + 
+			"            <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">В нижней части окна есть три графика; они действуют как осциллографы, каждый из которых показывает напряжение и ток по конкретному компоненту. Напряжение отображается зеленым, а ток - желтым. Ток на графике может быть не виден, если график напряжения перекрывает график тока. Также показано пиковое значение напряжения. Переместив указатель мыши на один из графиков, компонент, который он представляет, будет подсвечен в схеме определенным цветом. Чтобы изменить или удалить область, щелкните правой кнопкой мыши на ней и в контекстном меню выберите &quot;Удалить&quot;. В этом контекстном меню также есть много других возможностей графиков. Чтобы просмотреть компонент в графике, щелкните правой кнопкой мыши над компонентом и выберите &quot;Подключить осциллограф&quot;.</p>\n" + 
+			"            <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Меню &quot;Схемы&quot; содержит множество примеров схем.</p>\n" + 
+			"            <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Некоторые схемы, например Основы->Потенциометр, содержат потенциометры или источники переменного напряжения. Их можно настроить с помощью ползунков, которые добавляются в боковую панель, или путем установки указателя мыши на компонент и с помощью колеса мыши.</p>\n" + 
+			"        </fieldset>\n" + 
+			"<br>\n" + 
+			"        <form action=\"#\" method=\"GET\">\n" + 
+			"            <fieldset>\n" + 
+			"                <legend>\n" + 
+			"                    <h2 id=\"h2\">Рисование и редактирование схем</h2>\n" + 
+			"                </legend>\n" + 
+			"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Вы можете получить пустую схему, выбрав «Пустая схема» в меню «Схемы». Для запуска симулятора вам нужно будет добавить хотя бы один источник напряжения.</p>\n" + 
+			"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Чтобы добавить компоненты или провод, выберите один из компонентов в меню «Рисовать». Обратите внимание, что основные компоненты имеют привязку к клавишам для быстрого добавления.  Когда в режиме добавления курсор меняется на &quot;+&quot;, кликните левой кнопкой мыши и перетащите курсор с одной точки на другую не отпуская левую кнопку мыши, чтобы добавить компонент.</p>\n" + 
+			"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Компоненты могут быть перемещены в режиме выбора (в режиме выбора &quot;+&quot; меняется на стрелку). Выберите &quot;Выбрать/Переместить&quot; из \"Рисовать\" или нажмите «Пробел» или нажмите «Esc», для перехода в режим выбора. При наведении курсора на компонент, он будет выделен определенным цветом и информация об этом компоненте будет отображена в области информации. Щелчок и перетаскивание компонента переместит компонент. Если вы нажмете на квадратные точки, иммитирующие соединения и перетащите или нажмете на элемент удерживая клавишу ctrl, это изменит размер компонента и переместит клемы.</p>\n" + 
+			"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Провода соединяются только на концах, а не посередине, поэтому вы должны провести каждый сегмент провода отдельно. Если симулятор видит не связанные точки, которые, по его мнению, вы собираетесь подключить, он выделяет их красным кружком.</p>\n" + 
+			"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Многие компоненты имеют настройки, которые могут быть выполнены с помощью функции редактирования, описанной выше. Для резисторов, конденсаторов и катушек индуктивности будет удобно устанавливать значение путем прокрутки колеса мыши при наведении на эти компоненты</p>\n" + 
+			"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Меню «Файл» позволяет вам импортировать или экспортировать файлы схем.</p>\n" + 
+			"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Кнопка Restart сбрасывает цепь в исходное состояние. Если симуляция приостановлена, то дважды нажмите кнопку «Restart», чтобы перезапустить ее. Кнопка Start/Stop позволяет приостановить симуляцию. Ползунок «Скорость симуляции» позволяет вам регулировать скорость моделирования. Если симуляция не зависит от времени (то есть, если нет конденсаторов, индукторов или источников напряжения, зависящих от времени), то это не будет иметь никакого эффекта. Ползунок &quot;Скорость тока&quot; позволяет вам регулировать скорость точек, изображающих ток, т.к. если токи очень слабы (или сильны), то точки движутся слишком медленно (или слишком быстро).</p>\n" + 
+			"            </fieldset>\n" + 
+			"        </form>\n" + 
+			"<br>\n" + 
+			"        <form action=\"#\" method=\"GET\">\n" + 
+			"            <fieldset>\n" + 
+			"                <legend>\n" + 
+			"                    <h2 id=h3>Высокочастотные схемы</h2>\n" + 
+			"                </legend>\n" + 
+			"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Эта программа симулирует схему, используя серию коротких временных шагов. На каждом шаге изменения напряжений и токов в цепи рассчитываются на основе моделей компонентов и состояния текущей схемы. Чтобы этот процесс работал, используемые временные шаги должны быть значительно короче, чем продолжительность любого события, представляющего интерес для схемы. Или, если хотите, временные шаги должны быть значительно короче, чем период наибольшего частотного сигнала, представляющего интерес.</p>\n" + 
+			"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">По умолчанию симулятор использует время шага 5&micro;s. Это нормально для звуковых частотных сигналов, но не для радиочастотных сигналов или быстрых цифровых сигналов. Время шага может быть изменено во вкладке «Другие настройки...» в меню &quot;Опции&quot;. Для сравнения, пример линии передачи в приложении использует время шага 5ps.</p>\n" + 
+			"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Время шага моделирования не следует путать с «Скорость симуляции» в правой панели. Время шага моделирования определяет промежутки каждого шага (в симулированном времени). «Скорость симуляции» контролирует, как часто (в режиме реального времени) компьютер вычисляет шаг.</p>\n" + 
+			"\n" + 
+			"            </fieldset>\n" + 
+			"        </form>\n" + 
+			"<br>\n" + 
+			"        <form action=\"#\" method=\"GET\">\n" + 
+			"            <fieldset>\n" + 
+			"                <legend>\n" + 
+			"                    <h2 id=h4>Моделирование - не реальность</h2>\n" + 
+			"                </legend>\n" + 
+			"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Физическое моделирование не является реальностью и не предполагает, что симуляция и реальность идентичны! Эта симуляция идеализирует многие компоненты. Провода и компоненты не имеют сопротивления. Источники напряжения идеальны - они будут пытаться подавать бесконечный ток, если вы им позволяете. Конденсаторы и катушки на 100% эффективны. Входы логических затворов потребляют нулевой ток - не так уж плохо в качестве приближения для КМОП логики, но не типичны, например, для ТТЛ 1980-х годов. Во что бы то ни стало, используйте этот симулятор, чтобы визуализировать схемы, но всегда проверяйте на практике.</p>\n" + 
+			"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Симулятор лишь численно аппроксимирует модели компонентов, которые также приблизительны. Даже без учета каких-либо ошибок, это просто грубый гайд к реальности. Этот симулятор может быть полезен для визуализации, но порой используется неправильным образом, т.к. любой симулятор может дать ложное чувство безопасности. Некоторые люди действительно не понимают эту важную концепцию. У меня даже был один пользователь, обвиняющий симулятор во «лжи» просто потому что он (или она) не учитывал идеализацию компонентов и не понимал фактической производительности компонентов, которые он выбрал для использования. Для всех инженеров, связанных с электроникой, важно, чтобы они всегда были полностью осведомлены о характеристиках компонента (и системы) в реальном мире и о том, как они отличаются от любого конкретного симулятора, который они используют. Если вам нужны более точные модели реальных компонентов, то симуляторы на SPICE являются гораздо более подходящими инструментами, чем этот, но даже тогда вам следует знать об отклонениях от реальности.</p>\n" + 
+			"                <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Одним из следствий использования идеальных компонентов является то, что симулятор не сходится к результату для цепей, которые не имеют определенного поведения - например, идеальный источник напряжения, закоротившийся на идеальном проводе. Другой ситуацией, которая не может быть смоделирована в этих предположениях, является распределение тока между проводниками, если два совершенных проводника соединены параллельно. При использовании симулятора вы должны учитывать места, где реальная электроника отличается от идеала.</p>\n" + 
+			"            </fieldset>\n" + 
+			"        </form>\n" + 
+			"<br>\n" + 
+			"        <form action=\"#\" method=\"GET\">\n" + 
+			"            <fieldset>\n" + 
+			"                <legend>\n" + 
+			"                    <h2 id=\"h5\">Некоторые ошибки</h2>\n" + 
+			"                </legend>\n" + 
+			"                <p style=\"font-family: Arial, Helvetica, sans-serif;\">Вот некоторые ошибки, которые могут возникнуть:</p>\n" + 
+			"                <ul style=\"margin-top: 0px; margin-bottom: 0px; font-family: Arial, Helvetica, sans-serif;\">\n" + 
+			"                    <li style=\"text-align: justify;\">Voltage source loop with no resistance! - это означает, что один из источников напряжения в вашей цепи закорочен. Удостоверьтесь, что у каждого источника напряжения есть определенное сопротивление</li>\n" + 
+			"                    <li style=\"text-align: justify;\">Capacitor loop with no resistance! - не допускается наличие каких-либо токовых контуров, содержащих конденсаторы, но никакого сопротивления. Например, конденсаторы, подключенные параллельно, не допускаются; вы должны установить резистор последовательно с ними. В противном случае конденсаторы считаются закорочеными.</li>\n" + 
+			"                    <li style=\"text-align: justify;\">Singular matrix! - это означает, что ваша цепь несовместима (два разных источника напряжения подключены друг к другу) или что напряжение в какой-либо точке не определено. Это может означать, что клемы некоторых компонентов не подключены; например, если вы создаете операционный усилитель, но еще ничего не подключили к нему, вы получите эту ошибку.</li>\n" + 
+			"                    <li style=\"text-align: justify;\">Convergence failed! - это означает, что симулятор не может понять, каково должно быть состояние цепи. Просто нажмите «Restart» и, возможно, это исправиться. Ваша схема может быть слишком сложной. Иногда это случается даже с примерами.</li>\n" + 
+			"                    <li style=\"text-align: justify;\">Transmission line delay too large! - задержка линии передачи слишком велика по сравнению с тайм-аутом симулятора, поэтому потребуется слишком много памяти. Уменьшите задержку.</li>\n" + 
+			"                    <li style=\"text-align: justify;\">Need to ground transmission line! - нижние два провода линии передачи всегда должны быть заземлены в этом симуляторе.</li>\n" + 
+			"                </ul>\n" + 
+			"            </fieldset>\n" + 
+			"<br>\n" + 
+			"            <form action=\"#\" method=\"GET\">\n" + 
+			"                <fieldset>\n" + 
+			"                    <legend>\n" + 
+			"                        <h2 id=\"h6\">Лицензия</h2>\n" + 
+			"                    </legend>\n" + 
+			"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Симулятор не имеет поддержки или гарантии. Абсолютно никакая гарантия не предусматривает пригодность для каких-либо целей.</p>\n" + 
+			"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Это свободная программа: вы можете перераспространять ее и/или изменять ее на условиях Стандартной общественной лицензии GNU в том виде, в каком она была опубликована Фондом свободного программного обеспечения; либо версии 2 лицензии, либо (по вашему выбору) любой более поздней версии.</p>\n" + 
+			"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Эта программа распространяется в надежде, что она будет полезной, но БЕЗО ВСЯКИХ ГАРАНТИЙ; даже без неявной гарантии ТОВАРНОГО ВИДА или ПРИГОДНОСТИ ДЛЯ ОПРЕДЕЛЕННЫХ ЦЕЛЕЙ. Подробнее см. в Стандартной общественной лицензии GNU.</p>\n" + 
+			"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Вы должны были получить копию Стандартной общественной лицензии GNU вместе с этой программой. Если это не так, см. http://www.gnu.org/licenses/.</p>\n" + 
+			"                    <br>\n" + 
+			"                    <hr>\n" + 
+			"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Оригинал: Paul Falstad. (http://www.falstad.com/)</p>\n" + 
+			"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Компиляция в JavaScript: Iain Sharp. (http://lushprojects.com/)</p>\n" + 
+			"                    <p align=\"justify\" style=\"font-family: Arial, Helvetica, sans-serif;\">Портирование программы на Windows, MAC OS и Linux: Хаткевич Всеволод. (https://github.com/CEBA77)</p>\n");
+			
+		
+		
+		
+		TabPanel tp = new TabPanel();
+		vp.add(tp);
+		String tab1Title = "EN";
+		String tab2Title = "RU";
+
+		      //create tabs 
+		tp.add(sp= new ScrollPanel(contentsEN), tab1Title);
+		tp.add(sp2= new ScrollPanel(contentsRU), tab2Title);
+		
 		sp.setWidth("500px");
 		sp.setHeight("400px");
+		
+		sp2.setWidth("500px");
+		sp2.setHeight("400px");
+		
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.setWidth("100%");
 		hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 		hp.setStyleName("topSpace");
+		
+		//select first tab
+		tp.selectTab(0);
+
+		//set width if tabpanel
+		tp.setWidth("500");
+		
 		vp.add(hp);
 		hp.add(okButton = new Button("OK"));
 		okButton.addClickHandler(new ClickHandler() {
