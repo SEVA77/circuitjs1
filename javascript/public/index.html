@@ -101,8 +101,13 @@
 </style>
 <script src="help/js/jquery-1.12.4.min.js"></script>
 <script src="help/jQuery.scrollSpeed.js"></script>
-<!-- The script for the panel on the right.
-  This script takes care of scrolling. If this script does not exist, 
+<script>
+    $(function() {
+        $('div').delay(1000).fadeOut(400);
+        $.scrollSpeed(100, 800);
+    });
+    </script>
+<!--  This script takes care of scrolling. If this script does not exist, 
   then at random scrolling with the mouse wheel the program will lagging.-->  
 </head>
   <body>
@@ -115,14 +120,7 @@
     height = screen.height 
     } 
     </script>
-        <script language="javascript">
-          $(function() {  
-              // Default
-              jQuery.scrollSpeed(100, 800);
-              // Custom Easing
-              jQuery.scrollSpeed(100, 800, 'easeOutCubic');
-          });
-          </script>
+    
 
   <!-- Include the next line to allow support for dropbox import/export. You will need your own app key. -->
   <!--<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="YOUR_KEY"></script>-->
@@ -137,6 +135,6 @@
     <!-- Include a history iframe to enable full GWT history support -->
     <!-- (the id must be exactly as shown)                           -->
     <webview src="javascript:''" id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
-    
+      
   </body>
  </html>
