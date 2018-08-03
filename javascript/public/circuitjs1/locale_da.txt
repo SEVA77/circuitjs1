@@ -533,3 +533,5 @@
 "voltage source"="spændingskilde"
 "wire"="ledning"
 "wire loop detected"="ledningsloop opdaget"
+"License"="Licens"
+"Help"="Hjælp"
