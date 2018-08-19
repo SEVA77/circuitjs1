@@ -38,7 +38,7 @@ public class AboutBox extends DialogBox {
 		setWidget(vp);
 		setText(sim.LS("About"));
 		vp.setWidth("500px");
-		vp.add(new HTML("<p>Circuit Simulator version 1.0.1</p>"+
+		vp.add(new HTML("<p>Circuit Simulator version 1.0.2</p>"+
 		"<p>Original by Paul Falstad.(http://www.falstad.com/)</p>"+
 		"<p>JavaScript conversion by Iain Sharp (version "+version+" for JavaScript).(http://lushprojects.com/)</p>"+
 		"<p>The program was ported to Windows, MAC OS and Linux by Usevalad Khatkevich (NW.js version 0.17.0).</p>"+

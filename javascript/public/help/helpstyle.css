@@ -1,0 +1,60 @@
+.contents {
+list-style: none;
+padding: 20px;
+border: 1px solid #000;
+background: #e7e7e7;
+} 
+.contents a {
+color: black;
+border: 1px solid transparent;
+margin: 0;
+padding: 4px;
+display: block;
+text-decoration: none;
+}
+.contents a:hover {
+color: black;
+background: lightgray;
+margin: 0;
+border: 1px dashed DarkGray;
+}
+.contents a span {
+    opacity: 0;
+    padding-left: 1px; 
+    padding-right: 1px;
+    font-weight: bold;
+    transition: 0.4s ease-in-out;
+  }
+.contents a:hover span {
+    opacity: 1;
+    padding-left: 1px; 
+    padding-right: 8px;
+    color: black;
+  }
+#toTop {
+display: none;
+text-decoration: none;
+position: fixed;
+bottom: 13px;
+right: 15px;
+overflow: hidden;
+width: 33px;
+height: 18px;
+border: none;
+text-indent: 100%;
+background: url(move-top.png) no-repeat 0px 0px;
+}
+#toTopHover {
+width: 37px;
+height: 16px;
+height: 48px;
+display: block;
+overflow: hidden;
+float: right;
+opacity: 0;
+-moz-opacity: 0;
+filter: alpha(opacity=0);
+}
+#toTop:active, #toTop:focus {
+outline: none;
+}
