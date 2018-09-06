@@ -85,6 +85,7 @@ import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.Window.Navigator;
+import com.google.gwt.user.client.ui.HTML;
 
 
 public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandler,
@@ -98,9 +99,10 @@ MouseOutHandler, MouseWheelHandler {
     Button runStopButton;
     Button dumpMatrixButton;
     MenuItem aboutItem;
-// CEBA77 Start
+ // CEBA77 Start
     MenuItem helpItem;
     MenuItem licenseItem;
+    CheckboxAlignedMenuItem langinlinkItem;
 // CEBA77 End
     MenuItem importFromLocalFileItem, importFromTextItem,
     	exportAsUrlItem, exportAsLocalFileItem, exportAsTextItem, printItem, recoverItem;
@@ -221,6 +223,7 @@ MouseOutHandler, MouseWheelHandler {
  // CEBA77 Start    
     static HelpDialog helpDialog;
     static LicenseDialog licenseDialog;
+    static LangInLinkBox langinlinkBox;
 // CEBA77 End  
     static ImportFromDropboxDialog importFromDropboxDialog;
 //    Class dumpTypes[], shortcuts[];
@@ -516,8 +519,13 @@ MouseOutHandler, MouseWheelHandler {
 		}
 	}));
 	conventionCheckItem.setState(convention);
+	//CEBA77 Start
+	m.addItem(langinlinkItem=new CheckboxAlignedMenuItem(LS("Language"),
+        new MyCommand("options","langinlink")));
+	//CEBA77 End
 	m.addItem(optionsItem = new CheckboxAlignedMenuItem(LS("Other Options..."),
 			new MyCommand("options","other")));
+
 	mainMenuBar = new MenuBar(true);
 	mainMenuBar.setAutoOpen(true);
 	composeMainMenu(mainMenuBar);
@@ -2468,6 +2476,8 @@ MouseOutHandler, MouseWheelHandler {
     	helpDialog = new HelpDialog();
     	if (item=="license")
         licenseDialog = new LicenseDialog();
+    	if (item=="langinlink")
+    	langinlinkBox = new LangInLinkBox();
     	// CEBA77 End
     	if (item=="about")
     		aboutBox = new AboutBox(circuitjs1.versionString);
@@ -4066,6 +4076,9 @@ MouseOutHandler, MouseWheelHandler {
     	if (licenseDialog !=null && licenseDialog.isShowing()) {
 		return true;
 	}
+    	if (langinlinkBox !=null && langinlinkBox.isShowing()) {
+		return true;
+    	}
     	// CEBA77 End
     	if (importFromTextDialog !=null && importFromTextDialog.isShowing())
     		return true;
