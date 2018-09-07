@@ -776,3 +776,4 @@
 "Alt Color for Volts & Pwr"="Andere Farben Spannung & Leistung"
 "License"="Lizenz"
 "Help"="Hilfe"
+"Edit"="Bearbeiten"

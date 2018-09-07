@@ -535,3 +535,4 @@
 "wire loop detected"="ledningsloop opdaget"
 "License"="Licens"
 "Help"="Hjælp"
+"Edit"="Rediger"

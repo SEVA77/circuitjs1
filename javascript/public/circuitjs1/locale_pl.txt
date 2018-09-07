@@ -980,3 +980,4 @@
 "Audio data is not ready yet.  Increase simulation speed to make data ready sooner."="Dane dźwiękowe nie są gotowe. Przyśpiesz symulację w celu uzyskania ich wcześniej."
 "License"="Licencja"
 "Help"="Wsparcie"
+"Edit"="Edycja"
