@@ -1,3 +1,7 @@
+/*    
+    Copyright (C) Usevalad Khatkevich
+*/
+
 package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.event.dom.client.ClickEvent;
