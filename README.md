@@ -1,14 +1,34 @@
 # Circuit Simulator (CircuitJS1)
 
+![](https://pp.userapi.com/c849220/v849220906/728da/TlBHd39K6v8.jpg)
 
 The source code of the **Circuit Simulator**. It was originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT. The program was ported to Windows (x32, x64), Linux (x32, x64) and MacOS (x64) by Usevalad Khatkevich.
 
 This program is distributed by me as a program for education. It is not recommended to use the program for modeling real circuits, since many components in the program are idealized.
 
+The program supports the following languages:
+- English
+- Russian
+- Danish
+- German
+- Polish
+
 For a web version of the application see:
 
 Paul's Page: http://www.falstad.com/circuit/  
 Iain's Page: http://lushprojects.com/circuitjs/
+
+# Downloads:
+
+You can download this program for Windows (x32, x64), Linux (x32, x64) and Mac OS X (x64):
+
+[Circuit Simulator version 1.0.2](https://github.com/CEBA77/circuitjs1/releases/tag/1.0.2)
+
+[Circuit Simulator version 1.0.1](https://github.com/CEBA77/circuitjs1/releases/tag/1.0.1)
+
+[Circuit Simulator version 1.0.0](https://github.com/CEBA77/circuitjs1/releases/tag/1.0.0)
+
+[All versions...](https://github.com/CEBA77/circuitjs1/releases)
 
 # Building the program
 
@@ -20,10 +40,6 @@ The compiled program has a large size. To reduce the size of executable files of
 
 > ***Warning! Not all executable files need to be compressed. For Windows, you can compress everything, except for the file d3dcompiler_47.dll. For Linux, you can compress only those files that are in the 'lib' folder. Otherwise, the program does not work.***
 >> ***Therefore, I do not recommend the use of compression settings in Web2Executable.***
-
-# Downloads:
-
-https://github.com/CEBA77/circuitjs1/releases
 
 # License
 
