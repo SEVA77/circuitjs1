@@ -1,6 +1,6 @@
 # Circuit Simulator (CircuitJS1)
 
-![](https://pbs.twimg.com/media/Dmglty4XoAAOL3U.jpg)
+![](https://pbs.twimg.com/media/Dmglty4XoAAOL3U.jpg:large)
 
 The source code of the **Circuit Simulator**. It was originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT. The program was ported to Windows (x32, x64), Linux (x32, x64) and MacOS (x64) by Usevalad Khatkevich.
 
