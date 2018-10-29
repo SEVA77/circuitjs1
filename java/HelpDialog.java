@@ -43,23 +43,23 @@ public class HelpDialog extends DialogBox {
 		      //create tabs 
 		tp.add(vpEN = new VerticalPanel(), tab1Title);
 		vpEN.setWidth("500px");
-		vpEN.add(new HTML("<iframe src=\"help/EN.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
+		vpEN.add(new HTML("<iframe style=\"border:0;\" src=\"help/EN.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
 		
 		tp.add(vpRU = new VerticalPanel(), tab2Title);
 		vpRU.setWidth("500px");
-		vpRU.add(new HTML("<iframe src=\"help/RU.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
+		vpRU.add(new HTML("<iframe style=\"border:0;\" src=\"help/RU.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
 
-		tp.add(vpRU = new VerticalPanel(), tab3Title);
-		vpRU.setWidth("500px");
-		vpRU.add(new HTML("<iframe src=\"help/PL.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
+		tp.add(vpPL = new VerticalPanel(), tab3Title);
+		vpPL.setWidth("500px");
+		vpPL.add(new HTML("<iframe style=\"border:0;\" src=\"help/PL.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
 
-		tp.add(vpRU = new VerticalPanel(), tab4Title);
-		vpRU.setWidth("500px");
-		vpRU.add(new HTML("<iframe src=\"help/DE.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
+		tp.add(vpDE = new VerticalPanel(), tab4Title);
+		vpDE.setWidth("500px");
+		vpDE.add(new HTML("<iframe style=\"border:0;\" src=\"help/DE.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
 
-		tp.add(vpRU = new VerticalPanel(), tab5Title);
-		vpRU.setWidth("500px");
-		vpRU.add(new HTML("<iframe src=\"help/DA.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
+		tp.add(vpDA = new VerticalPanel(), tab5Title);
+		vpDA.setWidth("500px");
+		vpDA.add(new HTML("<iframe style=\"border:0;\" src=\"help/DA.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
 		
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.setWidth("100%");

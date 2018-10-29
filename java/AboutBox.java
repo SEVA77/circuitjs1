@@ -36,12 +36,12 @@ public class AboutBox extends DialogBox {
 		super();
 		vp = new VerticalPanel();
 		setWidget(vp);
-		setText(sim.LS("About"));
+		setText(sim.LS("About..."));
 		vp.setWidth("500px");
-		vp.add(new HTML("<p>Circuit Simulator version 1.0.2</p>"+
-		"<p>Original by Paul Falstad.(http://www.falstad.com/)</p>"+
-		"<p>JavaScript conversion by Iain Sharp (version "+version+" for web application).(http://lushprojects.com/)</p>"+
-		"<p>The program was ported to Windows, MAC OS and Linux by Usevalad Khatkevich (NW.js version 0.17.0).</p>"+
+		vp.add(new HTML("<p>Circuit Simulator version 1.0.3</p>"+
+		"<p>Original by Paul Falstad.(<a href=\"http://www.falstad.com/\" target=\"_blank\">http://www.falstad.com/</a>)</p>"+
+		"<p>JavaScript conversion by Iain Sharp (version "+version+" for web application).(<a href=\"http://lushprojects.com/\" target=\"_blank\">http://lushprojects.com/</a>)</p>"+
+		"<p>The program was  compiled to desktop application by Usevalad Khatkevich (NW.js version 0.17.0).</p>"+
 		"<p style=\"font-size:11px\">Thanks to: Edward Calver for 15 new components and other improvements; Rodrigo Hausen for file import/export and many other UI improvements; "+  
 		"J. Mike Rollins for the Zener diode code; Julius Schmidt for the spark gap code and some examples; Dustin Soodak for help with the user interface improvements; "+
 		"Jacob Calvert for the T Flip Flop; Ben Hayden for scope spectrum; " +
@@ -58,10 +58,10 @@ public class AboutBox extends DialogBox {
 		"but WITHOUT ANY WARRANTY; without even the implied warranty of "+
 		"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the "+
 		"GNU General Public License for more details.</p>"+
-		"<p style=\"font-size:10px\">For details of licensing see http://www.gnu.org/licenses/.</p>"+
-		"<p style=\"font-size:10px\">Source code (Paul): https://github.com/pfalstad/circuitjs1</p>"+
-		"<p style=\"font-size:10px\">Source code (Iain): https://github.com/sharpie7/circuitjs1</p>"+
-	    "<p style=\"font-size:10px\">Source code (Usevalad): https://github.com/CEBA77/circuitjs1</p>"));
+		"<p style=\"font-size:10px\">For details of licensing see <a href=\"http://www.gnu.org/licenses/\" target=\"_blank\">http://www.gnu.org/licenses/</a>.</p>"+
+		"<p style=\"font-size:10px\">Source code (Paul): <a href=\"https://github.com/pfalstad/circuitjs1\" target=\"_blank\">https://github.com/pfalstad/circuitjs1</a></p>"+
+		"<p style=\"font-size:10px\">Source code (Iain): <a href=\"https://github.com/sharpie7/circuitjs1\" target=\"_blank\">https://github.com/sharpie7/circuitjs1</a></p>"+
+	    "<p style=\"font-size:10px\">Source code (Usevalad): <a href=\"https://github.com/CEBA77/circuitjs1\" target=\"_blank\">https://github.com/CEBA77/circuitjs1</a></p>"));
 		
 		
 		vp.add(okButton = new Button("OK"));

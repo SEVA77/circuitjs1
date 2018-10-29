@@ -23,7 +23,7 @@ public class LicenseDialog extends DialogBox {
 		setWidget(vp);
 		setText(sim.LS("License"));
 		vp.setWidth("500px");
-		vp.add(new HTML("<iframe src=\"help/license.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
+		vp.add(new HTML("<iframe style=\"border:0;\" src=\"help/license.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
 		vp.add(okButton = new Button("OK"));
 		okButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
