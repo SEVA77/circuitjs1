@@ -1,69 +1,159 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-<style type="text/css">
+    <style type="text/css">
+    body{
+      margin: 0;
+    }
 div.fix_block {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
+  background-color: white;
 }
- h4 {
-  padding: 0;
-  margin: 0;
-}
- b {
-   color: black;
-   border-width: 2px;
-   border-style:outset;
-   background: #d8d8d8;
-   margin: 0;
-   }
 h5 {
-  border: 3px solid #bbb;
-  border-style:ridge;
-  margin: 0;   
-  padding:7px 0px;
-}
-p {
-  text-align: center;
+  padding: 3px;
   margin: 0;
+  font-family: arial, verdana, courier;
 }
-footer {
-  position:  sticky;
+table{
+  width: 100%;
 }
-</style>
-    <script src="help/js/jquery-1.12.4.min.js"></script>
-    <script src="help/js/jquery.nicescroll.min.js"></script>
+._1{
+  color: black;
+   border-width: 1.6px;
+   border-style:solid;
+   border-color: darkgray;
+   background: #eeeeee;
+   margin: 0;
+   border-radius: 4px;
+   padding: 3.6px;
+   font-family: arial, verdana, courier;
+   font-size: 11pt;
+}
+._2{
+  font-size: 18pt;
+  margin: 0;
+  padding: 0px;
+  color: grey;
+}
+img._3{
+  width: 44px;
+  padding-right: 6px;
+}
+.Shift{
+  color: black;
+   border-width: 1.8px;
+   border-style:solid;
+   border-color: darkgray;
+   background: #eeeeee;
+   margin-left: 1px;
+   border-radius: 4px;
+   padding: 3px;
+   font-family: arial, verdana, courier;
+   font-size: 9pt;
+   
+}
+    </style>
+        <script src="help/js/jquery-1.12.4.min.js"></script>
+        <script src="help/js/jquery.nicescroll.min.js"></script>
 </head>
 <body>
-  <script>
-  $(document).ready(function() {
-	var nice = $("html").niceScroll();  // The document page (body)
-  });
-</script>
-  <h4>Basic keys:</h4>
-  <h5>&nbsp;<b>&nbsp;SPACE&nbsp;</b> or <b>&nbsp;Esc&nbsp;</b><br>&nbsp;Select/Drag sel<hr>
-    &nbsp;<b>&nbsp;W&nbsp;</b> Add Wire<hr>
-    &nbsp;<b>&nbsp;R&nbsp;</b> Add Resistor<hr>
-    &nbsp;<b>&nbsp;C&nbsp;</b> Add Capatitor<hr>
-    &nbsp;<b>&nbsp;SHIFT&nbsp;</b> + <b>&nbsp;L&nbsp;</b><br>&nbsp;Add Inductor<hr>
-    &nbsp;<b>&nbsp;S&nbsp;</b> Add Switch<hr>
-    &nbsp;<b>&nbsp;SHIFT&nbsp;</b> + <b>&nbsp;S&nbsp;</b><br>&nbsp;Add SPDT Switch<hr>
-    &nbsp;<b>&nbsp;G&nbsp;</b> Add Ground<hr>
-    &nbsp;<b>&nbsp;V&nbsp;</b> Add Voltage Soorse (2-terminal)<hr>
-    &nbsp;<b>&nbsp;SHIFT&nbsp;</b> + <b>&nbsp;S&nbsp;</b><br>&nbsp;Add Voltage Soorse (1-terminal)<hr>
-    &nbsp;<b>&nbsp;L&nbsp;</b> Add LED<hr>
-    &nbsp;<b>&nbsp;T&nbsp;</b> Add Text<hr>
-    &nbsp;<b>&nbsp;D&nbsp;</b> Add Diode<hr>
-    &nbsp;<b>&nbsp;Z&nbsp;</b> Add Zender Diode<hr>
-    &nbsp;<b>&nbsp;N&nbsp;</b> Add Bipolar Tranzistor NPN<hr>
-    &nbsp;<b>&nbsp;P&nbsp;</b> Add Bipolar Tranzistor PNP<hr>
-    &nbsp;<b>&nbsp;SHIFT&nbsp;</b> + <b>&nbsp;N&nbsp;</b><br>&nbsp;Add MOSFET (N-Channel)<hr>
-    &nbsp;<b>&nbsp;SHIFT&nbsp;</b> + <b>&nbsp;P&nbsp;</b><br>&nbsp;Add MOSFET (P-Channel)
-  </h5>
-  <br>
+    <script>
+        $(document).ready(function() {
+        var nice = $("html").niceScroll();  // The document page (body)
+        });
+      </script>
+      
+    <div class="fix_block" align="center"><h5>Basic keys:</h5></div><br>
+    <table align="center" cellspacing="3">
+    <tr>
+    <td><center><font class="_1"><b>&nbsp;W&nbsp;</b></font></center></td>
+    <td><font class="_2"><b>&rArr;</b></font></td>
+    <td><center><img class="_3" src="help/bk_img/wire.png"></center></td>
+    </tr>
+    <tr>
+    <td><center><font class="_1"><b>&nbsp;R&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/resistor.png"></center></td>
+    </tr>
+    <tr>
+    <td><center><font class="_1"><b>&nbsp;C&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/capatitor.png"></center></td>
+    </tr>
+    <tr>
+    <td height="40px"><center><font class="Shift"><b>&nbsp;Shift&nbsp;</b></font><br><font size="0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#10010;</font><font class="Shift"><b>&nbsp;&nbsp;I&nbsp;&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/inductor.png"></center></td>
+    </tr>
+    <tr>
+    <td><center><font class="_1"><b>&nbsp;S&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/switch.png"></center></td>
+    </tr>
+    <tr>
+    <td height="40px"><center><font class="Shift"><b>&nbsp;Shift&nbsp;</b></font><br><font size="0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#10010;</font><font class="Shift"><b>&nbsp;S&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/SPDTswitch.png"></center></td>
+    </tr>
+    <tr>
+    <td><center><font class="_1"><b>&nbsp;G&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/ground.png"></center></td>
+    </tr>
+    <tr>
+    <td><center><font class="_1"><b>&nbsp;V&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/vsoorse2t.png"></center></td>
+    </tr>
+    <tr>
+    <td height="40px"><center><font class="Shift"><b>&nbsp;Shift&nbsp;</b></font><br><font size="0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#10010;</font><font class="Shift"><b>&nbsp;V&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/vsoorse1t.png"></center></td>
+    </tr>
+    <tr>
+    <td><center><font class="_1"><b>&nbsp;T&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/text.png"></center></td>
+    </tr>
+    <tr>
+    <td><center><font class="_1"><b>&nbsp;D&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/diode.png"></center></td>
+    </tr>
+    <tr>
+    <td><center><font class="_1"><b>&nbsp;L&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/led.png"></center></td>
+    </tr>
+    <tr>
+    <td><center><font class="_1"><b>&nbsp;Z&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/zdiode.png"></center></td>
+    </tr>
+    <tr>
+    <td><center><font class="_1"><b>&nbsp;N&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/npn.png"></center></td>
+    </tr>
+    <tr>
+    <td><center><font class="_1"><b>&nbsp;P&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/pnp.png"></center></td>
+    </tr>
+    <tr>
+    <td height="40px"><center><font class="Shift"><b>&nbsp;Shift&nbsp;</b></font><br><font size="0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#10010;</font><font class="Shift"><b>&nbsp;N&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/nMOSFET.png"></center></td>
+    </tr>
+    <tr>
+    <td height="40px"><center><font class="Shift"><b>&nbsp;Shift&nbsp;</b></font><br><font size="0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#10010;</font><font class="Shift"><b>&nbsp;P&nbsp;</b></font></center></td>
+    <td><center><font class="_2"><b>&rArr;</b></font></center></td>
+    <td><center><img class="_3" src="help/bk_img/pMOSFET.png"></center></td>
+    </tr>
+    </table>
+    <br>
 </body>
 </html>
