@@ -1,6 +1,6 @@
 # Circuit Simulator (CircuitJS1)
 
-![](https://pbs.twimg.com/media/Dmglty4XoAAOL3U.jpg:large)
+![](https://ceba77.github.io/slides/5.png)
 
 The source code of the **Circuit Simulator**. It was originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT. The program was ported to Windows (x32, x64), Linux (x32, x64) and MacOS (x64) by Usevalad Khatkevich.
 
@@ -21,9 +21,9 @@ Iain's Page: http://lushprojects.com/circuitjs/
 # Downloads:
 
 You can download this program for Windows (x32, x64), Linux (x32, x64) and Mac OS X (x64):
+- [Circuit Simulator version 1.1.0-beta](https://github.com/CEBA77/circuitjs1/releases/tag/1.1.0-beta)
 - [Circuit Simulator version 1.0.2](https://github.com/CEBA77/circuitjs1/releases/tag/1.0.2)
 - [Circuit Simulator version 1.0.1](https://github.com/CEBA77/circuitjs1/releases/tag/1.0.1)
-- [Circuit Simulator version 1.0.0](https://github.com/CEBA77/circuitjs1/releases/tag/1.0.0)
 - [All versions...](https://github.com/CEBA77/circuitjs1/releases)
 
 # Building the program
