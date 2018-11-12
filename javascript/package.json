@@ -1,9 +1,9 @@
 {
     "app_name": "CircuitSimulator",
-    "description": "Circuit Simulator version 1.1.0",
+    "description": "Circuit Simulator version 1.1.0-beta",
     "main": "index.html",
     "name": "circuitjs1",
-    "version": "1.1.0",
+    "version": "1.1.0-beta",
     "webexe_settings": {
         "blacklist": "",
         "custom_script": "",
@@ -31,6 +31,6 @@
         "mac_icon": "icon.png",
         "min_height": 450,
         "min_width": 630,
-        "title": "Circuit Simulator 1.1.0"
+        "title": "Circuit Simulator 1.1.0-beta"
     }
 }
