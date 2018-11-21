@@ -1,9 +1,16 @@
+<!DOCTYPE html>
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=windows-1252"><style>#header + #content > #left > #rlblock_left,
 #content > #right > .dose > .dosesingle,
 #content > #center > .dose > .dosesingle
 {display:none !important;}</style><style>img[src="http://s05.flagcounter.com/count/pTvk/bg=FFFFFF/txt=000000/border=CCCCCC/columns=6/maxflags=36/viewers=0/labels=0/"]
-{display:none !important;}</style></head><body><h1>Controlled Source Output Function</h1>
+{display:none !important;}</style><script src="help/js/jquery-1.12.4.min.js"></script><script src="help/js/jquery.nicescroll.min.js"></script></head><body>
+    <script>
+        $(document).ready(function() {
+        var nice = $("html").niceScroll();  // The document page (body)
+        });
+      </script>
+    <h1>Controlled Source Output Function</h1>
 The controlled source elements take an output function parameter.  The output function takes the inputs, if any,
 as parameters (which will be <tt>a</tt>, <tt>b</tt>, etc. for a voltage-controlled sourse, or <tt>i</tt> for a current-controlled source).  You
 can also specify <tt>t</tt> for

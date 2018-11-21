@@ -1,16 +1,16 @@
 {
     "app_name": "CircuitSimulator",
-    "description": "Circuit Simulator version 1.1.0-beta",
+    "description": "Circuit Simulator version 1.1.0",
     "main": "index.html",
     "name": "circuitjs1",
-    "version": "1.1.0-beta",
+    "version": "1.1.0",
     "webexe_settings": {
         "blacklist": "",
         "custom_script": "",
         "download_dir": "",
         "export_dir": "output",
         "force_download": false,
-        "linux-x32": true,
+        "linux-x32": false,
         "linux-x64": false,
         "mac-x64": false,
         "nw_compression_level": 0,
@@ -20,7 +20,7 @@
         "uncompressed_folder": false,
         "whitelist": "",
         "windows-x32": false,
-        "windows-x64": false
+        "windows-x64": true
     },
     "webkit": {},
     "window": {
@@ -31,6 +31,6 @@
         "mac_icon": "icon.png",
         "min_height": 450,
         "min_width": 630,
-        "title": "Circuit Simulator 1.1.0-beta"
+        "title": "Circuit Simulator 1.1.0"
     }
 }
