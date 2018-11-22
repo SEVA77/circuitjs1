@@ -21,7 +21,7 @@ Iain's Page: http://lushprojects.com/circuitjs/
 # Downloads:
 
 You can download this program for Windows (x32, x64), Linux (x32, x64) and Mac OS X (x64):
-- [Circuit Simulator version 1.1.0-beta](https://github.com/CEBA77/circuitjs1/releases/tag/1.1.0-beta)
+- [Circuit Simulator version 1.1.0](https://github.com/CEBA77/circuitjs1/releases/tag/1.1.0)
 - [Circuit Simulator version 1.0.2](https://github.com/CEBA77/circuitjs1/releases/tag/1.0.2)
 - [Circuit Simulator version 1.0.1](https://github.com/CEBA77/circuitjs1/releases/tag/1.0.1)
 - [All versions...](https://github.com/CEBA77/circuitjs1/releases)
@@ -50,5 +50,12 @@ You should have received a copy of the GNU General Public License along with thi
     JQuery - Distributed under the MIT License
     jQuery.NiceScroll - Distributed under the MIT License
     jQuery.scrollSpeed - is taken from the github.com/nathco/jQuery.scrollSpeed
-    NW.js - Distributed under the MIT License
     
+    NW.js - Distributed under the MIT License
+    Circuit Simulator - Distributed under the GNU General Public License version 2
+    
+    © Usevalad Khatkevich 2018
+    
+# Credits
+	 Paul Falstad - Creator
+     Iain Sharp - JavaScript conversion, so there are more opportunities for the development of this application.
