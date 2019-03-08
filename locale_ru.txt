@@ -186,7 +186,7 @@
 "Amplifier"="Усилитель"
 "Amplifiers"="Усилители"
 "Analog Reciprocal"="Преобразователь обратной величины"
-"Analog/Digital"="Аналогово-цифровой"
+"Analog/Digital"="АЦП и ЦАП"
 "AND gate"="Элемент И"
 "Apply"="Применить"
 "Astable Multivib"="Астабильный мультивибратор"
