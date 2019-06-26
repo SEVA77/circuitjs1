@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html>
   <head>
-  
+
     <!-- Properties can be specified to influence deferred binding -->
     <meta name='gwt:property' content='locale=en_UK'>
-    
-    
+
+
     <!-- Titles are optional, but useful -->
     <title></title>
 
 <style>
 .disabled {
-	color: lightgray;
+    color: lightgray;
 }
 .topSpace {
-	margin-top: 12px;
+    margin-top: 12px;
 }
 .cursorPointer {
    cursor: default;
@@ -28,39 +28,39 @@
 }
 
 .gwt-MenuItem-disabled {
-	color: lightgray;
+    color: lightgray;
 }
 .offScreen {
-	position: absolute;
-	right: 101%;
-	overflow: auto;
+    position: absolute;
+    right: 101%;
+    overflow: auto;
 }
 .gwt-Frame{
-	scrolling="no";
+    scrolling="no";
   border: 0px !important;
 }
 
 .gwt-MenuItem {
-	font-size: 12px !important;
+    font-size: 12px !important;
 }
 
 .gwt-MenuBar-horizontal {
-	font-size: 12px !important;
-	}
-	
+    font-size: 12px !important;
+    }
+
 .gwt-Label-selected {
-	font-size: 1.3em;
-	font-weight: 400;
-	border-top: 1px solid black;
-	border-bottom: 1px solid black;
+    font-size: 1.3em;
+    font-weight: 400;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
 }
 .gwt-Label-1off {
-	color: DarkGray;
+    color: DarkGray;
 }
 
 .gwt-Label-2off {
-	font-size:0.8em;
-	color: LightGray;
+    font-size:0.8em;
+    color: LightGray;
 }
 
 .gwt-Label-current {
@@ -76,7 +76,7 @@
     cursor: pointer;
     cursor: hand;
     font-size: small;
-    background-color: #ff0000; 
+    background-color: #ff0000;
     border: 1px solid #bbb;
     border-bottom: 1px solid #a0a0a0;
     border-radius: 3px;
@@ -92,49 +92,45 @@
     cursor: pointer;
     cursor: hand;
     font-size: small;
-    background-color: #e7e7e7; 
+    background-color: #e7e7e7;
     border: 1px solid #bbb;
     border-bottom: 1px solid #a0a0a0;
     border-radius: 3px;
     -moz-border-radius: 3px;
 }
 </style>
+<script>
+nw.Window.get().maximize();
+nw.Window.get().leaveFullscreen();
+</script>
 <script src="help/js/jquery-1.12.4.min.js"></script>
 <script src="help/jQuery.scrollSpeed.js"></script>
+<!--<script src="help/js/syscmds.js"></script>-->
 <script>
     $(function() {
         $('div').delay(1000).fadeOut(400);
         $.scrollSpeed(100, 800);
     });
     </script>
-<!--  This script takes care of scrolling. If this script does not exist, 
-  then at random scrolling with the mouse wheel the program will lagging.-->  
+<!--  This script takes care of scrolling. If this script does not exist,
+  then at random scrolling with the mouse wheel the program will lagging.-->
 </head>
   <body>
 
-    <script language="javascript">
-    self.moveTo(0,0) 
-    self.resizeTo(screen.availWidth,screen.availHeight) 
-    if (self.screen) { 
-    width = screen.width 
-    height = screen.height 
-    } 
-    </script>
-    
 
   <!-- Include the next line to allow support for dropbox import/export. You will need your own app key. -->
   <!--<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="YOUR_KEY"></script>-->
 
-   
+
     <!-- This script tag is what actually loads the GWT module.  The -->
     <!-- 'nocache.js' file (also called a "selection script") is     -->
     <!-- produced by the GWT compiler in the module output directory -->
     <!-- or generated automatically in development mode.             -->
     <script language="javascript" src="circuitjs1/circuitjs1.nocache.js"></script>
-    
+
     <!-- Include a history iframe to enable full GWT history support -->
     <!-- (the id must be exactly as shown)                           -->
     <iframe src="javascript:''" id="__gwt_historyFrame" tabindex="-1" style="width:0;height:0;border:0"></iframe>
-      
+
   </body>
  </html>

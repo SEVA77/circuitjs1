@@ -278,6 +278,7 @@
 "ECL"="ECL (Emittergekoppelte Logik)"
 "ECL NOR/OR"="ECL-Nicht-ODER/ODER (NOR/OR)"
 "Edge-Triggered D Flip-Flop"="Flankengetriggertes D-Flipflop"
+"Edit"="Bearbeiten"
 "Edit..."="Bearbeiten..."
 "Edit Component"="Bauteil bearbeiten"
 "Emitter Follower"="Emitterfolger/Kollektorschaltung"
@@ -776,6 +777,3 @@
 "Re-Import"="Re-Importieren"
 "Show RMS Average"="Effektivwert (RMS) anzeigen"
 "Alt Color for Volts & Pwr"="Andere Farben Spannung & Leistung"
-"License"="Lizenz"
-"Help"="Hilfe"
-"Edit"="Bearbeiten

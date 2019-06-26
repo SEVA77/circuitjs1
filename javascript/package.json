@@ -1,9 +1,9 @@
 {
     "app_name": "CircuitSimulator",
-    "description": "Circuit Simulator version 1.1.0",
+    "description": "Circuit Simulator version 1.2.0",
     "main": "index.html",
     "name": "circuitjs1",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "webexe_settings": {
         "blacklist": "",
         "custom_script": "",
