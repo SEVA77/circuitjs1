@@ -8,11 +8,11 @@
 <script src="help/js/jquery-1.12.4.min.js"></script>
 <script src="help/js/jquery.nicescroll.min.js"></script>
 </head><body>
-    <script>
-            $(document).ready(function() {
-            var nice = $("html").niceScroll();  // The document page (body)
-            });
-          </script>
+<script>
+$(document).ready(function() {
+var nice = $("html").niceScroll();  // The document page (body)
+});
+</script>
     <h1>Custom Logic</h1>
 You can implement your own simple logic devices with custom logic chips.  (located under "Digital Chips")
 <p>
@@ -31,7 +31,7 @@ input pins is chosen, and the output pins are set to match the <i>output</i> pat
 (<tt>A</tt>, <tt>B</tt>, etc.).  The <i>input</i> has to be at least as long as the number of input pins.  If it's longer,
 than the additional pattern characters will be matched against the output pins; this allows you to create devices with state.
 </p><p>
-Examples: 
+Examples:
 </p><p>
 </p><h3> 3 input NAND: </h3>
 <p>
@@ -72,7 +72,7 @@ the equals sign specifies the resulting Q and
 <p>
 The first line sets the Q output if both outputs are low (this is needed
  when resetting the circuit).
-The next line sets the outputs to 1,0 if set is high.  The second line 
+The next line sets the outputs to 1,0 if set is high.  The second line
 sets the outputs to 0,1 if reset is high.  The next
 line keeps the outputs the same otherwise.  (The first two letters match
  the input pins and the second two letters match the output
@@ -87,7 +87,7 @@ Definition:</p><pre>?? 00=10
 ?? AB=AB
 </pre>
 The first line sets the Q output if both outputs are low (this is needed when resetting the circuit).
-The next two lines set the Q output to match the D input on a rising transition of the clock.  The last 
+The next two lines set the Q output to match the D input on a rising transition of the clock.  The last
 line keeps the outputs the same otherwise.
 <h3>JK Flip Flop:</h3>
 <p>
