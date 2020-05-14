@@ -21,10 +21,8 @@ Iain's Page: http://lushprojects.com/circuitjs/
 # Downloads:
 
 You can download this program for Windows (x32, x64), Linux (x32, x64) and Mac OS X (x64):
-- [Circuit Simulator version 1.2.0](https://github.com/CEBA77/circuitjs1/releases/tag/1.2.0)
-- [Circuit Simulator version 1.1.0](https://github.com/CEBA77/circuitjs1/releases/tag/1.1.0)
-- [Circuit Simulator version 1.0.2](https://github.com/CEBA77/circuitjs1/releases/tag/1.0.2)
-- [All versions...](https://github.com/CEBA77/circuitjs1/releases)
+- [Circuit Simulator version 1.2.0](https://github.com/SEVA77/circuitjs1/releases/tag/1.2.0)
+- [All versions...](https://github.com/SEVA77/circuitjs1/releases)
 
 # Building the program
 
@@ -35,7 +33,8 @@ After compiling the web application, you can then compile it into the local exec
 The compiled program has a large size. To reduce the size of executable files of the program, you can use to **Ultimate Packer for eXecutables** (UPX). You can download it by following the link: https://upx.github.io/.
 
 > ***Warning! Not all executable files need to be compressed. For Windows, you can compress everything, except for the file d3dcompiler_47.dll. For Linux, you can compress only those files that are in the 'lib' folder. Otherwise, the program does not work.***
->> ***Therefore, I do not recommend the use of compression settings in Web2Executable.***
+>
+> > ***Therefore, I do not recommend the use of compression settings in Web2Executable.***
 
 
 # License
@@ -54,8 +53,8 @@ You should have received a copy of the GNU General Public License along with thi
     NW.js - Distributed under the MIT License
     Circuit Simulator - Distributed under the GNU General Public License version 2
     
-    © Usevalad Khatkevich 2018
-    
+    © Usevalad Khatkevich 2020
+
 # Credits
 	 Paul Falstad - Creator
-     Iain Sharp - JavaScript conversion, so there are more opportunities for the development of this application.
+	 Iain Sharp - JavaScript conversion, so there are more opportunities for the development of this application.
