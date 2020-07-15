@@ -1,3 +1,5 @@
+# Step 2 - Work with JavaScript
+
 This folder contains the source code of the **Circuit Simulator** for **Web2Executable** program.
 
 The files in this folder were compiled from https://github.com/sharpie7/circuitjs1 with additional files from the **Java** folder of this repository.
