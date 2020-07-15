@@ -2,7 +2,7 @@
 
 ![](https://sevalikesto.tk/slides/1-2-0.png)
 
-The source code of the **Circuit Simulator**. It was originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT. The program was ported to Windows (x32, x64), Linux (x32, x64) and MacOS (x64) by Usevalad Khatkevich.
+The source code for offline version of the **Circuit Simulator**. It was originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT. The program was compiled to offline version for Windows (x32, x64), Linux (x32, x64) and MacOS (x64) by Usevalad Khatkevich.
 
 This program is distributed by me as a program for education. It is not recommended to use the program for modeling real circuits, since many components in the program are idealized.
 
@@ -23,6 +23,8 @@ Iain's Page: http://lushprojects.com/circuitjs/
 You can download this program for Windows (x32, x64), Linux (x32, x64) and Mac OS X (x64):
 - [Circuit Simulator version 1.2.0](https://github.com/SEVA77/circuitjs1/releases/tag/1.2.0)
 - [All versions...](https://github.com/SEVA77/circuitjs1/releases)
+
+> If you have problems with this application, you can try to use [the offline application of the main developer](http://www.falstad.com/circuit/).
 
 # Building the program
 
