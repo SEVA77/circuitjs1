@@ -391,10 +391,20 @@ MouseOutHandler, MouseWheelHandler {
 	shortcuts = new String[127];
 
 	layoutPanel = new DockLayoutPanel(Unit.PX);
-	
-	  fileMenuBar = new MenuBar(true);
 	  if (isElectron())
 	      fileMenuBar.addItem(iconMenuItem("clone", "New Window...", new MyCommand("file", "newwindow")));
+	  
+	  // CEBA77 Start
+	  fileMenuBar = new MenuBar(true);
+	  fileMenuBar.addItem(iconMenuItem("popup", "New Window...",
+			new Command() { public void execute(){
+			    	ScriptInjector.fromString("nw.Window.open('index.html', {}, function(new_win) {});")
+			    	  .setRemoveTag(false)
+			    	  .setWindow(ScriptInjector.TOP_WINDOW)
+			    	  .inject();
+			    }
+			  }));
+	  // CEBA77 End
 	  importFromLocalFileItem = iconMenuItem("folder", "Open File...", new MyCommand("file","importfromlocalfile"));
 	  importFromLocalFileItem.setEnabled(LoadFile.isSupported());
 	  fileMenuBar.addItem(importFromLocalFileItem);
@@ -456,14 +466,14 @@ MouseOutHandler, MouseWheelHandler {
 	  fileMenuBar.addItem(aboutItem);
 	  aboutItem.setScheduledCommand(new MyCommand("file","about"));
 	  */
-	  //CEBA77 End	
 	  int width=(int)RootLayoutPanel.get().getOffsetWidth();
-	  VERTICALPANELWIDTH = width/5;
+	  VERTICALPANELWIDTH = 166; /* = width/5;
 	  if (VERTICALPANELWIDTH > 166)
 	      VERTICALPANELWIDTH = 166;
 	  if (VERTICALPANELWIDTH < 128)
-	      VERTICALPANELWIDTH = 128;
-
+	      VERTICALPANELWIDTH = 128;*/
+	  //CEBA77 End
+	  
 	  menuBar = new MenuBar();
 	  menuBar.addItem(LS("File"), fileMenuBar);
 	  verticalPanel=new VerticalPanel();
