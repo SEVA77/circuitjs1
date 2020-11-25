@@ -444,7 +444,7 @@ MouseOutHandler, MouseWheelHandler {
 		
 	  fileMenuBar.addItem(LS("Open circuitjs1 from web"), fsub);
 	  */
-	  fileMenuBar.addItem(closeItem = new MenuItem(LS("Exit"),
+	  fileMenuBar.addItem(iconMenuItem("exit", "Exit",
 	 		new Command() { public void execute(){
 	 		    	ScriptInjector.fromString("nw.Window.get().close(true);")
 	 		    	  .setWindow(ScriptInjector.TOP_WINDOW)
@@ -3204,51 +3204,39 @@ MouseOutHandler, MouseWheelHandler {
     	menuBar.addItem(LS("Circuits"), currentMenuBar);
     	
 	// CEBA77 Start
-	  
+	  //iconMenuItem("clone", "New Window...", new MyCommand("file", "newwindow"))
+    	/*
+    	 exportAsTextItem = iconMenuItem("export", "Export As Text...", new MyCommand("file","exportastext"));
+	  fileMenuBar.addItem(exportAsTextItem);
+    	 * */
 	MenuBar h = new MenuBar(true);
-	helpItem=new MenuItem(LS("User Guide"),(Command)null);
+	helpItem=iconMenuItem("book-open", "User Guide", (Command)null);
 	h.addItem(helpItem);
 	helpItem.setScheduledCommand(new MyCommand("file","help"));
-	licenseItem=new MenuItem(LS("License"),(Command)null);
+	licenseItem=iconMenuItem("license", "License",(Command)null);
 	h.addItem(licenseItem);
 	licenseItem.setScheduledCommand(new MyCommand("file","license"));
-	aboutItem=new MenuItem(LS("About..."),(Command)null);
+	aboutItem = iconMenuItem("info-circled", "About...", (Command)null);
 	h.addItem(aboutItem);
 	aboutItem.setScheduledCommand(new MyCommand("file","about"));
 	h.addSeparator();
- 	h.addItem(aboutCircuitsItem = new MenuItem(LS("About Circuits 🌐"), // it is a &#127760; but browsers don't see it...
+ 	h.addItem(aboutCircuitsItem = iconMenuItem("link", "About Circuits",
 	new Command() { public void execute(){
 	    	ScriptInjector.fromString("nw.Shell.openExternal('https://www.falstad.com/circuit/e-index.html');")
 	    	  .setRemoveTag(false)
 	    	  .setWindow(ScriptInjector.TOP_WINDOW)
 	    	  .inject();
-	    /*
-	    String CirInfoEN = "nw.Shell.openExternal('https://www.falstad.com/circuit/e-index.html');";
-	    ScriptInjector.fromString(CirInfoEN).inject();
-	    */
 	    }
 	}));
-	h.addItem(aboutCircuitsPLItem = new MenuItem(LS("About Circuits (Polish ver.) 🌐"),
+	h.addItem(aboutCircuitsPLItem = iconMenuItem("link", "About Circuits (Polish ver.)",
 	new Command() { public void execute(){
 	    	ScriptInjector.fromString("nw.Shell.openExternal('https://www.falstad.com/circuit/polish/e-index.html');")
 	    	  .setRemoveTag(false)
 	    	  .setWindow(ScriptInjector.TOP_WINDOW)
 	    	  .inject();
-	    /*
-	    String CirInfoPL = "nw.Shell.openExternal('https://www.falstad.com/circuit/polish/e-index.html');";
-	    ScriptInjector.fromString(CirInfoPL).inject();
-	    */
 	    }
 	}));
-	
-	/*
-	h.addItem(testItem = new MenuItem(LS("Show HW"),
-		new Command() { public void execute(){
-		    String scriptBody = "alert('Hello World');console.log('hello world');";
-		    ScriptInjector.fromString(scriptBody).inject();
-		    }
-		}));
-	*/
+
 	menuBar.addItem(LS("Help"), h);
 	
 	// CEBA77 End
