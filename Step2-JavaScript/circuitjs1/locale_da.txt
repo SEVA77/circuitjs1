@@ -345,7 +345,7 @@
 "Phase Comparator Internals"="Fasekomparator indre dele"
 "Phase Offset (degrees)"="Faseforskydning (grader)"
 "Phase-Locked Loops"="Faselåste loops"
-"Phase-Sequence Network"=" "    Fasesekvensnetværk
+"Phase-Sequence Network"=" "  Fasesekvensnetværk
 "Phase-Shift Oscillator"="Faseskiftsoscillator"
 "Potentiometer Divider"="Potentiometerdeler"
 "Power Brightness"="Effekt lysstyrke"
@@ -537,7 +537,8 @@
 "Help"="Hjælp"
 "User Guide"="Brugervejledning"
 "License"="Licens"
-"About Circuits 🌐"="Om Kredsløb (engelsk) 🌐"
-"About Circuits (Polish ver.) 🌐"="Om Kredsløb (polsk) 🌐"
+"About Circuits"="Om Kredsløb (engelsk)"
+"About Circuits (Polish ver.)"="Om Kredsløb (polsk)"
 "Fullscreen Mode"="Fuldskærmstilstand"
 "Exit"="Afslut"
+"New Window..."="Nyt vindue..."
