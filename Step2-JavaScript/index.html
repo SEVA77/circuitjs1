@@ -7,7 +7,7 @@
 
 
     <!-- Titles are optional, but useful -->
-    <title></title>
+    <title>Circuit Simulator 1.2.1</title>
 
 <!-- Add icons for menu -->
 <link rel="stylesheet" href="font/fontello.css">
@@ -106,8 +106,6 @@
 /*nw.Window.get().maximize();
 nw.Window.get().leaveFullscreen();*/
 
-  nw.Window.get().setMinimumSize(640, 480); // for new windows
-
 // Optimizing application size:
 
 /*
@@ -117,11 +115,13 @@ Workspace if nw.Window.get().zoomLevel =
 1 => 1600 x 834
 1.5 => 1460 x 761
 2 => 1333 x 695
+
 -0.4 (2 is big)
 */
 
   nw.Screen.Init();
   let dwidth =  nw.Screen.screens[0].bounds.width;
+  let dheight =  nw.Screen.screens[0].bounds.height; // for new window
 
     if (dwidth >= 1960)
       nw.Window.get().zoomLevel = 1.6; // 2-0.4 and etc.
@@ -136,11 +136,19 @@ Workspace if nw.Window.get().zoomLevel =
     else if (dwidth < 1200)
       nw.Window.get().zoomLevel = -0.3;
 
+  //use dwidth and dheight variables for size new window
+  nw.Window.get().resizeTo(dwidth*0.75, dheight*0.75);
+  //nw.Window.get().width = dwidth*0.7;
+  //nw.Window.get().height = dheight*0.7;
+  //nw.Window.get().setPosition('center'); // do not work! why?
+
+  nw.Window.get().setMinimumSize(640, 480); // for new windows
+
 </script>
 
 <script src="help/js/jquery-1.12.4.min.js"></script>
 <script src="help/jQuery.scrollSpeed.js"></script>
-<!--<script src="help/js/syscmds.js"></script>-->
+<script src="help/js/syscmds.js"></script>
 <script>
     $(function() {
         $('div').delay(1000).fadeOut(400);

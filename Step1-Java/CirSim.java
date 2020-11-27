@@ -456,7 +456,7 @@ MouseOutHandler, MouseWheelHandler {
 	  */
 	  fileMenuBar.addItem(iconMenuItem("exit", "Exit",
 	 		new Command() { public void execute(){
-	 		    	ScriptInjector.fromString("nw.Window.get().close(true);")
+	 		    	ScriptInjector.fromString("close_app()")
 	 		    	  .setWindow(ScriptInjector.TOP_WINDOW)
 	 		    	  .inject();
 	 		    }

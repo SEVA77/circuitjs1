@@ -1,4 +1,15 @@
-function open_webapp(wa_link) { // wa - web app)))
+
+function close_app() {
+  if(confirm("Are you sure you want to close this window?")){
+     nw.Window.get().close(true);
+     }
+}
+
+nw.Window.get().on('close', function () {
+  close_app();
+});
+
+/*function open_webapp(wa_link) { // wa - web app)))
 
     let langtext_wa = new Array();
 
@@ -29,4 +40,4 @@ function open_webapp(wa_link) { // wa - web app)))
             return document.location.href = "wa_link";
         });
     }
-}
+}*/
