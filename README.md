@@ -25,7 +25,7 @@ Iain's Page: http://lushprojects.com/circuitjs/
 # Downloads:
 
 You can download this program for Windows (x32, x64), Linux (x32, x64) and Mac OS X (x64):
-- [Circuit Simulator version 1.2.0](https://github.com/SEVA77/circuitjs1/releases/tag/1.2.0)
+- [Circuit Simulator version 1.2.1](https://github.com/SEVA77/circuitjs1/releases/tag/1.2.1)
 - [All versions...](https://github.com/SEVA77/circuitjs1/releases)
 
 > If you have problems with this application, you can try to use [this offline application of the main developer](http://www.falstad.com/circuit/offline/).
