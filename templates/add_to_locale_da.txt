@@ -1,0 +1,8 @@
+"Help"="Hjælp"
+"User Guide"="Brugervejledning"
+"License"="Licens"
+"About Circuits"="Om Kredsløb (engelsk)"
+"About Circuits (Polish ver.)"="Om Kredsløb (polsk)"
+"Fullscreen Mode"="Fuldskærmstilstand"
+"Exit"="Afslut"
+"New Window..."="Nyt vindue..."

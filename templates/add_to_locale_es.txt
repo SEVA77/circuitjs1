@@ -1,0 +1,8 @@
+"Help"="Ayuda"
+"User Guide"="Guía del usuario"
+"License"="Licencia"
+"About Circuits"="Acerca de los circuitos (en inglés)"
+"About Circuits (Polish ver.)"="Acerca de los circuitos (en polaco)"
+"Fullscreen Mode"="Modo de pantalla completa"
+"Exit"="Cerrar aplicación"
+"New Window..."="Nueva ventana..."

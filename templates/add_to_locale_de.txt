@@ -1,0 +1,8 @@
+"Help"="Hilfe"
+"User Guide"="Benutzerhandbuch"
+"License"="Lizenz"
+"About Circuits"="Über Schaltungen (englisch)"
+"About Circuits (Polish ver.)"="Über Schaltungen (polnische)"
+"Fullscreen Mode"="Vollbildmodus"
+"Exit"="Ausfahrt"
+"New Window..."="Neues Fenster..."

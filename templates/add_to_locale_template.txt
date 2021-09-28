@@ -1,0 +1,8 @@
+"Help"=""
+"User Guide"=""
+"License"=""
+"About Circuits"=""
+"About Circuits (Polish ver.)"=""
+"Fullscreen Mode"=""
+"Exit"=""
+"New Window..."=""

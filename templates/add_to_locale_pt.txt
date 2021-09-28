@@ -1,0 +1,8 @@
+"Help"="Aiuto"
+"User Guide"="Guia de usuario"
+"License"="Licença"
+"About Circuits"="Sobre Exemplos de Circuitos (em inglês)"
+"About Circuits (Polish ver.)"="Sobre Exemplos de Circuitos (em polonês)"
+"Fullscreen Mode"="Modo tela cheia"
+"Exit"="Saída"
+"New Window..."="Nova Janela..."

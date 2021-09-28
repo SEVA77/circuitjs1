@@ -1,0 +1,8 @@
+"Help"="Помощь"
+"User Guide"="Руководство пользователя"
+"License"="Лицензия"
+"About Circuits"="Информация о схемах (англ.)"
+"About Circuits (Polish ver.)"="Информация о схемах (польск.)"
+"Fullscreen Mode"="Полноэкранный режим"
+"Exit"="Выход"
+"New Window..."="Новое окно..."

@@ -1,0 +1,8 @@
+"Help"="Wsparcie"
+"User Guide"="Podręcznik użytkownika"
+"License"="Licencja"
+"About Circuits"="O Schematy (angielska wersja)"
+"About Circuits (Polish ver.)"="O Schematy"
+"Fullscreen Mode"="Pełny ekran"
+"Exit"="Wyjdź"
+"New Window..."="Nowe okno..."
