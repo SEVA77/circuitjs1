@@ -443,7 +443,7 @@ MouseOutHandler, MouseWheelHandler {
 
 	fileMenuBar = new MenuBar(true);
 	if (isElectron())
-	    fileMenuBar.addItem(menuItemWithShortcut("window", "New Window...", LS(ctrlMetaKey + "N"),
+	    fileMenuBar.addItem(menuItemWithShortcut("window", LS("New Window..."), LS(ctrlMetaKey + "N"),
 		    new MyCommand("file", "newwindow")));
 
 	// CEBA77 Start
@@ -458,7 +458,7 @@ MouseOutHandler, MouseWheelHandler {
 			}));
 	// CEBA77 End
 	fileMenuBar.addItem(iconMenuItem("doc-new", "New Blank Circuit", new MyCommand("file", "newblankcircuit")));
-	importFromLocalFileItem = menuItemWithShortcut("folder", "Open File...", LS(ctrlMetaKey + "O"),
+	importFromLocalFileItem = menuItemWithShortcut("folder", LS("Open File..."), LS(ctrlMetaKey + "O"),
 		new MyCommand("file","importfromlocalfile"));
 	importFromLocalFileItem.setEnabled(LoadFile.isSupported());
 	fileMenuBar.addItem(importFromLocalFileItem);
@@ -467,11 +467,11 @@ MouseOutHandler, MouseWheelHandler {
 	importFromDropboxItem = iconMenuItem("dropbox", "Import From Dropbox...", new MyCommand("file", "importfromdropbox"));
 	fileMenuBar.addItem(importFromDropboxItem);
 	if (isElectron()) {
-	    saveFileItem = fileMenuBar.addItem(menuItemWithShortcut("floppy", "Save", LS(ctrlMetaKey + "S"),
+	    saveFileItem = fileMenuBar.addItem(menuItemWithShortcut("floppy", LS("Save"), LS(ctrlMetaKey + "S"),
 		    new MyCommand("file", "save")));
-	    fileMenuBar.addItem(iconMenuItem("floppy", "Save As...", new MyCommand("file", "saveas")));
+	    fileMenuBar.addItem(iconMenuItem("floppy", LS("Save As..."), new MyCommand("file", "saveas")));
 	} else {
-	    exportAsLocalFileItem = menuItemWithShortcut("floppy", "Save As...", LS(ctrlMetaKey + "S"),
+	    exportAsLocalFileItem = menuItemWithShortcut("floppy", LS("Save As..."), LS(ctrlMetaKey + "S"),
 		    new MyCommand("file","exportaslocalfile"));
 	    exportAsLocalFileItem.setEnabled(ExportAsLocalFileDialog.downloadIsSupported());
 	    fileMenuBar.addItem(exportAsLocalFileItem);
@@ -487,7 +487,7 @@ MouseOutHandler, MouseWheelHandler {
 	recoverItem = iconMenuItem("back-in-time", "Recover Auto-Save", new MyCommand("file","recover"));
 	recoverItem.setEnabled(recovery != null);
 	fileMenuBar.addItem(recoverItem);
-	printItem = menuItemWithShortcut("print", "Print...", LS(ctrlMetaKey + "P"), new MyCommand("file","print"));
+	printItem = menuItemWithShortcut("print", LS("Print..."), LS(ctrlMetaKey + "P"), new MyCommand("file","print"));
 	fileMenuBar.addItem(printItem);
 	fileMenuBar.addSeparator();
 	//CEBA77 Start
@@ -883,7 +883,7 @@ MouseOutHandler, MouseWheelHandler {
     }
     
     MenuItem menuItemWithShortcut(String icon, String text, String shortcut, MyCommand cmd) {
-	final String edithtml="<div style=\"white-space:nowrap\"><div style=\"display:inline-block;width:110px;\"><i class=\"cirjsicon-";
+	final String edithtml="<div style=\"white-space:nowrap\"><div style=\"display:inline-block;width:100%;padding-right:5px;\"><i class=\"cirjsicon-";
 	String nbsp = "&nbsp;";
 	if (icon=="") nbsp="";
 	String sn=edithtml + icon + "\"></i>" + nbsp + text + "</div>" + shortcut + "</div>";
