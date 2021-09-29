@@ -1,0 +1,8 @@
+"Help"="Hjelp"
+"User Guide"="Brukerhåndboken"
+"License"="Tillatelse"
+"About Circuits"="Om kretser (Engelsk ver.)"
+"About Circuits (Polish ver.)"="Om kretser (Polsk ver.)"
+"Fullscreen Mode"="Fullskjerm-modus"
+"Exit"="Exit"
+"New Window..."="Nytt vindu..."

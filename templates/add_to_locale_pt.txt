@@ -5,4 +5,3 @@
 "About Circuits (Polish ver.)"="Sobre Exemplos de Circuitos (em polonês)"
 "Fullscreen Mode"="Modo tela cheia"
 "Exit"="Saída"
-"New Window..."="Nova Janela..."

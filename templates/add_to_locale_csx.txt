@@ -1,0 +1,7 @@
+"Help"="Pomoc"
+"User Guide"="Uživatelská příručka"
+"License"="Licence"
+"About Circuits"="O obvodech (anglicky ver.)"
+"About Circuits (Polish ver.)"="O obvodech (polský ver.)"
+"Fullscreen Mode"="Režim celé obrazovky"
+"Exit"="Výstup"
