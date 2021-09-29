@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+  font-family: Arial Unicode MS, Arial, sans-serif;
+  font-size: small;
+}
+h4 {
+  padding: 3px;
+  margin: 0;
+  font-family: arial, verdana, courier;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+}
+div.comp{
+  color: black;
+  border: 1px solid transparent;
+  margin: 0;
+  padding: 0px 0px 0px 6px;
+  display: block;
+  opacity: 1;
+  border: 1px dashed DarkGray;
+}
+</style>
+<script src="help/js/jquery-1.12.4.min.js"></script>
+<script src="help/js/jquery.nicescroll.min.js"></script>
+</head>
+<body>
+<script>
+    $(document).ready(function() {
+        var nice = $("html").niceScroll();  // The document page (body)
+    });
+</script>
+<div>
+  <h4>Circuit Simulator version 1.2.2</h4><br>
+  <p>Original by Paul Falstad.<br><a href="javascript:nw.Shell.openExternal('http://www.falstad.com/');" target="_blank">http://www.falstad.com/</a></p>
+  <p>JavaScript conversion by Iain Sharp (version <span class="ver"></span> (pfalstad) for web application).<br><a href="javascript:nw.Shell.openExternal('http://lushprojects.com/');" target="_blank">http://lushprojects.com/</a></p>
+  <p>The program was compiled to desktop application by Usevalad Khatkevich (NW.js version 0.17.0).</p>
+  <p>Thanks to: Edward Calver for 15 new components and other improvements; Rodrigo Hausen for file import/export and many other UI improvements; J. Mike Rollins for the Zener diode code; Julius Schmidt for the spark gap code and some examples; Dustin Soodak for help with the user interface improvements; Jacob Calvert for the T Flip Flop; Ben Hayden for scope spectrum; Thomas Reitinger, Krystian Sławiński, Usevalad Khatkevich, Lucio Sciamanna, Mauro Hemerly Gazzani, J. Miguel Silva, and Franck Viard for translations; Andre Adrian for improved emitter coupled oscillator; Felthry for many examples; Colin Howell for code improvements. LZString (c) 2013 pieroxy.</p>
+  <p style="font-size:9px">This program uses free icons. For more information, please read the <a href="font/webfontlicense.html" target="_self">list of authors and licenses of these icons and webfonts</a>.</p>
+  <p style="font-size:9px">This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or (at your option) any later version.</p>
+  <p style="font-size:9px">This program is distributed in the hope that it will be useful,but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+    <div class="comp">
+      <p style="font-size:9px"><b>Components of this program:</b></p>
+      <p style="font-size:9px">JQuery - Distributed under the MIT License</p>
+      <p style="font-size:9px">jQuery.NiceScroll - Distributed under the MIT License</p>
+      <p style="font-size:9px">jQuery.scrollSpeed - is taken from the github.com/nathco/jQuery.scrollSpeed</p>
+      <p style="font-size:9px">NW.js - Distributed under the MIT License</p>
+    </div>
+  <p style="font-size:9px">Source code (Paul):<a href="javascript:nw.Shell.openExternal('https://github.com/pfalstad/circuitjs1');" target="_blank">https://github.com/pfalstad/circuitjs1</a></p>
+  <p style="font-size:9px">Source code (Iain):<a href="javascript:nw.Shell.openExternal('https://github.com/sharpie7/circuitjs1');" target="_blank">https://github.com/sharpie7/circuitjs1</a></p>
+  <p style="font-size:9px">Source code (Usevalad): <a href="javascript:nw.Shell.openExternal('https://github.com/SEVA77/circuitjs1');" target="_blank">https://github.com/SEVA77/circuitjs1</a></p>
+  <p style="font-size:9px">
+Copyright (c) 1985-1991 The Regents of the University of California.
+All rights reserved.</p>
+<p style="font-size:9px">IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
+OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
+CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+<p style="font-size:9px">THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN
+"AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO PROVIDE
+MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+<p>canvas2svg: Copyright (c) 2014 Gliffy Inc.</p>
+
+  <p style="font-size:9px">
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+
+</div>
+<script>
+  // Add version from versionString variable
+  let versionString = document.querySelector('.ver');
+  let verStr = sessionStorage.getItem('versionString');
+  if (verStr == null) {
+    versionString.textContent = "... ";
+  } else {
+    versionString.textContent = verStr;
+  }
+</script>
+</body>
+</html>
