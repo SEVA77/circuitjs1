@@ -107,6 +107,15 @@ MouseOutHandler, MouseWheelHandler {
     Button runStopButton;
     Button dumpMatrixButton;
     MenuItem aboutItem;
+    // CEBA77 Start
+    MenuItem helpItem;
+    MenuItem licenseItem;
+    // MenuItem testItem;
+    MenuItem aboutCircuitsItem;
+    MenuItem aboutCircuitsPLItem;
+    MenuItem closeItem;
+    CheckboxMenuItem fullscreenCheckItem;
+    // CEBA77 End
     MenuItem importFromLocalFileItem, importFromTextItem,
     	exportAsUrlItem, exportAsLocalFileItem, exportAsTextItem, printItem, recoverItem, saveFileItem;
     MenuItem importFromDropboxItem;
@@ -248,6 +257,10 @@ MouseOutHandler, MouseWheelHandler {
     static ScrollValuePopup scrollValuePopup;
     static DialogBox dialogShowing;
     static AboutBox aboutBox;
+    // CEBA77 Start    
+    static HelpDialog helpDialog;
+    static LicenseDialog licenseDialog;
+    // CEBA77 End 
     static ImportFromDropboxDialog importFromDropboxDialog;
 //    Class dumpTypes[], shortcuts[];
     String shortcuts[];
@@ -432,7 +445,18 @@ MouseOutHandler, MouseWheelHandler {
 	if (isElectron())
 	    fileMenuBar.addItem(menuItemWithShortcut("window", "New Window...", LS(ctrlMetaKey + "N"),
 		    new MyCommand("file", "newwindow")));
-	
+
+	// CEBA77 Start
+	fileMenuBar = new MenuBar(true);
+	fileMenuBar.addItem(iconMenuItem("popup", "New Window...",
+		new Command() { public void execute(){
+				ScriptInjector.fromString("nw.Window.open('index.html', {}, function(new_win) {});")
+					.setRemoveTag(false)
+					.setWindow(ScriptInjector.TOP_WINDOW)
+					.inject();
+			}
+			}));
+	// CEBA77 End
 	fileMenuBar.addItem(iconMenuItem("doc-new", "New Blank Circuit", new MyCommand("file", "newblankcircuit")));
 	importFromLocalFileItem = menuItemWithShortcut("folder", "Open File...", LS(ctrlMetaKey + "O"),
 		new MyCommand("file","importfromlocalfile"));
@@ -466,18 +490,48 @@ MouseOutHandler, MouseWheelHandler {
 	printItem = menuItemWithShortcut("print", "Print...", LS(ctrlMetaKey + "P"), new MyCommand("file","print"));
 	fileMenuBar.addItem(printItem);
 	fileMenuBar.addSeparator();
+	//CEBA77 Start
+	/*
+	MenuBar fsub = new MenuBar(true);
+	fsub.setAutoOpen(true);
+	fsub.addItem(new MenuItem(LS("pfalstad"),
+			new Command() { public void execute(){
+			ScriptInjector.fromString("open_webapp('http://www.falstad.com/circuit/circuitjs.html');")
+				.setWindow(ScriptInjector.TOP_WINDOW)
+				.inject();
+				}
+		}));
+	fsub.addItem(new MenuItem(LS("isharp"),
+		new Command() { public void execute(){
+				ScriptInjector.fromString("open_webapp('http://lushprojects.com/circuitjs/circuitjs.html');")
+					.setWindow(ScriptInjector.TOP_WINDOW)
+					.inject();
+			}
+		}));
+	
+	fileMenuBar.addItem(LS("Open circuitjs1 from web"), fsub);
+	*/
 	fileMenuBar.addItem(iconMenuItem("resize-full-alt", "Toggle Full Screen", new MyCommand("view", "fullscreen")));
 	fileMenuBar.addSeparator();
+	fileMenuBar.addItem(iconMenuItem("exit", "Exit",
+		new Command() { public void execute(){
+				ScriptInjector.fromString("close_app()")
+					.setWindow(ScriptInjector.TOP_WINDOW)
+					.inject();
+			}
+		}));
+	/*  
 	aboutItem = iconMenuItem("info-circled", "About...", (Command)null);
 	fileMenuBar.addItem(aboutItem);
 	aboutItem.setScheduledCommand(new MyCommand("file","about"));
-
+	*/
 	int width=(int)RootLayoutPanel.get().getOffsetWidth();
-	VERTICALPANELWIDTH = width/5;
+	VERTICALPANELWIDTH = 166; /* = width/5;
 	if (VERTICALPANELWIDTH > 166)
-	    VERTICALPANELWIDTH = 166;
+		VERTICALPANELWIDTH = 166;
 	if (VERTICALPANELWIDTH < 128)
-	    VERTICALPANELWIDTH = 128;
+		VERTICALPANELWIDTH = 128;*/
+	//CEBA77 End
 
 	menuBar = new MenuBar();
 	menuBar.addItem(LS("File"), fileMenuBar);
@@ -520,6 +574,28 @@ MouseOutHandler, MouseWheelHandler {
 
 	optionsMenuBar = m = new MenuBar(true );
 	menuBar.addItem(LS("Options"), optionsMenuBar);
+	// CEBA77 Start
+	m.addItem(fullscreenCheckItem = new CheckboxMenuItem(LS("Fullscreen Mode"),
+	 		new Command() { public void execute(){
+	 		    	if (fullscreenCheckItem.getState()) {
+	 		    	ScriptInjector.fromString("nw.Window.get().enterFullscreen();")
+	 		    	  .setRemoveTag(false)
+	 		    	  .setWindow(ScriptInjector.TOP_WINDOW)
+	 		    	  .inject();
+	 		    	}
+	 		    	else {
+		 		ScriptInjector.fromString("nw.Window.get().leaveFullscreen();")
+		 		  .setRemoveTag(false)
+		 		  .setWindow(ScriptInjector.TOP_WINDOW)
+		 		  .inject();
+	 		    	}
+	 		    /*  (new CheckboxAlignedMenuItem)
+	 		    String fullscreenScript = "nw.Window.get().toggleFullscreen();";
+	 		    ScriptInjector.fromString(fullscreenScript).inject();
+	 		    */
+	 		    }
+	 		}));
+	// CEBA77 End
 	m.addItem(dotsCheckItem = new CheckboxMenuItem(LS("Show Current")));
 	dotsCheckItem.setState(true);
 	m.addItem(voltsCheckItem = new CheckboxMenuItem(LS("Show Voltage"),
@@ -3075,6 +3151,12 @@ MouseOutHandler, MouseWheelHandler {
 	    Window.alert(LS("Editing disabled.  Re-enable from the Options menu."));
 	    return;
 	}
+		// CEBA77 Start
+    	if (item=="help")
+    	helpDialog = new HelpDialog();
+    	if (item=="license")
+        licenseDialog = new LicenseDialog();
+    	// CEBA77 End
     	if (item=="about")
     		aboutBox = new AboutBox(circuitjs1.versionString);
     	if (item=="importfromlocalfile") {
@@ -3605,6 +3687,44 @@ MouseOutHandler, MouseWheelHandler {
     	currentMenuBar=new MenuBar(true);
     	currentMenuBar.setAutoOpen(true);
     	menuBar.addItem(LS("Circuits"), currentMenuBar);
+		// CEBA77 Start
+		//iconMenuItem("clone", "New Window...", new MyCommand("file", "newwindow"))
+			/*
+			exportAsTextItem = iconMenuItem("export", "Export As Text...", new MyCommand("file","exportastext"));
+		fileMenuBar.addItem(exportAsTextItem);
+			* */
+		MenuBar h = new MenuBar(true);
+		helpItem=iconMenuItem("book-open", "User Guide", (Command)null);
+		h.addItem(helpItem);
+		helpItem.setScheduledCommand(new MyCommand("file","help"));
+		licenseItem=iconMenuItem("license", "License",(Command)null);
+		h.addItem(licenseItem);
+		licenseItem.setScheduledCommand(new MyCommand("file","license"));
+		aboutItem = iconMenuItem("info-circled", "About...", (Command)null);
+		h.addItem(aboutItem);
+		aboutItem.setScheduledCommand(new MyCommand("file","about"));
+		h.addSeparator();
+		h.addItem(aboutCircuitsItem = iconMenuItem("link", "About Circuits",
+		new Command() { public void execute(){
+				ScriptInjector.fromString("nw.Shell.openExternal('https://www.falstad.com/circuit/e-index.html');")
+				.setRemoveTag(false)
+				.setWindow(ScriptInjector.TOP_WINDOW)
+				.inject();
+			}
+		}));
+		h.addItem(aboutCircuitsPLItem = iconMenuItem("link", "About Circuits (Polish ver.)",
+		new Command() { public void execute(){
+				ScriptInjector.fromString("nw.Shell.openExternal('https://www.falstad.com/circuit/polish/e-index.html');")
+				.setRemoveTag(false)
+				.setWindow(ScriptInjector.TOP_WINDOW)
+				.inject();
+			}
+		}));
+
+		menuBar.addItem(LS("Help"), h);
+		
+		// CEBA77 End
+
     	stack[stackptr++] = currentMenuBar;
     	int p;
     	for (p = 0; p < len; ) {
@@ -5133,6 +5253,12 @@ MouseOutHandler, MouseWheelHandler {
     		return true;
     	if (aboutBox !=null && aboutBox.isShowing())
     		return true;
+		// CEBA77 Start
+    	if (helpDialog !=null && helpDialog.isShowing())
+			return true;
+    	if (licenseDialog !=null && licenseDialog.isShowing())
+			return true;
+    	// CEBA77 End
     	if (importFromDropboxDialog != null && importFromDropboxDialog.isShowing())
     		return true;
     	return false;
