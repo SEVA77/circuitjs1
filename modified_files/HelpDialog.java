@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 public class HelpDialog extends DialogBox {
 	
-    	HorizontalPanel hp;
+    HorizontalPanel hp;
 	VerticalPanel vp;
 	Button okButton;
 	VerticalPanel vpEN;
@@ -48,7 +48,7 @@ public class HelpDialog extends DialogBox {
 		tp.add(vpRU = new VerticalPanel(), tab2Title);
 		vpRU.setWidth("500px");
 		vpRU.add(new HTML("<iframe style=\"border:0;\" src=\"help/RU.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
-
+/*
 		tp.add(vpPL = new VerticalPanel(), tab3Title);
 		vpPL.setWidth("500px");
 		vpPL.add(new HTML("<iframe style=\"border:0;\" src=\"help/PL.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
@@ -60,7 +60,7 @@ public class HelpDialog extends DialogBox {
 		tp.add(vpDA = new VerticalPanel(), tab5Title);
 		vpDA.setWidth("500px");
 		vpDA.add(new HTML("<iframe style=\"border:0;\" src=\"help/DA.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
-		
+*/		
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.setWidth("100%");
 		hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
