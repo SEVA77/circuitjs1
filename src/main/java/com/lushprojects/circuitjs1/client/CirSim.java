@@ -21,6 +21,8 @@ package com.lushprojects.circuitjs1.client;
 
 // GWT conversion (c) 2015 by Iain Sharp
 
+/*The file was changed for desktop program by Usevalad Khatkevich (my changes are marked by the 'CEBA77' label)*/
+
 // For information about the theory behind this, see Electronic Circuit & System Simulation Methods by Pillage
 // or https://github.com/sharpie7/circuitjs1/blob/master/INTERNALS.md
 
