@@ -2,25 +2,19 @@
 
 ![](https://my77thblog.pp.ua/projects/demo/circuitjs1/circuitjs_1_2_1.PNG)
 
-The source code for offline version of the **Circuit Simulator**. It was originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT. The program was compiled to offline version for Windows (x32, x64), Linux (x32, x64) and MacOS (x64) by Usevalad Khatkevich.
+The source code for offline version of the **Circuit Simulator** based on [NW.js](https://github.com/nwjs/nw.js). It was originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT. The program was compiled to offline version for Windows (x32, x64), Linux (x32, x64) and MacOS (x64) by Usevalad Khatkevich.
 
 This program is distributed by me as a program for education. It is not recommended to use the program for modeling real circuits, since many components in the program are idealized.
 
-The program supports the following languages:
-- English
-- Russian
-- Danish
-- German
-- Polish
-- Spanish
-- French
-- Italian
-- Portuguese
+The program supports the following languages: English, Russian, Danish, German, Polish, Spanish, French, Italian, Portuguese, Czech, Norwegian, Chinese.
 
 For a web version of the application see:
 
-Paul's Page: http://www.falstad.com/circuit/  
+Paul's Page: http://www.falstad.com/circuit/
+Source code: https://github.com/pfalstad/circuitjs1
+
 Iain's Page: http://lushprojects.com/circuitjs/
+Source code: https://github.com/sharpie7/circuitjs1
 
 # Downloads:
 
@@ -28,20 +22,19 @@ You can download this program for Windows (x32, x64), Linux (x32, x64) and Mac O
 - [Circuit Simulator version 1.2.1](https://github.com/SEVA77/circuitjs1/releases/tag/1.2.1)
 - [All versions...](https://github.com/SEVA77/circuitjs1/releases)
 
-> If you have problems with this application, you can try to use [this offline application of the main developer](http://www.falstad.com/circuit/offline/).
+> If you have problems with this application, you can try to use [this offline application of the main developer](http://www.falstad.com/circuit/offline/) based on Electron.
 
 # Building the program
 
-If you want to building the web application for your website, you can use the instructions and source code of Iain Sharp (https://github.com/sharpie7/circuitjs1) or Paul Falstad (https://github.com/pfalstad/circuitjs1) or use archive (java/circuitjs1-master.zip) from this repository. 
+The tools you will need to build the project are:
+
+* JDK 8+
+* Maven 3+
+* [Web2Executable](https://github.com/jyapayne/Web2Executable) (will be changed in the future)
+
+Simply run `mvn install` from the circuitjs1 directory to build the project. Copy the `target/site` directory to any location convenient for you.
 
 After compiling the web application, you can then compile it into the local executables for a variety of platforms with the help of NW.js. To build a program on NW.js you will need a **Web2Executable** program. You can download it by following the link: https://github.com/jyapayne/Web2Executable/releases.
-
-The compiled program has a large size. To reduce the size of executable files of the program, you can use to **Ultimate Packer for eXecutables** (UPX). You can download it by following the link: https://upx.github.io/.
-
-> ***Warning! Not all executable files need to be compressed. For Windows, you can compress everything, except for the file d3dcompiler_47.dll. For Linux, you can compress only those files that are in the 'lib' folder. Otherwise, the program does not work.***
->
-> > ***Therefore, I do not recommend the use of compression settings in Web2Executable.***
-
 
 # License
 
@@ -64,3 +57,4 @@ You should have received a copy of the GNU General Public License along with thi
 # Credits
 	 Paul Falstad - Creator
 	 Iain Sharp - JavaScript conversion, so there are more opportunities for the development of this application.
+     Brian Gordon - Mavenized version of circuitjs1
