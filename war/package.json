@@ -14,7 +14,7 @@
         "linux-x64": true,
         "mac-x64": true,
         "nw_compression_level": 0,
-        "nw_version": "0.17.0",
+        "nw_version": "0.20.0",
         "output_pattern": "",
         "sdk_build": false,
         "uncompressed_folder": false,
