@@ -19,8 +19,8 @@ Source code: https://github.com/sharpie7/circuitjs1
 # Downloads:
 
 You can download this program for Windows (x32, x64), Linux (x32, x64) and Mac OS X (x64):
-- [Circuit Simulator version 1.2.1](https://github.com/SEVA77/circuitjs1/releases/tag/1.2.1)
-- [All versions...](https://github.com/SEVA77/circuitjs1/releases)
+- [Latest release](https://github.com/SEVA77/circuitjs1/releases/latest)
+- [All Releases](https://github.com/SEVA77/circuitjs1/releases)
 
 > If you have problems with this application, you can try to use [this offline application of the main developer](http://www.falstad.com/circuit/offline/) based on Electron.
 
@@ -52,7 +52,7 @@ You should have received a copy of the GNU General Public License along with thi
     NW.js - Distributed under the MIT License
     Circuit Simulator - Distributed under the GNU General Public License version 2
     
-    © Usevalad Khatkevich 2020
+    © Usevalad Khatkevich 2021
 
 # Credits
 	 Paul Falstad - Creator
