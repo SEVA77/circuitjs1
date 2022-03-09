@@ -1,7 +1,8 @@
 {
     "app_name": "CircuitSimulator",
+    "chromium-args": "--ignore-gpu-blacklist --enable-gpu-rasterization --force-gpu-rasterization --enable-zero-copy --enable-smooth-scrolling",
     "description": "Circuit Simulator version 1.2.2",
-    "main": "index.html",
+    "main": "circuitjs.html",
     "name": "circuitjs1",
     "version": "1.2.2",
     "webexe_settings": {

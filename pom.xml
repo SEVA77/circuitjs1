@@ -107,7 +107,7 @@
 					<optimize>9</optimize>
 					<compilerArgs>
 						<compilerArg>-style</compilerArg>
-						<compilerArg>PRETTY</compilerArg>
+						<compilerArg>OBFUSCATED</compilerArg>
 					</compilerArgs>
 					<codeServerPort>8888</codeServerPort>
 				</configuration>
