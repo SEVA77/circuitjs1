@@ -1,5 +1,5 @@
 --- /dev/null
-+++ AboutBox.java
++++ ../src/main/java/com/lushprojects/circuitjs1/client/AboutBox.java
 @@ -0,0 +1,55 @@
 +/*    
 +    Copyright (C) Paul Falstad and Iain Sharp

@@ -1,5 +1,5 @@
 --- /dev/null
-+++ HelpDialog.java
++++ ../src/main/java/com/lushprojects/circuitjs1/client/HelpDialog.java
 @@ -0,0 +1,89 @@
 +/*    
 +    Copyright (C) Usevalad Khatkevich

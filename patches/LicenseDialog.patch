@@ -1,5 +1,5 @@
 --- /dev/null
-+++ LicenseDialog.java
++++ ../src/main/java/com/lushprojects/circuitjs1/client/LicenseDialog.java
 @@ -0,0 +1,40 @@
 +/*    
 +    Copyright (C) Usevalad Khatkevich
