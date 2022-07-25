@@ -63,7 +63,7 @@
 +		tp.add(vpDA = new VerticalPanel(), tab5Title);
 +		vpDA.setWidth("500px");
 +		vpDA.add(new HTML("<iframe style=\"border:0;\" src=\"help/DA.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
-+*/		
++*/
 +		HorizontalPanel hp = new HorizontalPanel();
 +		hp.setWidth("100%");
 +		hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
