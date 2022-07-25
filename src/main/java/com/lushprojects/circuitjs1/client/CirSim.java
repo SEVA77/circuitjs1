@@ -21,7 +21,7 @@ package com.lushprojects.circuitjs1.client;
 
 // GWT conversion (c) 2015 by Iain Sharp
 
-/*The file was changed for desktop program by Usevalad Khatkevich (my changes are marked by the 'CEBA77' label)*/
+/*The file was changed for desktop program by Usevalad Khatkevich*/
 
 // For information about the theory behind this, see Electronic Circuit & System Simulation Methods by Pillage
 // or https://github.com/sharpie7/circuitjs1/blob/master/INTERNALS.md
@@ -62,6 +62,8 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.dom.client.Style.Unit;
@@ -94,6 +96,7 @@ import static com.google.gwt.event.dom.client.KeyCodes.*;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Widget;
+import com.lushprojects.circuitjs1.client.util.PerfMonitor;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.event.logical.shared.CloseHandler;
@@ -109,7 +112,6 @@ MouseOutHandler, MouseWheelHandler {
     Button runStopButton;
     Button dumpMatrixButton;
     MenuItem aboutItem;
-    // CEBA77 Start
     MenuItem helpItem;
     MenuItem licenseItem;
     // MenuItem testItem;
@@ -117,7 +119,6 @@ MouseOutHandler, MouseWheelHandler {
     MenuItem aboutCircuitsPLItem;
     MenuItem closeItem;
     CheckboxMenuItem fullscreenCheckItem;
-    // CEBA77 End
     MenuItem importFromLocalFileItem, importFromTextItem,
     	exportAsUrlItem, exportAsLocalFileItem, exportAsTextItem, printItem, recoverItem, saveFileItem;
     MenuItem importFromDropboxItem;
@@ -136,6 +137,7 @@ MouseOutHandler, MouseWheelHandler {
     CheckboxMenuItem printableCheckItem;
     CheckboxMenuItem conventionCheckItem;
     CheckboxMenuItem noEditCheckItem;
+    CheckboxMenuItem mouseWheelEditCheckItem;
     private Label powerLabel;
     private Label titleLabel;
     private Scrollbar speedBar;
@@ -182,10 +184,6 @@ MouseOutHandler, MouseWheelHandler {
     static final int MODE_SELECT = 6;
     static final int MODE_DRAG_SPLITTER = 7;
     static final int infoWidth = 160;
-    long myframes =1;
-    long mytime=0;
-    long myruntime=0;
-    long mydrawtime=0;
     int dragGridX, dragGridY, dragScreenX, dragScreenY, initDragGridX, initDragGridY;
     long mouseDownTime;
     long zoomTime;
@@ -222,6 +220,7 @@ MouseOutHandler, MouseWheelHandler {
     int timeStepCount;
     
     boolean adjustTimeStep;
+    boolean developerMode;
     static final int HINT_LC = 1;
     static final int HINT_RC = 2;
     static final int HINT_3DB_C = 3;
@@ -259,10 +258,8 @@ MouseOutHandler, MouseWheelHandler {
     static ScrollValuePopup scrollValuePopup;
     static DialogBox dialogShowing;
     static AboutBox aboutBox;
-    // CEBA77 Start    
     static HelpDialog helpDialog;
     static LicenseDialog licenseDialog;
-    // CEBA77 End 
     static ImportFromDropboxDialog importFromDropboxDialog;
 //    Class dumpTypes[], shortcuts[];
     String shortcuts[];
@@ -382,6 +379,7 @@ MouseOutHandler, MouseWheelHandler {
 	boolean hideSidebar = false;
 	boolean hideMenu = false;
 	boolean noEditing = false;
+	boolean mouseWheelEdit = false;
 	MenuBar m;
 
 	CircuitElm.initClass(this);
@@ -393,6 +391,7 @@ MouseOutHandler, MouseWheelHandler {
 	String selectColor = null;
 	String currentColor = null;
 	String mouseModeReq = null;
+	boolean euroGates = false;
 
 	try {
 	    //baseURL = applet.getDocumentBase().getFile();
@@ -410,6 +409,7 @@ MouseOutHandler, MouseWheelHandler {
 	    startLabel   = qp.getValue("startLabel");
 	    startCircuitLink = qp.getValue("startCircuitLink");
 	    euroRes = qp.getBooleanValue("euroResistors", false);
+	    euroGates = qp.getBooleanValue("IECGates", getOptionFromStorage("euroGates", weAreInGermany()));
 	    usRes = qp.getBooleanValue("usResistors",  false);
 	    running = qp.getBooleanValue("running", true);
 	    hideSidebar = qp.getBooleanValue("hideSidebar", false);
@@ -418,6 +418,7 @@ MouseOutHandler, MouseWheelHandler {
 	    convention = qp.getBooleanValue("conventionalCurrent",
 		    getOptionFromStorage("conventionalCurrent", true));
 	    noEditing = !qp.getBooleanValue("editable", true);
+	    mouseWheelEdit = qp.getBooleanValue("mouseWheelEdit", getOptionFromStorage("mouseWheelEdit", true));
 	    positiveColor = qp.getValue("positiveColor");
 	    negativeColor = qp.getValue("negativeColor");
 	    selectColor = qp.getValue("selectColor");
@@ -432,7 +433,6 @@ MouseOutHandler, MouseWheelHandler {
 	    euroSetting = false;
 	else
 	    euroSetting = getOptionFromStorage("euroResistors", !weAreInUS(true));
-	boolean euroGates = getOptionFromStorage("euroGates", weAreInGermany());
 
 	transform = new double[6];
 	String os = Navigator.getPlatform();
@@ -445,10 +445,9 @@ MouseOutHandler, MouseWheelHandler {
 
 	fileMenuBar = new MenuBar(true);
 	if (isElectron())
-	    fileMenuBar.addItem(menuItemWithShortcut("window", LS("New Window..."), LS(ctrlMetaKey + "N"),
+	    fileMenuBar.addItem(menuItemWithShortcut("window", "New Window...", LS(ctrlMetaKey + "N"),
 		    new MyCommand("file", "newwindow")));
 
-	// CEBA77 Start
 	fileMenuBar = new MenuBar(true);
 	fileMenuBar.addItem(iconMenuItem("popup", "New Window...",
 		new Command() { public void execute(){
@@ -458,9 +457,8 @@ MouseOutHandler, MouseWheelHandler {
 					.inject();
 			}
 			}));
-	// CEBA77 End
 	fileMenuBar.addItem(iconMenuItem("doc-new", "New Blank Circuit", new MyCommand("file", "newblankcircuit")));
-	importFromLocalFileItem = menuItemWithShortcut("folder", LS("Open File..."), LS(ctrlMetaKey + "O"),
+	importFromLocalFileItem = menuItemWithShortcut("folder", "Open File...", LS(ctrlMetaKey + "O"),
 		new MyCommand("file","importfromlocalfile"));
 	importFromLocalFileItem.setEnabled(LoadFile.isSupported());
 	fileMenuBar.addItem(importFromLocalFileItem);
@@ -469,11 +467,11 @@ MouseOutHandler, MouseWheelHandler {
 	importFromDropboxItem = iconMenuItem("dropbox", "Import From Dropbox...", new MyCommand("file", "importfromdropbox"));
 	fileMenuBar.addItem(importFromDropboxItem);
 	if (isElectron()) {
-	    saveFileItem = fileMenuBar.addItem(menuItemWithShortcut("floppy", LS("Save"), LS(ctrlMetaKey + "S"),
+	    saveFileItem = fileMenuBar.addItem(menuItemWithShortcut("floppy", "Save", LS(ctrlMetaKey + "S"),
 		    new MyCommand("file", "save")));
-	    fileMenuBar.addItem(iconMenuItem("floppy", LS("Save As..."), new MyCommand("file", "saveas")));
+	    fileMenuBar.addItem(iconMenuItem("floppy", "Save As...", new MyCommand("file", "saveas")));
 	} else {
-	    exportAsLocalFileItem = menuItemWithShortcut("floppy", LS("Save As..."), LS(ctrlMetaKey + "S"),
+	    exportAsLocalFileItem = menuItemWithShortcut("floppy", "Save As...", LS(ctrlMetaKey + "S"),
 		    new MyCommand("file","exportaslocalfile"));
 	    exportAsLocalFileItem.setEnabled(ExportAsLocalFileDialog.downloadIsSupported());
 	    fileMenuBar.addItem(exportAsLocalFileItem);
@@ -489,10 +487,9 @@ MouseOutHandler, MouseWheelHandler {
 	recoverItem = iconMenuItem("back-in-time", "Recover Auto-Save", new MyCommand("file","recover"));
 	recoverItem.setEnabled(recovery != null);
 	fileMenuBar.addItem(recoverItem);
-	printItem = menuItemWithShortcut("print", LS("Print..."), LS(ctrlMetaKey + "P"), new MyCommand("file","print"));
+	printItem = menuItemWithShortcut("print", "Print...", LS(ctrlMetaKey + "P"), new MyCommand("file","print"));
 	fileMenuBar.addItem(printItem);
 	fileMenuBar.addSeparator();
-	//CEBA77 Start
 	/*
 	MenuBar fsub = new MenuBar(true);
 	fsub.setAutoOpen(true);
@@ -533,7 +530,6 @@ MouseOutHandler, MouseWheelHandler {
 		VERTICALPANELWIDTH = 166;
 	if (VERTICALPANELWIDTH < 128)
 		VERTICALPANELWIDTH = 128;*/
-	//CEBA77 End
 
 	menuBar = new MenuBar();
 	menuBar.addItem(LS("File"), fileMenuBar);
@@ -543,23 +539,24 @@ MouseOutHandler, MouseWheelHandler {
 	buttonPanel=(VERTICALPANELWIDTH == 166) ? new HorizontalPanel() : new VerticalPanel();
 
 	m = new MenuBar(true);
-	m.addItem(undoItem = menuItemWithShortcut("ccw", LS("Undo"), LS(ctrlMetaKey + "Z"), new MyCommand("edit","undo")));
-	m.addItem(redoItem = menuItemWithShortcut("cw", LS("Redo"), LS(ctrlMetaKey + "Y"), new MyCommand("edit","redo")));
+	m.addItem(undoItem = menuItemWithShortcut("ccw", "Undo", LS(ctrlMetaKey + "Z"), new MyCommand("edit","undo")));
+	m.addItem(redoItem = menuItemWithShortcut("cw", "Redo", LS(ctrlMetaKey + "Y"), new MyCommand("edit","redo")));
 	m.addSeparator();
-	m.addItem(cutItem = menuItemWithShortcut("scissors", LS("Cut"), LS(ctrlMetaKey + "X"), new MyCommand("edit","cut")));
-	m.addItem(copyItem = menuItemWithShortcut("copy", LS("Copy"), LS(ctrlMetaKey + "C"), new MyCommand("edit","copy")));
-	m.addItem(pasteItem = menuItemWithShortcut("paste", LS("Paste"), LS(ctrlMetaKey + "V"), new MyCommand("edit","paste")));
+	m.addItem(cutItem = menuItemWithShortcut("scissors", "Cut", LS(ctrlMetaKey + "X"), new MyCommand("edit","cut")));
+	m.addItem(copyItem = menuItemWithShortcut("copy", "Copy", LS(ctrlMetaKey + "C"), new MyCommand("edit","copy")));
+	m.addItem(pasteItem = menuItemWithShortcut("paste", "Paste", LS(ctrlMetaKey + "V"), new MyCommand("edit","paste")));
 	pasteItem.setEnabled(false);
 
-	m.addItem(menuItemWithShortcut("clone", LS("Duplicate"), LS(ctrlMetaKey + "D"), new MyCommand("edit","duplicate")));
+	m.addItem(menuItemWithShortcut("clone", "Duplicate", LS(ctrlMetaKey + "D"), new MyCommand("edit","duplicate")));
 
 	m.addSeparator();
-	m.addItem(selectAllItem = menuItemWithShortcut("select-all", LS("Select All"), LS(ctrlMetaKey + "A"), new MyCommand("edit","selectAll")));
+	m.addItem(selectAllItem = menuItemWithShortcut("select-all", "Select All", LS(ctrlMetaKey + "A"), new MyCommand("edit","selectAll")));
 	m.addSeparator();
+	m.addItem(menuItemWithShortcut("search", "Find Component...", "/", new MyCommand("edit", "search")));
 	m.addItem(iconMenuItem("target", weAreInUS(false) ? "Center Circuit" : "Centre Circuit", new MyCommand("edit", "centrecircuit")));
-	m.addItem(menuItemWithShortcut("zoom-11", LS("Zoom 100%"), "0", new MyCommand("zoom", "zoom100")));
-	m.addItem(menuItemWithShortcut("zoom-in", LS("Zoom In"), "+", new MyCommand("zoom", "zoomin")));
-	m.addItem(menuItemWithShortcut("zoom-out", LS("Zoom Out"), "-", new MyCommand("zoom", "zoomout")));
+	m.addItem(menuItemWithShortcut("zoom-11", "Zoom 100%", "0", new MyCommand("zoom", "zoom100")));
+	m.addItem(menuItemWithShortcut("zoom-in", "Zoom In", "+", new MyCommand("zoom", "zoomin")));
+	m.addItem(menuItemWithShortcut("zoom-out", "Zoom Out", "-", new MyCommand("zoom", "zoomout")));
 	menuBar.addItem(LS("Edit"),m);
 
 	MenuBar drawMenuBar = new MenuBar(true);
@@ -576,7 +573,6 @@ MouseOutHandler, MouseWheelHandler {
 
 	optionsMenuBar = m = new MenuBar(true );
 	menuBar.addItem(LS("Options"), optionsMenuBar);
-	// CEBA77 Start
 	m.addItem(fullscreenCheckItem = new CheckboxMenuItem(LS("Fullscreen Mode"),
 	 		new Command() { public void execute(){
 	 		    	if (fullscreenCheckItem.getState()) {
@@ -597,7 +593,6 @@ MouseOutHandler, MouseWheelHandler {
 	 		    */
 	 		    }
 	 		}));
-	// CEBA77 End
 	m.addItem(dotsCheckItem = new CheckboxMenuItem(LS("Show Current")));
 	dotsCheckItem.setState(true);
 	m.addItem(voltsCheckItem = new CheckboxMenuItem(LS("Show Voltage"),
@@ -667,6 +662,12 @@ MouseOutHandler, MouseWheelHandler {
 	m.addItem(noEditCheckItem = new CheckboxMenuItem(LS("Disable Editing")));
 	noEditCheckItem.setState(noEditing);
 
+	m.addItem(mouseWheelEditCheckItem = new CheckboxMenuItem(LS("Edit Values With Mouse Wheel"),
+		new Command() { public void execute(){
+		    setOptionInStorage("mouseWheelEdit", mouseWheelEditCheckItem.getState());
+		}
+	}));
+	mouseWheelEditCheckItem.setState(mouseWheelEdit);
 
 	m.addItem(new CheckboxAlignedMenuItem(LS("Shortcuts..."), new MyCommand("options", "shortcuts")));
 	m.addItem(optionsItem = new CheckboxAlignedMenuItem(LS("Other Options..."), new MyCommand("options","other")));
@@ -788,7 +789,7 @@ MouseOutHandler, MouseWheelHandler {
 	elmMenuBar.addItem(elmDeleteMenuItem = new MenuItem(LS("Delete"),new MyCommand("elm","delete")));
 	elmMenuBar.addItem(                    new MenuItem(LS("Duplicate"),new MyCommand("elm","duplicate")));
 	elmMenuBar.addItem(elmFlipMenuItem = new MenuItem(LS("Swap Terminals"),new MyCommand("elm","flip")));
-	elmMenuBar.addItem(elmSplitMenuItem = menuItemWithShortcut("", LS("Split Wire"), LS(ctrlMetaKey + "click"), new MyCommand("elm","split")));
+	elmMenuBar.addItem(elmSplitMenuItem = menuItemWithShortcut("", "Split Wire", LS(ctrlMetaKey + "click"), new MyCommand("elm","split")));
 	elmMenuBar.addItem(elmSliderMenuItem = new MenuItem(LS("Sliders..."),new MyCommand("elm","sliders")));
 
 	scopePopupMenu = new ScopePopupMenu();
@@ -885,10 +886,10 @@ MouseOutHandler, MouseWheelHandler {
     }
     
     MenuItem menuItemWithShortcut(String icon, String text, String shortcut, MyCommand cmd) {
-	final String edithtml="<div style=\"white-space:nowrap\"><div style=\"display:inline-block;width:100%;padding-right:5px;\"><i class=\"cirjsicon-";
+	final String edithtml="<div style=\"white-space:nowrap\"><div style=\"display:inline-block;width:100%;\"><i class=\"cirjsicon-";
 	String nbsp = "&nbsp;";
 	if (icon=="") nbsp="";
-	String sn=edithtml + icon + "\"></i>" + nbsp + text + "</div>" + shortcut + "</div>";
+	String sn=edithtml + icon + "\"></i>" + nbsp + LS(text) + "</div>" + shortcut + "</div>";
 	return new MenuItem(SafeHtmlUtils.fromTrustedString(sn), cmd);
     }
     
@@ -1090,6 +1091,7 @@ MouseOutHandler, MouseWheelHandler {
     	inputMenuBar.addItem(getClassCheckItem(LS("Add Current Source"), "CurrentElm"));
     	inputMenuBar.addItem(getClassCheckItem(LS("Add Noise Generator"), "NoiseElm"));
     	inputMenuBar.addItem(getClassCheckItem(LS("Add Audio Input"), "AudioInputElm"));
+    	inputMenuBar.addItem(getClassCheckItem(LS("Add Data Input"), "DataInputElm"));
     	inputMenuBar.addItem(getClassCheckItem(LS("Add External Voltage (JavaScript)"), "ExtVoltageElm"));
 
     	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+LS("&nbsp;</div>Inputs and Sources")), inputMenuBar);
@@ -1149,12 +1151,14 @@ MouseOutHandler, MouseWheelHandler {
     	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add CCII-"), "CC2NegElm"));
     	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Comparator (Hi-Z/GND output)"), "ComparatorElm"));
     	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add OTA (LM13700 style)"), "OTAElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Voltage-Controlled Voltage Source"), "VCVSElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Voltage-Controlled Current Source"), "VCCSElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Current-Controlled Voltage Source"), "CCVSElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Current-Controlled Current Source"), "CCCSElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Voltage-Controlled Voltage Source (VCVS)"), "VCVSElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Voltage-Controlled Current Source (VCCS)"), "VCCSElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Current-Controlled Voltage Source (CCVS)"), "CCVSElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Current-Controlled Current Source (CCCS)"), "CCCSElm"));
     	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Optocoupler"), "OptocouplerElm"));
     	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Time Delay Relay"), "TimeDelayRelayElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add LM317"), "CustomCompositeElm:~LM317-v2"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add TL431"), "CustomCompositeElm:~TL431"));
     	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Subcircuit Instance"), "CustomCompositeElm"));
     	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+LS("&nbsp;</div>Active Building Blocks")), activeBlocMenuBar);
     	
@@ -1416,201 +1420,233 @@ MouseOutHandler, MouseWheelHandler {
 	}
     }
     
-// *****************************************************************
-//                     UPDATE CIRCUIT
+    // *****************************************************************
+    //                     UPDATE CIRCUIT
     
     public void updateCircuit() {
-    long mystarttime;
-    long myrunstarttime;
-    long mydrawstarttime;
-//	if (winSize == null || winSize.width == 0)
-//	    return;
-    	checkCanvasSize();
-	mystarttime=System.currentTimeMillis();
-	boolean didAnalyze = analyzeFlag;
-	if (analyzeFlag || dcAnalysisFlag) {
-	    analyzeCircuit();
-	    analyzeFlag = false;
-	}
-	if (needsStamp && simRunning) {
-	    try {
-		stampCircuit();
-	    } catch (Exception e) {
-		stop("Exception in stampCircuit()", null);
-	    }
-	}
-	
-//	if (editDialog != null && editDialog.elm instanceof CircuitElm)
-//	    mouseElm = (CircuitElm) (editDialog.elm);
-	if (stopElm != null && stopElm != mouseElm)
-	    stopElm.setMouseElm(true);
-	setupScopes();
+        PerfMonitor perfmon = new PerfMonitor();
+        perfmon.startContext("updateCircuit()");
 
-	Graphics g=new Graphics(cvcontext);
-	
-	if (printableCheckItem.getState()) {
-  	    CircuitElm.whiteColor = Color.black;
-  	    CircuitElm.lightGrayColor = Color.black;
-  	    g.setColor(Color.white);
-  	    cv.getElement().getStyle().setBackgroundColor("#fff");
-	} else {
-	    CircuitElm.whiteColor = Color.white;
-	    CircuitElm.lightGrayColor = Color.lightGray;
-	    g.setColor(Color.black);
-  	    cv.getElement().getStyle().setBackgroundColor("#000");
-	}
-	g.fillRect(0, 0, canvasWidth, canvasHeight);
-	myrunstarttime=System.currentTimeMillis();
-	if (simRunning) {
-	    if (needsStamp)
-		console("needsStamp while simRunning?");
-	    try {
-		runCircuit(didAnalyze);
-	    } catch (Exception e) {
-		debugger();
-		console("exception in runCircuit " + e);
-		e.printStackTrace();
-		return;
-	    }
-	    myruntime+=System.currentTimeMillis()-myrunstarttime;
-	}
-	long sysTime = System.currentTimeMillis();
-		if (simRunning) {
-			
-			if (lastTime != 0) {
-				int inc = (int) (sysTime - lastTime);
-				double c = currentBar.getValue();
-				c = java.lang.Math.exp(c / 3.5 - 14.2);
-				CircuitElm.currentMult = 1.7 * inc * c;
-				 if (!conventionCheckItem.getState())
-				 CircuitElm.currentMult = -CircuitElm.currentMult;
-			}
+        checkCanvasSize();
+        
+        // Analyze circuit
+        boolean didAnalyze = analyzeFlag;
+        if (analyzeFlag || dcAnalysisFlag) {
+            perfmon.startContext("analyzeCircuit()");
+            analyzeCircuit();
+            analyzeFlag = false;
+            perfmon.stopContext();
+        }
+        
+        // Stamp circuit
+        if (needsStamp && simRunning) {
+            perfmon.startContext("stampCircuit()");
+            try {
+                stampCircuit();
+            } catch (Exception e) {
+                stop("Exception in stampCircuit()", null);
+            }
+            perfmon.stopContext();
+        }
+        
+        if (stopElm != null && stopElm != mouseElm)
+            stopElm.setMouseElm(true);
+        
+        setupScopes();
 
-			lastTime = sysTime;
-		} else
-			lastTime = 0;
-		
-		if (sysTime - secTime >= 1000) {
-			framerate = frames;
-			steprate = steps;
-			frames = 0;
-			steps = 0;
-			secTime = sysTime;
-		}
-	   CircuitElm.powerMult = Math.exp(powerBar.getValue()/4.762-7);
-	   
-	
-	int i;
-	g.setFont(CircuitElm.unitsFont);
-	
-	// this causes bad behavior on Chrome 55
-//	g.clipRect(0, 0, circuitArea.width, circuitArea.height);
-	
-	mydrawstarttime=System.currentTimeMillis();
+        Graphics g = new Graphics(cvcontext);
 
-	g.context.setLineCap(LineCap.ROUND);
+        if (printableCheckItem.getState()) {
+            CircuitElm.whiteColor = Color.black;
+            CircuitElm.lightGrayColor = Color.black;
+            g.setColor(Color.white);
+            cv.getElement().getStyle().setBackgroundColor("#fff");
+        } else {
+            CircuitElm.whiteColor = Color.white;
+            CircuitElm.lightGrayColor = Color.lightGray;
+            g.setColor(Color.black);
+            cv.getElement().getStyle().setBackgroundColor("#000");
+        }
 
-	if (noEditCheckItem.getState())
-	    g.drawLock(20, 30);
-	g.setColor(Color.white);
-	// draw elements
-	double scale = devicePixelRatio();
-	cvcontext.setTransform(transform[0]*scale, 0, 0, transform[3]*scale,
-		transform[4]*scale, transform[5]*scale);
-	for (i = 0; i != elmList.size(); i++) {
-	    if (powerCheckItem.getState())
-	    	g.setColor(Color.gray);
-	    /*else if (conductanceCheckItem.getState())
-	      g.setColor(Color.white);*/
-	    getElm(i).draw(g);
-	}
-	mydrawtime+=System.currentTimeMillis()-mydrawstarttime;
-	
-	// draw posts normally
-	if (mouseMode != CirSim.MODE_DRAG_ROW && mouseMode != CirSim.MODE_DRAG_COLUMN) {
-	    for (i = 0; i != postDrawList.size(); i++)
-		CircuitElm.drawPost(g, postDrawList.get(i));
-	}
-	
-	// for some mouse modes, what matters is not the posts but the endpoints (which are only
-	// the same for 2-terminal elements).  We draw those now if needed
-	if (tempMouseMode == MODE_DRAG_ROW || tempMouseMode == MODE_DRAG_COLUMN ||
-			tempMouseMode == MODE_DRAG_POST || tempMouseMode == MODE_DRAG_SELECTED)
-		for (i = 0; i != elmList.size(); i++) {
+        // Clear the frame
+        g.fillRect(0, 0, canvasWidth, canvasHeight);
 
-			CircuitElm ce = getElm(i);
-//			ce.drawPost(g, ce.x , ce.y );
-//			ce.drawPost(g, ce.x2, ce.y2);
-			if (ce!=mouseElm || tempMouseMode!=MODE_DRAG_POST) {
-				g.setColor(Color.gray);
-				g.fillOval(ce.x-3, ce.y-3, 7, 7);
-				g.fillOval(ce.x2-3, ce.y2-3, 7, 7);
-			} else {
-				ce.drawHandles(g, CircuitElm.selectColor);
-			}
-		}
-	// draw handles for elm we're creating
-	if (tempMouseMode==MODE_SELECT && mouseElm!=null) {
-		mouseElm.drawHandles(g, CircuitElm.selectColor);
-	}
+        // Run circuit
+        if (simRunning) {
+            if (needsStamp)
+                console("needsStamp while simRunning?");
 
-	// draw handles for elm we're dragging
-	if (dragElm != null &&
-		      (dragElm.x != dragElm.x2 || dragElm.y != dragElm.y2)) {
-		    	dragElm.draw(g);
-		    	dragElm.drawHandles(g, CircuitElm.selectColor);
-		}
+            perfmon.startContext("runCircuit()");
+            try {                
+                runCircuit(didAnalyze);
+            } catch (Exception e) {
+                debugger();
+                console("exception in runCircuit " + e);
+                e.printStackTrace();
+            }
+            perfmon.stopContext();
+        }
 
-	// draw bad connections.  do this last so they will not be overdrawn.
-	for (i = 0; i != badConnectionList.size(); i++) {
-	    Point cn = badConnectionList.get(i);
-	    g.setColor(Color.red);
-	    g.fillOval(cn.x-3, cn.y-3, 7, 7);
-	}
-	
-	if (selectedArea != null) {
-	    g.setColor(CircuitElm.selectColor);
-	    g.drawRect(selectedArea.x, selectedArea.y, selectedArea.width, selectedArea.height);
-	}
+        long sysTime = System.currentTimeMillis();
+        if (simRunning) {
+            if (lastTime != 0) {
+                int inc = (int) (sysTime - lastTime);
+                double c = currentBar.getValue();
+                c = java.lang.Math.exp(c / 3.5 - 14.2);
+                CircuitElm.currentMult = 1.7 * inc * c;
+                if (!conventionCheckItem.getState())
+                    CircuitElm.currentMult = -CircuitElm.currentMult;
+            }
+            lastTime = sysTime;
+        } else {
+            lastTime = 0;
+        }
 
-	if (crossHairCheckItem.getState() && mouseCursorX>=0
-		&& mouseCursorX <= circuitArea.width && mouseCursorY <= circuitArea.height) {
-	    g.setColor(Color.gray);
-	    int x = snapGrid(inverseTransformX(mouseCursorX));
-	    int y = snapGrid(inverseTransformY(mouseCursorY));
-	    g.drawLine(x, inverseTransformY(0), x, inverseTransformY(circuitArea.height));
-	    g.drawLine(inverseTransformX(0), y, inverseTransformX(circuitArea.width), y);
-	}
+        if (sysTime - secTime >= 1000) {
+            framerate = frames;
+            steprate = steps;
+            frames = 0;
+            steps = 0;
+            secTime = sysTime;
+        }
 
-	
-	cvcontext.setTransform(scale, 0, 0, scale, 0, 0);
-	
-	drawBottomArea(g);
+        CircuitElm.powerMult = Math.exp(powerBar.getValue() / 4.762 - 7);
 
-	if (stopElm != null && stopElm != mouseElm)
-	    stopElm.setMouseElm(false);
-	frames++;
-	
-	g.setColor(Color.white);
-//	g.drawString("Framerate: " + CircuitElm.showFormat.format(framerate), 10, 10);
-//	g.drawString("Steprate: " + CircuitElm.showFormat.format(steprate),  10, 30);
-//	g.drawString("Steprate/iter: " + CircuitElm.showFormat.format(steprate/getIterCount()),  10, 50);
-//	g.drawString("iterc: " + CircuitElm.showFormat.format(getIterCount()),  10, 70);
-//	g.drawString("Frames: "+ frames,10,90);
-//	g.drawString("ms per frame (other): "+ CircuitElm.showFormat.format((mytime-myruntime-mydrawtime)/myframes),10,110);
-//	g.drawString("ms per frame (sim): "+ CircuitElm.showFormat.format((myruntime)/myframes),10,130);
-//	g.drawString("ms per frame (draw): "+ CircuitElm.showFormat.format((mydrawtime)/myframes),10,150);
-	
-	// if we did DC analysis, we need to re-analyze the circuit with that flag cleared. 
-	if (dcAnalysisFlag) {
-	    dcAnalysisFlag = false;
-	    analyzeFlag = true;
-	}
+        perfmon.startContext("graphics");
 
-	lastFrameTime = lastTime;
-	mytime=mytime+System.currentTimeMillis()-mystarttime;
-	myframes++;
-	callUpdateHook();
+        g.setFont(CircuitElm.unitsFont);
+
+        g.context.setLineCap(LineCap.ROUND);
+
+        if (noEditCheckItem.getState())
+            g.drawLock(20, 30);
+        
+        g.setColor(Color.white);
+        
+        // Set the graphics transform to deal with zoom and offset
+        double scale = devicePixelRatio();
+        cvcontext.setTransform(transform[0] * scale, 0, 0, transform[3] * scale, transform[4] * scale, transform[5] * scale);
+
+        // Draw each element
+        perfmon.startContext("elm.draw()");
+        for (int i = 0; i != elmList.size(); i++) {
+            if (powerCheckItem.getState())
+                g.setColor(Color.gray);
+            
+            getElm(i).draw(g);
+        }
+        perfmon.stopContext();
+
+        // Draw posts normally
+        if (mouseMode != CirSim.MODE_DRAG_ROW && mouseMode != CirSim.MODE_DRAG_COLUMN) {
+            for (int i = 0; i != postDrawList.size(); i++)
+                CircuitElm.drawPost(g, postDrawList.get(i));
+        }
+
+        // for some mouse modes, what matters is not the posts but the endpoints (which
+        // are only the same for 2-terminal elements). We draw those now if needed
+        if (tempMouseMode == MODE_DRAG_ROW || 
+            tempMouseMode == MODE_DRAG_COLUMN || 
+            tempMouseMode == MODE_DRAG_POST || 
+            tempMouseMode == MODE_DRAG_SELECTED) {
+            for (int i = 0; i != elmList.size(); i++) {
+
+                CircuitElm ce = getElm(i);
+                // ce.drawPost(g, ce.x , ce.y );
+                // ce.drawPost(g, ce.x2, ce.y2);
+                if (ce != mouseElm || tempMouseMode != MODE_DRAG_POST) {
+                    g.setColor(Color.gray);
+                    g.fillOval(ce.x - 3, ce.y - 3, 7, 7);
+                    g.fillOval(ce.x2 - 3, ce.y2 - 3, 7, 7);
+                } else {
+                    ce.drawHandles(g, CircuitElm.selectColor);
+                }
+            }
+        }
+        
+        // draw handles for elm we're creating
+        if (tempMouseMode == MODE_SELECT && mouseElm != null) {
+            mouseElm.drawHandles(g, CircuitElm.selectColor);
+        }
+
+        // draw handles for elm we're dragging
+        if (dragElm != null && (dragElm.x != dragElm.x2 || dragElm.y != dragElm.y2)) {
+            dragElm.draw(g);
+            dragElm.drawHandles(g, CircuitElm.selectColor);
+        }
+
+        // draw bad connections. do this last so they will not be overdrawn.
+        for (int i = 0; i != badConnectionList.size(); i++) {
+            Point cn = badConnectionList.get(i);
+            g.setColor(Color.red);
+            g.fillOval(cn.x - 3, cn.y - 3, 7, 7);
+        }
+
+        // draw the selection rect
+        if (selectedArea != null) {
+            g.setColor(CircuitElm.selectColor);
+            g.drawRect(selectedArea.x, selectedArea.y, selectedArea.width, selectedArea.height);
+        }
+
+        // draw the crosshair cursor
+        if (crossHairCheckItem.getState() && mouseCursorX >= 0
+                && mouseCursorX <= circuitArea.width && mouseCursorY <= circuitArea.height) {
+            g.setColor(Color.gray);
+            int x = snapGrid(inverseTransformX(mouseCursorX));
+            int y = snapGrid(inverseTransformY(mouseCursorY));
+            g.drawLine(x, inverseTransformY(0), x, inverseTransformY(circuitArea.height));
+            g.drawLine(inverseTransformX(0), y, inverseTransformX(circuitArea.width), y);
+        }
+
+        // reset the graphics scale and translation
+        cvcontext.setTransform(scale, 0, 0, scale, 0, 0);
+
+        // draw the bottom area i.e. the scope and info section
+        perfmon.startContext("drawBottomArea()");
+        drawBottomArea(g);
+        perfmon.stopContext();
+
+        g.setColor(Color.white);
+        
+        perfmon.stopContext(); // graphics
+        
+        if (stopElm != null && stopElm != mouseElm)
+            stopElm.setMouseElm(false);
+        
+        frames++;
+
+        // if we did DC analysis, we need to re-analyze the circuit with that flag
+        // cleared.
+        if (dcAnalysisFlag) {
+            dcAnalysisFlag = false;
+            analyzeFlag = true;
+        }
+
+        lastFrameTime = lastTime;
+
+        perfmon.stopContext(); // updateCircuit
+        
+        if (developerMode) {
+            int height = 15;
+            int increment = 15;
+            g.drawString("Framerate: " + CircuitElm.showFormat.format(framerate), 10, height);
+            g.drawString("Steprate: " + CircuitElm.showFormat.format(steprate), 10, height += increment);
+            g.drawString("Steprate/iter: " + CircuitElm.showFormat.format(steprate / getIterCount()), 10, height += increment);
+            g.drawString("iterc: " + CircuitElm.showFormat.format(getIterCount()), 10, height += increment);
+            g.drawString("Frames: " + frames, 10, height += increment);
+            
+            height += (increment * 2);
+            
+            String perfmonResult = PerfMonitor.buildString(perfmon).toString();
+            String[] splits = perfmonResult.split("\n");
+            for (int x = 0; x < splits.length; x++) {
+                g.drawString(splits[x], 10, height + (increment * x));
+            }
+        }
+        
+        // This should always be the last 
+        // thing called by updateCircuit();
+        callUpdateHook();
     }
 
     void drawBottomArea(Graphics g) {
@@ -1630,6 +1666,12 @@ MouseOutHandler, MouseWheelHandler {
 	if (stopMessage != null)
 	    ct = 0;
 	int i;
+	Scope.clearCursorInfo();
+	for (i = 0; i != ct; i++)
+	    scopes[i].selectScope(mouseCursorX, mouseCursorY);
+	if (scopeElmArr != null)
+	    for (i=0; i != scopeElmArr.length; i++)
+		scopeElmArr[i].selectScope(mouseCursorX, mouseCursorY);
 	for (i = 0; i != ct; i++)
 	    scopes[i].draw(g);
 	if (mouseWasOverSplitter) {
@@ -2155,6 +2197,7 @@ MouseOutHandler, MouseWheelHandler {
     
     Vector<Integer> unconnectedNodes;
     Vector<CircuitElm> nodesWithGroundConnection;
+    int nodesWithGroundConnectionCount;
     
     void findUnconnectedNodes() {
 	int i, j;
@@ -2216,7 +2259,8 @@ MouseOutHandler, MouseWheelHandler {
     }
     
     // take list of unconnected nodes, which we identified earlier, and connect them to ground
-    // with a big resistor.  otherwise we will get matrix errors
+    // with a big resistor.  otherwise we will get matrix errors.  The resistor has to be big,
+    // otherwise circuits like 555 Square Wave will break
     void connectUnconnectedNodes() {
 	int i;
 	for (i = 0; i != unconnectedNodes.size(); i++) {
@@ -2359,11 +2403,14 @@ MouseOutHandler, MouseWheelHandler {
 	if (!validateCircuit())
 	    return;
 	
+	nodesWithGroundConnectionCount = nodesWithGroundConnection.size();
 	// only need this for validation
 	nodesWithGroundConnection = null;
 	
 	timeStep = maxTimeStep;
 	needsStamp = true;
+	
+	callAnalyzeHook();
     }
 
     // stamp the matrix, meaning populate the matrix as required to simulate the circuit (for all linear elements, at least)
@@ -3153,12 +3200,10 @@ MouseOutHandler, MouseWheelHandler {
 	    Window.alert(LS("Editing disabled.  Re-enable from the Options menu."));
 	    return;
 	}
-		// CEBA77 Start
     	if (item=="help")
     	helpDialog = new HelpDialog();
     	if (item=="license")
         licenseDialog = new LicenseDialog();
-    	// CEBA77 End
     	if (item=="about")
     		aboutBox = new AboutBox(circuitjs1.versionString);
     	if (item=="importfromlocalfile") {
@@ -3210,6 +3255,10 @@ MouseOutHandler, MouseWheelHandler {
     		contextPanel.hide();
     	if (menu=="options" && item=="shortcuts") {
     	    	dialogShowing = new ShortcutsDialog(this);
+    	    	dialogShowing.show();
+    	}
+    	if (item=="search") {
+    	    	dialogShowing = new SearchDialog(this);
     	    	dialogShowing.show();
     	}
     	if (menu=="options" && item=="other")
@@ -3306,6 +3355,9 @@ MouseOutHandler, MouseWheelHandler {
     	    ScopeElm newScope = new ScopeElm(snapGrid(menuElm.x+50), snapGrid(menuElm.y+50));
     	    elmList.addElement(newScope);
     	    newScope.setScopeElm(menuElm);
+    	    
+    	    // need to rebuild scopeElmArr
+    	    needAnalyze();
 	}
     	
     	if (item.substring(0,10)=="addToScope" && menuElm != null) {
@@ -3610,13 +3662,7 @@ MouseOutHandler, MouseWheelHandler {
     	dialogShowing.show();
     }
     
-
-    String dumpCircuit() {
-	int i;
-	CustomLogicModel.clearDumpedFlags();
-	CustomCompositeModel.clearDumpedFlags();
-	DiodeModel.clearDumpedFlags();
-	TransistorModel.clearDumpedFlags();
+    String dumpOptions() {
 	int f = (dotsCheckItem.getState()) ? 1 : 0;
 	f |= (smallGridCheckItem.getState()) ? 2 : 0;
 	f |= (voltsCheckItem.getState()) ? 0 : 4;
@@ -3628,6 +3674,17 @@ MouseOutHandler, MouseWheelHandler {
 	    maxTimeStep + " " + getIterCount() + " " +
 	    currentBar.getValue() + " " + CircuitElm.voltageRange + " " +
 	    powerBar.getValue() + " " + minTimeStep + "\n";
+	return dump;
+    }
+    
+    String dumpCircuit() {
+	int i;
+	CustomLogicModel.clearDumpedFlags();
+	CustomCompositeModel.clearDumpedFlags();
+	DiodeModel.clearDumpedFlags();
+	TransistorModel.clearDumpedFlags();
+	
+	String dump = dumpOptions();
 		
 	for (i = 0; i != elmList.size(); i++) {
 	    CircuitElm ce = getElm(i);
@@ -3689,7 +3746,6 @@ MouseOutHandler, MouseWheelHandler {
     	currentMenuBar=new MenuBar(true);
     	currentMenuBar.setAutoOpen(true);
     	menuBar.addItem(LS("Circuits"), currentMenuBar);
-		// CEBA77 Start
 		//iconMenuItem("clone", "New Window...", new MyCommand("file", "newwindow"))
 			/*
 			exportAsTextItem = iconMenuItem("export", "Export As Text...", new MyCommand("file","exportastext"));
@@ -3725,7 +3781,6 @@ MouseOutHandler, MouseWheelHandler {
 
 		menuBar.addItem(LS("Help"), h);
 		
-		// CEBA77 End
 
     	stack[stackptr++] = currentMenuBar;
     	int p;
@@ -3893,7 +3948,7 @@ MouseOutHandler, MouseWheelHandler {
 			break;
 		    }
 		    if (tint == '$') {
-			readOptions(st);
+			readOptions(st, flags);
 			break;
 		    }
 		    if (tint == '!') {
@@ -3977,6 +4032,7 @@ MouseOutHandler, MouseWheelHandler {
 	    updateModels();
 	
 	AudioInputElm.clearCache();  // to save memory
+	DataInputElm.clearCache();  // to save memory
     }
 
     // delete sliders for an element
@@ -3999,8 +4055,16 @@ MouseOutHandler, MouseWheelHandler {
 	hintItem2 = new Integer(st.nextToken()).intValue();
     }
 
-    void readOptions(StringTokenizer st) {
+    void readOptions(StringTokenizer st, int importFlags) {
 	int flags = new Integer(st.nextToken()).intValue();
+	
+	if ((importFlags & RC_RETAIN) != 0) {
+            // need to set small grid if pasted circuit uses it
+	    if ((flags & 2) != 0)
+		smallGridCheckItem.setState(true);
+	    return;
+	}
+	
 	dotsCheckItem.setState((flags & 1) != 0);
 	smallGridCheckItem.setState((flags & 2) != 0);
 	voltsCheckItem.setState((flags & 4) == 0);
@@ -4460,17 +4524,17 @@ MouseOutHandler, MouseWheelHandler {
     	}
     	scopeSelected = -1;
     	if (newMouseElm == null) {
-    		for (i = 0; i != scopeCount; i++) {
-    			Scope s = scopes[i];
-    			if (s.rect.contains(sx, sy)) {
-    				newMouseElm=s.getElm();
-    		    	if (s.plotXY) {
-    		    		plotXElm = s.getXElm();
-    		    		plotYElm = s.getYElm();
-    		    	}
-    				scopeSelected = i;
-    			}
+    	    for (i = 0; i != scopeCount; i++) {
+    		Scope s = scopes[i];
+    		if (s.rect.contains(sx, sy)) {
+    		    newMouseElm=s.getElm();
+    		    if (s.plotXY) {
+    			plotXElm = s.getXElm();
+    			plotYElm = s.getYElm();
+    		    }
+    		    scopeSelected = i;
     		}
+    	    }
     		//	    // the mouse pointer was not in any of the bounding boxes, but we
     		//	    // might still be close to a post
     		for (i = 0; i != elmList.size(); i++) {
@@ -4839,7 +4903,7 @@ MouseOutHandler, MouseWheelHandler {
     	// so we don't accidentally edit a resistor value while zooming
     	boolean zoomOnly = System.currentTimeMillis() < zoomTime+1000;
     	
-    	if (noEditCheckItem.getState())
+    	if (noEditCheckItem.getState() || !mouseWheelEditCheckItem.getState())
     	    zoomOnly = true;
     	
     	if (!zoomOnly)
@@ -5035,6 +5099,9 @@ MouseOutHandler, MouseWheelHandler {
     		if (ce instanceof ScopeElm && (((ScopeElm) ce).elmScope.needToRemove() )) {
     			ce.delete();
     			elmList.removeElementAt(i);
+    			
+    			// need to rebuild scopeElmArr
+    			needAnalyze();
     		}
     	}
 	
@@ -5075,7 +5142,7 @@ MouseOutHandler, MouseWheelHandler {
     }
     
     String copyOfSelectedElms() {
-	String r="";
+	String r = dumpOptions();
 	CustomLogicModel.clearDumpedFlags();
 	CustomCompositeModel.clearDumpedFlags();
 	DiodeModel.clearDumpedFlags();
@@ -5255,12 +5322,10 @@ MouseOutHandler, MouseWheelHandler {
     		return true;
     	if (aboutBox !=null && aboutBox.isShowing())
     		return true;
-		// CEBA77 Start
     	if (helpDialog !=null && helpDialog.isShowing())
 			return true;
     	if (licenseDialog !=null && licenseDialog.isShowing())
 			return true;
-    	// CEBA77 End
     	if (importFromDropboxDialog != null && importFromDropboxDialog.isShowing())
     		return true;
     	return false;
@@ -5308,6 +5373,10 @@ MouseOutHandler, MouseWheelHandler {
 		if (cc=='0') {
     		    menuPerformed("key", "zoom100");
     		    e.cancel();
+		}
+		if (cc=='/' && shortcuts['/'] == null) {
+		    menuPerformed("key", "search");
+		    e.cancel();
 		}
     	}
     	
@@ -5454,6 +5523,10 @@ MouseOutHandler, MouseWheelHandler {
 	    
 	    // pivoting
 	    if (j != largestRow) {
+		if (largestRow == -1) {
+		    console("largestRow == -1");
+		    return false;
+		}
 		double x;
 		for (k = 0; k != n; k++) {
 		    x = a[largestRow][k];
@@ -5668,6 +5741,7 @@ MouseOutHandler, MouseWheelHandler {
     	case 421: return new Counter2Elm(x1, y1, x2, y2, f, st);
     	case 422: return new DelayBufferElm(x1, y1, x2, y2, f, st);
     	case 423: return new LineElm(x1, y1, x2, y2, f, st);
+    	case 424: return new DataInputElm(x1, y1, x2, y2, f, st);
         }
     	return null;
     }
@@ -5930,6 +6004,8 @@ MouseOutHandler, MouseWheelHandler {
 		return (CircuitElm) new Counter2Elm(x1, y1);
     	if (n=="DelayBufferElm")
 		return (CircuitElm) new DelayBufferElm(x1, y1);
+    	if (n=="DataInputElm")
+		return (CircuitElm) new DataInputElm(x1, y1);
     	
     	// handle CustomCompositeElm:modelname
     	if (n.startsWith("CustomCompositeElm:")) {
@@ -5981,7 +6057,7 @@ MouseOutHandler, MouseWheelHandler {
 	// use trailing ~ to differentiate strings that are the same in English but need different translations.
 	// remove these if there's no translation.
 	int ix = s.indexOf('~');
-	if (ix < 0)
+	if (ix != s.length()-1)
 	    return s;
 	s = s.substring(0, ix);
 	sm = localizationMap.get(s);
@@ -6086,8 +6162,8 @@ MouseOutHandler, MouseWheelHandler {
 		// add some space on edges because bounds calculation is not perfect
 	    	int wmargin = 140;
 	    	int hmargin = 100;
-	    	int w = (bounds.width+wmargin) ;
-	    	int h = (bounds.height+hmargin) ;
+	    	int w = (bounds.width*2+wmargin) ;
+	    	int h = (bounds.height*2+hmargin) ;
 	    	cv.setCoordinateSpaceWidth(w);
 	    	cv.setCoordinateSpaceHeight(h);
 	    
@@ -6139,7 +6215,7 @@ MouseOutHandler, MouseWheelHandler {
 	            CircuitElm.whiteColor = Color.white;
 	            CircuitElm.lightGrayColor = Color.lightGray;
 	            g.setColor(Color.black);
-	            g.fillRect(0, 0, canvasWidth, canvasHeight);
+	            g.fillRect(0, 0, w, h);
 	        }
 		dotsCheckItem.setState(false);
 
@@ -6148,7 +6224,6 @@ MouseOutHandler, MouseWheelHandler {
 	        if (bounds != null)
 	            scale = Math.min(w /(double)(bounds.width+wmargin),
 	                             h/(double)(bounds.height+hmargin));
-	        scale = Math.min(scale, 1.5); // Limit scale so we don't create enormous circuits in big windows
 	        
 	        // ScopeElms need the transform array to be updated
 		transform[0] = transform[3] = scale;
@@ -6156,6 +6231,7 @@ MouseOutHandler, MouseWheelHandler {
 		transform[5] = -(bounds.y-hmargin/2);
 		context.scale(scale, scale);
 		context.translate(transform[4], transform[5]);
+		context.setLineCap(Context2d.LineCap.ROUND);
 		
 		// draw elements
 		int i;
@@ -6260,9 +6336,14 @@ MouseOutHandler, MouseWheelHandler {
 		}
 	    }
 	
+	    boolean first = true;
 	    for (i = 0; i != unconnectedNodes.size(); i++) {
 		int q = unconnectedNodes.get(i);
 		if (!extnodes[q] && used[q]) {
+		    if (nodesWithGroundConnectionCount == 0 && first) {
+			first = false;
+			continue;
+		    }
 		    Window.alert("Some nodes are unconnected!");
 		    return null;
 		}
@@ -6317,6 +6398,19 @@ MouseOutHandler, MouseWheelHandler {
 		}
 	    }
 	}
+
+	native JsArray<JavaScriptObject> getJSArray() /*-{ return []; }-*/;
+	
+	JsArray<JavaScriptObject> getJSElements() {
+	    int i;
+	    JsArray<JavaScriptObject> arr = getJSArray();
+	    for (i = 0; i != elmList.size(); i++) {
+		CircuitElm ce = getElm(i);
+		ce.addJSMethods();
+		arr.push(ce.getJavaScriptObject());
+	    }
+	    return arr;
+	}
 	
 	native void setupJSInterface() /*-{
 	    var that = this;
@@ -6325,7 +6419,8 @@ MouseOutHandler, MouseWheelHandler {
 	        getTime: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::t; } ),
 	        isRunning: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::simIsRunning()(); } ),
 	        getNodeVoltage: $entry(function(n) { return that.@com.lushprojects.circuitjs1.client.CirSim::getLabeledNodeVoltage(Ljava/lang/String;)(n); } ),
-	        setExtVoltage: $entry(function(n, v) { that.@com.lushprojects.circuitjs1.client.CirSim::setExtVoltage(Ljava/lang/String;D)(n, v); } )
+	        setExtVoltage: $entry(function(n, v) { that.@com.lushprojects.circuitjs1.client.CirSim::setExtVoltage(Ljava/lang/String;D)(n, v); } ),
+	        getElements: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::getJSElements()(); } )
 	    };
 	    var hook = $wnd.oncircuitjsloaded;
 	    if (hook)
@@ -6338,6 +6433,13 @@ MouseOutHandler, MouseWheelHandler {
 	    	hook($wnd.CircuitJS1);
 	}-*/;
 	
+        native void callAnalyzeHook() /*-{
+            var hook = $wnd.CircuitJS1.onanalyze;
+            if (hook)
+                hook($wnd.CircuitJS1);
+    	}-*/;
+    
+
 	native void callTimeStepHook() /*-{
 	    var hook = $wnd.CircuitJS1.ontimestep;
 	    if (hook)
