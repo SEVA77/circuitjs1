@@ -756,10 +756,12 @@ MouseOutHandler, MouseWheelHandler {
 	verticalPanel.add(l);
 	verticalPanel.add(titleLabel);
 
+/*
 	verticalPanel.add(iFrame = new Frame("iframe.html"));
 	iFrame.setWidth(VERTICALPANELWIDTH+"px");
 	iFrame.setHeight("100 px");
 	iFrame.getElement().setAttribute("scrolling", "no");
+*/
 
 	setGrid();
 	elmList = new Vector<CircuitElm>();
