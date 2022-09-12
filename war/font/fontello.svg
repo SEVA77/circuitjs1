@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg xmlns="http://www.w3.org/2000/svg">
-<metadata>Copyright (C) 2021 by original authors @ fontello.com</metadata>
+<metadata>Copyright (C) 2022 by original authors @ fontello.com</metadata>
 <defs>
 <font id="fontello" horiz-adv-x="1000" >
 <font-face font-family="fontello" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
@@ -49,6 +49,8 @@
 <glyph glyph-name="select-all" unicode="&#xe810;" d="M983 367h-466v466c0 10-8 17-17 17s-17-7-17-17v-466h-466c-10 0-17-8-17-17s7-17 17-17h466v-466c0-10 8-17 17-17s17 7 17 17v466h466c10 0 17 8 17 17s-7 17-17 17z m-233-67h-183c-10 0-17-7-17-17v-183c0-9 7-17 17-17h183c9 0 17 8 17 17v183c0 10-8 17-17 17z m-317 0h-183c-9 0-17-7-17-17v-183c0-9 8-17 17-17h183c10 0 17 8 17 17v183c0 10-7 17-17 17z m0 317h-183c-9 0-17-8-17-17v-183c0-9 8-17 17-17h183c10 0 17 8 17 17v183c0 9-7 17-17 17z m317 0h-183c-10 0-17-8-17-17v-183c0-9 7-17 17-17h183c9 0 17 8 17 17v183c0 9-8 17-17 17z" horiz-adv-x="1000" />
 
 <glyph glyph-name="window" unicode="&#xe811;" d="M900 750q42 0 71-30t29-70l0-600q0-42-29-71t-71-29l-800 0q-40 0-70 29t-30 71l0 600q0 40 30 70t70 30l800 0z m-670-94q-16 0-27-11t-11-25q0-16 11-27t27-11q38 0 38 38 0 16-11 26t-27 10z m-138-36q0-16 11-27t27-11q38 0 38 38 0 16-11 26t-27 10-27-11-11-25z m810-570l0 460-802 0 0-460 802 0z m0 540l0 60-602 0 0-60 602 0z" horiz-adv-x="1000" />
+
+<glyph glyph-name="search" unicode="&#xe812;" d="M643 386q0 103-73 176t-177 74-177-74-73-176 73-177 177-73 177 73 73 177z m286-465q0-29-22-50t-50-21q-30 0-50 21l-191 191q-100-69-223-69-80 0-153 31t-125 84-84 125-31 153 31 152 84 126 125 84 153 31 153-31 125-84 84-126 31-152q0-123-69-223l191-191q21-21 21-51z" horiz-adv-x="928.6" />
 
 <glyph glyph-name="doc-new" unicode="&#xe813;" d="M0-150l0 818 188 182 519 0 0-348-86 0 0 260-369 0 0-156-166 0 0-668 418 0 0-88-504 0z m373 207l0 162 209 0 0 207 160 0 0-207 207 0 0-162-207 0 0-207-160 0 0 207-209 0z" horiz-adv-x="949" />
 
