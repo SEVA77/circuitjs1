@@ -10,10 +10,10 @@ The program supports the following languages: English, Russian, Danish, German, 
 
 For a web version of the application see:
 
-Paul's Page: http://www.falstad.com/circuit/ \
+Paul's Page: https://www.falstad.com/circuit/ \
 Source code: https://github.com/pfalstad/circuitjs1
 
-Iain's Page: http://lushprojects.com/circuitjs/ \
+Iain's Page: https://lushprojects.com/circuitjs/ \
 Source code: https://github.com/sharpie7/circuitjs1
 
 # Downloads:
