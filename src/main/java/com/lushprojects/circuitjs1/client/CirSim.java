@@ -66,6 +66,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.ScriptInjector;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestException;
@@ -103,6 +104,7 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.HTML;
 
 public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandler,
 ClickHandler, DoubleClickHandler, ContextMenuHandler, NativePreviewHandler,
@@ -733,6 +735,7 @@ MouseOutHandler, MouseWheelHandler {
 
 	if (LoadFile.isSupported())
 	    verticalPanel.add(loadFileInput = new LoadFile(this));
+		setSlidersPanelHeight();
 
 	Label l;
 	verticalPanel.add(l = new Label(LS("Simulation Speed")));
@@ -760,11 +763,15 @@ MouseOutHandler, MouseWheelHandler {
 	//        titleLabel.setFont(f);
 	verticalPanel.add(l);
 	verticalPanel.add(titleLabel);
+	verticalPanel.add(new HTML("<hr><strong>"+LS("Sliders")+":<strong>"));
 
 	verticalPanel.add(slidersPanel);
-	// 100% vertical panel height - ()
-	//slidersPanel.setHeight("100 px");
 	slidersPanel.add(verticalPanel2);
+	//slidersPanel.setAlwaysShowScrollBars(true);
+	slidersPanel.getElement().getStyle().setOverflowX(Overflow.HIDDEN);
+	slidersPanel.getElement().getStyle().setOverflowY(Overflow.VISIBLE);
+
+	verticalPanel2.setWidth("150px");
 
 /*
 	verticalPanel.add(iFrame = new Frame("iframe.html"));
@@ -1282,7 +1289,7 @@ MouseOutHandler, MouseWheelHandler {
     public void setiFrameHeight() {
     	if (iFrame==null)
     		return;
-    	int i;
+    	/*int i;
     	int cumheight=0;
     	for (i=0; i < verticalPanel.getWidgetIndex(iFrame); i++) {
     		if (verticalPanel.getWidget(i) !=loadFileInput) {
@@ -1294,9 +1301,10 @@ MouseOutHandler, MouseWheelHandler {
     	int ih=RootLayoutPanel.get().getOffsetHeight()-MENUBARHEIGHT-cumheight;
     	if (ih<0)
     		ih=0;
-    	iFrame.setHeight(ih+"px");
+    	iFrame.setHeight(ih+"px");*/
     }
 
+// The void is the same as setiFrameHeight():
     public void setSlidersPanelHeight() {
     	int i;
     	int cumheight=0;
@@ -3502,11 +3510,15 @@ MouseOutHandler, MouseWheelHandler {
     		tempMouseMode = mouseMode;
     	}
     	if (item=="fullscreen") {
-    	    if (! Graphics.isFullScreen)
+    	    if (! Graphics.isFullScreen){
     		Graphics.viewFullScreen();
-    	    else
+			setSlidersPanelHeight();
+			}
+    	    else{
     		Graphics.exitFullScreen();
     	    centreCircuit();
+			setSlidersPanelHeight();
+			}
     	}
     
 	repaint();
@@ -3842,6 +3854,7 @@ MouseOutHandler, MouseWheelHandler {
     				if (file.equals(startCircuit) && startLabel == null) {
     				    startLabel = title;
     				    titleLabel.setText(title);
+						setSlidersPanelHeight();
     				}
     				if (first && startCircuit == null) {
     					startCircuit = file;
@@ -3859,16 +3872,19 @@ MouseOutHandler, MouseWheelHandler {
 	readCircuit(text.getBytes(), flags);
 	if ((flags & RC_KEEP_TITLE) == 0)
 	    titleLabel.setText(null);
+		setSlidersPanelHeight();
     }
 
     void readCircuit(String text) {
 	readCircuit(text.getBytes(), 0);
 	titleLabel.setText(null);
+	setSlidersPanelHeight();
     }
 
     void setCircuitTitle(String s) {
 	if (s != null)
 	    titleLabel.setText(s);
+		setSlidersPanelHeight();
     }
     
 	void readSetupFile(String str, String title) {
@@ -3878,6 +3894,7 @@ MouseOutHandler, MouseWheelHandler {
 		loadFileFromURL(url);
 		if (title != null)
 		    titleLabel.setText(title);
+			setSlidersPanelHeight();
 		unsavedChanges = false;
 	}
 	
