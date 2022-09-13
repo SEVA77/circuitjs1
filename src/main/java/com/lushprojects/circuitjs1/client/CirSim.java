@@ -102,6 +102,7 @@ import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.ui.ScrollPanel;
 
 public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandler,
 ClickHandler, DoubleClickHandler, ContextMenuHandler, NativePreviewHandler,
@@ -276,6 +277,8 @@ MouseOutHandler, MouseWheelHandler {
 	MenuBar menuBar;
 	MenuBar fileMenuBar;
 	VerticalPanel verticalPanel;
+	VerticalPanel verticalPanel2;
+	ScrollPanel slidersPanel;
 	CellPanel buttonPanel;
 	private boolean mouseDragging;
 	double scopeHeightFraction=0.2;
@@ -284,7 +287,7 @@ MouseOutHandler, MouseWheelHandler {
 	Vector<String> mainMenuItemNames = new Vector<String>();
 
 	LoadFile loadFileInput;
-	Frame iFrame;
+	Frame iFrame=null;
 	
     Canvas cv;
     Context2d cvcontext;
@@ -534,6 +537,8 @@ MouseOutHandler, MouseWheelHandler {
 	menuBar = new MenuBar();
 	menuBar.addItem(LS("File"), fileMenuBar);
 	verticalPanel=new VerticalPanel();
+	slidersPanel = new ScrollPanel();
+	verticalPanel2=new VerticalPanel();
 
 	// make buttons side by side if there's room
 	buttonPanel=(VERTICALPANELWIDTH == 166) ? new HorizontalPanel() : new VerticalPanel();
@@ -756,6 +761,11 @@ MouseOutHandler, MouseWheelHandler {
 	verticalPanel.add(l);
 	verticalPanel.add(titleLabel);
 
+	verticalPanel.add(slidersPanel);
+	// 100% vertical panel height - ()
+	//slidersPanel.setHeight("100 px");
+	slidersPanel.add(verticalPanel2);
+
 /*
 	verticalPanel.add(iFrame = new Frame("iframe.html"));
 	iFrame.setWidth(VERTICALPANELWIDTH+"px");
@@ -824,6 +834,7 @@ MouseOutHandler, MouseWheelHandler {
 
 	enableUndoRedo();
 	enablePaste();
+	setSlidersPanelHeight();
 	setiFrameHeight();
 	cv.addMouseDownHandler(this);
 	cv.addMouseMoveHandler(this);
@@ -1285,8 +1296,22 @@ MouseOutHandler, MouseWheelHandler {
     		ih=0;
     	iFrame.setHeight(ih+"px");
     }
-    
 
+    public void setSlidersPanelHeight() {
+    	int i;
+    	int cumheight=0;
+    	for (i=0; i < verticalPanel.getWidgetIndex(slidersPanel); i++) {
+    		if (verticalPanel.getWidget(i) !=loadFileInput) {
+    			cumheight=cumheight+verticalPanel.getWidget(i).getOffsetHeight();
+    			if (verticalPanel.getWidget(i).getStyleName().contains("topSpace"))
+    					cumheight+=12;
+    		}
+    	}
+    	int ih=RootLayoutPanel.get().getOffsetHeight()-MENUBARHEIGHT-cumheight;
+    	if (ih<0)
+    		ih=0;
+    	slidersPanel.setHeight(ih+"px");
+    }
 
     
 
@@ -5618,11 +5643,11 @@ MouseOutHandler, MouseWheelHandler {
     		setiFrameHeight();
     	}
     	else
-    		verticalPanel.add(w);
+    		verticalPanel2.add(w);
     }
     
     void removeWidgetFromVerticalPanel(Widget w){
-    	verticalPanel.remove(w);
+    	verticalPanel2.remove(w);
     	if (iFrame!=null)
     		setiFrameHeight();
     }
