@@ -104,7 +104,6 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.HTML;
 
 public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandler,
 ClickHandler, DoubleClickHandler, ContextMenuHandler, NativePreviewHandler,
@@ -712,6 +711,7 @@ MouseOutHandler, MouseWheelHandler {
 	setCanvasSize();
 	layoutPanel.add(cv);
 	verticalPanel.add(buttonPanel);
+	buttonPanel.addStyleName("sidePanelElm");
 	buttonPanel.add(resetButton = new Button(LS("Reset")));
 	resetButton.addClickHandler(new ClickHandler() {
 	    public void onClick(ClickEvent event) {
@@ -733,45 +733,63 @@ MouseOutHandler, MouseWheelHandler {
 	verticalPanel.add(dumpMatrixButton);// IES for debugging
 	 */
 
-	if (LoadFile.isSupported())
+	if (LoadFile.isSupported()){
 	    verticalPanel.add(loadFileInput = new LoadFile(this));
+		loadFileInput.addStyleName("sidePanelElm");
 		setSlidersPanelHeight();
+	}
 
 	Label l;
 	verticalPanel.add(l = new Label(LS("Simulation Speed")));
 	l.addStyleName("topSpace");
+	l.addStyleName("sidePanelElm");
 
 	// was max of 140
 	verticalPanel.add( speedBar = new Scrollbar(Scrollbar.HORIZONTAL, 3, 1, 0, 260));
+	speedBar.addStyleName("sidePanelElm");
 
 	verticalPanel.add( l = new Label(LS("Current Speed")));
 	l.addStyleName("topSpace");
+	l.addStyleName("sidePanelElm");
+
 	currentBar = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 1, 100);
 	verticalPanel.add(currentBar);
+	currentBar.addStyleName("sidePanelElm");
+
 	verticalPanel.add(powerLabel = new Label (LS("Power Brightness")));
 	powerLabel.addStyleName("topSpace");
+	powerLabel.addStyleName("sidePanelElm");
+
 	verticalPanel.add(powerBar = new Scrollbar(Scrollbar.HORIZONTAL,
 		50, 1, 1, 100));
+	powerBar.addStyleName("sidePanelElm");
 	setPowerBarEnable();
 
 	//	verticalPanel.add(new Label(""));
 	//        Font f = new Font("SansSerif", 0, 10);
 	l = new Label(LS("Current Circuit:"));
 	l.addStyleName("topSpace");
+	l.addStyleName("sidePanelElm");
 	//        l.setFont(f);
 	titleLabel = new Label("Label");
+	titleLabel.addStyleName("sidePanelElm");
 	//        titleLabel.setFont(f);
 	verticalPanel.add(l);
 	verticalPanel.add(titleLabel);
-	verticalPanel.add(new HTML("<hr><strong>"+LS("Sliders")+":<strong>"));
+
+	Label sab;
+	sab = new Label(LS("Sliders and buttons")+":");
+	sab.addStyleName("sabLabel");
+	verticalPanel.add(sab);
 
 	verticalPanel.add(slidersPanel);
 	slidersPanel.add(verticalPanel2);
+	verticalPanel2.addStyleName("sidePanelvp2");
+	verticalPanel2.setWidth("150px");
+
 	//slidersPanel.setAlwaysShowScrollBars(true);
 	slidersPanel.getElement().getStyle().setOverflowX(Overflow.HIDDEN);
-	slidersPanel.getElement().getStyle().setOverflowY(Overflow.VISIBLE);
-
-	verticalPanel2.setWidth("150px");
+	slidersPanel.getElement().getStyle().setOverflowY(Overflow.SCROLL);
 
 /*
 	verticalPanel.add(iFrame = new Frame("iframe.html"));
