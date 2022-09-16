@@ -123,7 +123,7 @@ MouseOutHandler, MouseWheelHandler {
     CheckboxMenuItem fullscreenCheckItem;
     MenuItem importFromLocalFileItem, importFromTextItem,
     	exportAsUrlItem, exportAsLocalFileItem, exportAsTextItem, printItem, recoverItem, saveFileItem;
-    MenuItem importFromDropboxItem;
+    //MenuItem importFromDropboxItem;
     MenuItem undoItem, redoItem,
 	cutItem, copyItem, pasteItem, selectAllItem, optionsItem;
     MenuBar optionsMenuBar;
@@ -256,13 +256,13 @@ MouseOutHandler, MouseWheelHandler {
    int scopeColCount[];
     static EditDialog editDialog, customLogicEditDialog, diodeModelEditDialog;
     static SliderDialog sliderDialog;
-    static ImportFromDropbox importFromDropbox;
+    //static ImportFromDropbox importFromDropbox;
     static ScrollValuePopup scrollValuePopup;
     static DialogBox dialogShowing;
     static AboutBox aboutBox;
     static HelpDialog helpDialog;
     static LicenseDialog licenseDialog;
-    static ImportFromDropboxDialog importFromDropboxDialog;
+    //static ImportFromDropboxDialog importFromDropboxDialog;
 //    Class dumpTypes[], shortcuts[];
     String shortcuts[];
     static String muString = "\u03bc";
@@ -468,8 +468,8 @@ MouseOutHandler, MouseWheelHandler {
 	fileMenuBar.addItem(importFromLocalFileItem);
 	importFromTextItem = iconMenuItem("doc-text", "Import From Text...", new MyCommand("file","importfromtext"));
 	fileMenuBar.addItem(importFromTextItem);
-	importFromDropboxItem = iconMenuItem("dropbox", "Import From Dropbox...", new MyCommand("file", "importfromdropbox"));
-	fileMenuBar.addItem(importFromDropboxItem);
+	//importFromDropboxItem = iconMenuItem("dropbox", "Import From Dropbox...", new MyCommand("file", "importfromdropbox"));
+	//fileMenuBar.addItem(importFromDropboxItem);
 	if (isElectron()) {
 	    saveFileItem = fileMenuBar.addItem(menuItemWithShortcut("floppy", "Save", LS(ctrlMetaKey + "S"),
 		    new MyCommand("file", "save")));
@@ -842,8 +842,8 @@ MouseOutHandler, MouseWheelHandler {
 	    if (stopMessage == null && startCircuitLink!=null) {
 		readCircuit("");
 		getSetupList(false);
-		ImportFromDropboxDialog.setSim(this);
-		ImportFromDropboxDialog.doImportDropboxLink(startCircuitLink, false);
+		//ImportFromDropboxDialog.setSim(this);
+		//ImportFromDropboxDialog.doImportDropboxLink(startCircuitLink, false);
 	    } else {
 		readCircuit("");
 		if (stopMessage == null && startCircuit != null) {
@@ -3277,9 +3277,9 @@ MouseOutHandler, MouseWheelHandler {
     	if (item=="importfromtext") {
     		dialogShowing = new ImportFromTextDialog(this);
     	}
-    	if (item=="importfromdropbox") {
+    	/*if (item=="importfromdropbox") {
     		importFromDropboxDialog = new ImportFromDropboxDialog(this);
-    	}
+    	}*/
     	if (item=="exportasurl") {
     		doExportAsUrl();
     		unsavedChanges = false;
@@ -5389,8 +5389,8 @@ MouseOutHandler, MouseWheelHandler {
 			return true;
     	if (licenseDialog !=null && licenseDialog.isShowing())
 			return true;
-    	if (importFromDropboxDialog != null && importFromDropboxDialog.isShowing())
-    		return true;
+    	/*if (importFromDropboxDialog != null && importFromDropboxDialog.isShowing())
+    		return true;*/
     	return false;
     }
     
