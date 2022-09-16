@@ -704,6 +704,7 @@ MouseOutHandler, MouseWheelHandler {
 	Window.addResizeHandler(new ResizeHandler() {
 	    public void onResize(ResizeEvent event) {
 		repaint();
+		setSlidersPanelHeight();
 	    }
 	});
 
