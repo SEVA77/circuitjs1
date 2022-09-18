@@ -120,7 +120,7 @@ MouseOutHandler, MouseWheelHandler {
     MenuItem aboutCircuitsItem;
     MenuItem aboutCircuitsPLItem;
     MenuItem closeItem;
-    CheckboxMenuItem fullscreenCheckItem;
+    //CheckboxMenuItem fullscreenCheckItem;
     MenuItem importFromLocalFileItem, importFromTextItem,
     	exportAsUrlItem, exportAsLocalFileItem, exportAsTextItem, printItem, recoverItem, saveFileItem;
     //MenuItem importFromDropboxItem;
@@ -579,7 +579,7 @@ MouseOutHandler, MouseWheelHandler {
 
 	optionsMenuBar = m = new MenuBar(true );
 	menuBar.addItem(LS("Options"), optionsMenuBar);
-	m.addItem(fullscreenCheckItem = new CheckboxMenuItem(LS("Fullscreen Mode"),
+	/*m.addItem(fullscreenCheckItem = new CheckboxMenuItem(LS("Fullscreen Mode"),
 	 		new Command() { public void execute(){
 	 		    	if (fullscreenCheckItem.getState()) {
 	 		    	ScriptInjector.fromString("nw.Window.get().enterFullscreen();")
@@ -592,13 +592,13 @@ MouseOutHandler, MouseWheelHandler {
 		 		  .setRemoveTag(false)
 		 		  .setWindow(ScriptInjector.TOP_WINDOW)
 		 		  .inject();
-	 		    	}
+	 		    	}*/
 	 		    /*  (new CheckboxAlignedMenuItem)
 	 		    String fullscreenScript = "nw.Window.get().toggleFullscreen();";
 	 		    ScriptInjector.fromString(fullscreenScript).inject();
 	 		    */
-	 		    }
-	 		}));
+	 		  /*  }
+	 		}));*/
 	m.addItem(dotsCheckItem = new CheckboxMenuItem(LS("Show Current")));
 	dotsCheckItem.setState(true);
 	m.addItem(voltsCheckItem = new CheckboxMenuItem(LS("Show Voltage"),
