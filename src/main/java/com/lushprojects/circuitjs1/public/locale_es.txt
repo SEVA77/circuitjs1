@@ -1067,6 +1067,7 @@
 "Plots"="Gráficos"
 "X-Y Plots"="Gráficos X-Y"
 "Show Info"="Parámetros del Gráfico"
+"Sliders and buttons"="Controles deslizantes y botones"
 "Help"="Ayuda"
 "User Guide"="Guía del usuario"
 "License"="Licencia"

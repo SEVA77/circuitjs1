@@ -1,3 +1,4 @@
+"Sliders and buttons"="Glidere og knapper"
 "Help"="Hjelp"
 "User Guide"="Brukerhåndboken"
 "License"="Tillatelse"

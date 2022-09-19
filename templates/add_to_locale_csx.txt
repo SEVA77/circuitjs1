@@ -1,3 +1,4 @@
+"Sliders and buttons"="Posuvníky a tlačítka"
 "Help"="Pomoc"
 "User Guide"="Uživatelská příručka"
 "License"="Licence"

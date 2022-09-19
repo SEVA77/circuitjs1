@@ -1,3 +1,4 @@
+"Sliders and buttons"="Schieberegler und Knöpfe"
 "Help"="Hilfe"
 "User Guide"="Benutzerhandbuch"
 "License"="Lizenz"

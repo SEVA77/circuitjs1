@@ -1312,6 +1312,7 @@
 "Play Once"="Воспроизвести один раз"
 "Load Contents From File"="Загрузить данные из файла"
 "Show Pin Numbers"="Показать номера выводов"
+"Sliders and buttons"="Ползунки и кнопки"
 "Help"="Помощь"
 "User Guide"="Руководство пользователя"
 "License"="Лицензия"

@@ -1064,6 +1064,7 @@
 "Slew Rate (V/usec)"="Slew Rate (V/usec)"
 "Output Current Limit (A)"="Limite di Uscita di Corrente (A)"
 "Swap Inputs"="Scambia Ingressi"
+"Sliders and buttons"="Cursori e bottoni"
 "Help"="Aiuto"
 "User Guide"="Guida utente"
 "License"="Licenza"

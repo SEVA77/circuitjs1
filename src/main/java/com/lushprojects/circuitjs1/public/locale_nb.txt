@@ -1079,6 +1079,7 @@
 "Slew Rate (V/usec)"="Stigehastighet (V/usec)"
 "Output Current Limit (A)"="Begrensning på utgangsstrøm (A)"
 "Swap Inputs"="Bytt innganger"
+"Sliders and buttons"="Glidere og knapper"
 "Help"="Hjelp"
 "User Guide"="Brukerhåndboken"
 "License"="Tillatelse"

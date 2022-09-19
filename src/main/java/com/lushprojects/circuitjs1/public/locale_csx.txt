@@ -1085,6 +1085,7 @@
 "New Window..."="Otevře nový program"
 "Add DC Motor"="= DC Motor"
 "TP"="<small><small>Testovací bod U</small></small>"
+"Sliders and buttons"="Posuvníky a tlačítka"
 "Help"="Pomoc"
 "User Guide"="Uživatelská příručka"
 "License"="Licence"

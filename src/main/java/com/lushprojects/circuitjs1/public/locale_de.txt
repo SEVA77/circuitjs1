@@ -776,6 +776,7 @@
 "Re-Import"="Re-Importieren"
 "Show RMS Average"="Effektivwert (RMS) anzeigen"
 "Alt Color for Volts & Pwr"="Andere Farben Spannung & Leistung"
+"Sliders and buttons"="Schieberegler und Knöpfe"
 "Help"="Hilfe"
 "User Guide"="Benutzerhandbuch"
 "License"="Lizenz"

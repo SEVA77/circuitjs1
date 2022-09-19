@@ -1,4 +1,5 @@
-﻿"Help"="Aide"
+﻿"Sliders and buttons"="Diapositives et boutons"
+"Help"="Aide"
 "User Guide"="Mode d'emploi"
 "License"="Licence"
 "About Circuits"="À propos des Circuits (en anglais)"

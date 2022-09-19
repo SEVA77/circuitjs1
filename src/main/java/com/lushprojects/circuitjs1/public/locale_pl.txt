@@ -977,6 +977,7 @@
 "You can open a shared Dropbox file if you have a link. Paste the Dropbox link below..."="Możesz otworzyć udostępniony plik z konta Dropbox za pomocą łącza. Wstaw poniżej łącze pliku na koncie Dropbox."
 "Waiting for short URL for web service..."="Oczekiwanie na usługę..."
 "Audio data is not ready yet.  Increase simulation speed to make data ready sooner."="Dane dźwiękowe nie są gotowe. Przyśpiesz symulację w celu uzyskania ich wcześniej."
+"Sliders and buttons"="Suwaki i przyciski"
 "Help"="Wsparcie"
 "User Guide"="Podręcznik użytkownika"
 "License"="Licencja"
