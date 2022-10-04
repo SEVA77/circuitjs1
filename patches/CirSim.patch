@@ -1,5 +1,5 @@
 --- /dev/null
-+++ ../src/main/java/com/lushprojects/circuitjs1/client/CirSim.java
++++ src/main/java/com/lushprojects/circuitjs1/client/CirSim.java
 @@ -21,6 +21,8 @@
  
  // GWT conversion (c) 2015 by Iain Sharp
@@ -9,7 +9,23 @@
  // For information about the theory behind this, see Electronic Circuit & System Simulation Methods by Pillage
  // or https://github.com/sharpie7/circuitjs1/blob/master/INTERNALS.md
  
-@@ -110,6 +112,13 @@
+@@ -64,6 +66,7 @@
+ import com.google.gwt.core.client.JsArray;
+ import com.google.gwt.core.client.Scheduler;
+ import com.google.gwt.core.client.ScriptInjector;
++import com.google.gwt.dom.client.Style.Overflow;
+ import com.google.gwt.dom.client.Style.Unit;
+ import com.google.gwt.http.client.Request;
+ import com.google.gwt.http.client.RequestException;
+@@ -100,6 +103,7 @@
+ import com.google.gwt.event.logical.shared.CloseHandler;
+ import com.google.gwt.event.logical.shared.ResizeEvent;
+ import com.google.gwt.event.logical.shared.ResizeHandler;
++import com.google.gwt.user.client.ui.ScrollPanel;
+ 
+ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandler,
+ ClickHandler, DoubleClickHandler, ContextMenuHandler, NativePreviewHandler,
+@@ -110,9 +114,16 @@
      Button runStopButton;
      Button dumpMatrixButton;
      MenuItem aboutItem;
@@ -19,20 +35,49 @@
 +    MenuItem aboutCircuitsItem;
 +    MenuItem aboutCircuitsPLItem;
 +    MenuItem closeItem;
-+    CheckboxMenuItem fullscreenCheckItem;
++    //CheckboxMenuItem fullscreenCheckItem;
      MenuItem importFromLocalFileItem, importFromTextItem,
      	exportAsUrlItem, exportAsLocalFileItem, exportAsTextItem, printItem, recoverItem, saveFileItem;
-     MenuItem importFromDropboxItem;
-@@ -249,6 +258,8 @@
+-    MenuItem importFromDropboxItem;
++    //MenuItem importFromDropboxItem;
+     MenuItem undoItem, redoItem,
+ 	cutItem, copyItem, pasteItem, selectAllItem, optionsItem;
+     MenuBar optionsMenuBar;
+@@ -245,11 +256,13 @@
+    int scopeColCount[];
+     static EditDialog editDialog, customLogicEditDialog, diodeModelEditDialog;
+     static SliderDialog sliderDialog;
+-    static ImportFromDropbox importFromDropbox;
++    //static ImportFromDropbox importFromDropbox;
      static ScrollValuePopup scrollValuePopup;
      static DialogBox dialogShowing;
      static AboutBox aboutBox;
+-    static ImportFromDropboxDialog importFromDropboxDialog;
 +    static HelpDialog helpDialog;
 +    static LicenseDialog licenseDialog;
-     static ImportFromDropboxDialog importFromDropboxDialog;
++    //static ImportFromDropboxDialog importFromDropboxDialog;
  //    Class dumpTypes[], shortcuts[];
      String shortcuts[];
-@@ -436,7 +447,16 @@
+     static String muString = "\u03bc";
+@@ -265,6 +278,8 @@
+ 	MenuBar menuBar;
+ 	MenuBar fileMenuBar;
+ 	VerticalPanel verticalPanel;
++	VerticalPanel verticalPanel2;
++	ScrollPanel slidersPanel;
+ 	CellPanel buttonPanel;
+ 	private boolean mouseDragging;
+ 	double scopeHeightFraction=0.2;
+@@ -273,7 +288,7 @@
+ 	Vector<String> mainMenuItemNames = new Vector<String>();
+ 
+ 	LoadFile loadFileInput;
+-	Frame iFrame;
++	Frame iFrame=null;
+ 	
+     Canvas cv;
+     Context2d cvcontext;
+@@ -436,7 +451,16 @@
  	if (isElectron())
  	    fileMenuBar.addItem(menuItemWithShortcut("window", "New Window...", LS(ctrlMetaKey + "N"),
  		    new MyCommand("file", "newwindow")));
@@ -50,7 +95,18 @@
  	fileMenuBar.addItem(iconMenuItem("doc-new", "New Blank Circuit", new MyCommand("file", "newblankcircuit")));
  	importFromLocalFileItem = menuItemWithShortcut("folder", "Open File...", LS(ctrlMetaKey + "O"),
  		new MyCommand("file","importfromlocalfile"));
-@@ -470,18 +490,46 @@
+@@ -444,8 +468,8 @@
+ 	fileMenuBar.addItem(importFromLocalFileItem);
+ 	importFromTextItem = iconMenuItem("doc-text", "Import From Text...", new MyCommand("file","importfromtext"));
+ 	fileMenuBar.addItem(importFromTextItem);
+-	importFromDropboxItem = iconMenuItem("dropbox", "Import From Dropbox...", new MyCommand("file", "importfromdropbox"));
+-	fileMenuBar.addItem(importFromDropboxItem);
++	//importFromDropboxItem = iconMenuItem("dropbox", "Import From Dropbox...", new MyCommand("file", "importfromdropbox"));
++	//fileMenuBar.addItem(importFromDropboxItem);
+ 	if (isElectron()) {
+ 	    saveFileItem = fileMenuBar.addItem(menuItemWithShortcut("floppy", "Save", LS(ctrlMetaKey + "S"),
+ 		    new MyCommand("file", "save")));
+@@ -470,22 +494,52 @@
  	printItem = menuItemWithShortcut("print", "Print...", LS(ctrlMetaKey + "P"), new MyCommand("file","print"));
  	fileMenuBar.addItem(printItem);
  	fileMenuBar.addSeparator();
@@ -101,11 +157,17 @@
  
  	menuBar = new MenuBar();
  	menuBar.addItem(LS("File"), fileMenuBar);
-@@ -525,6 +573,26 @@
+ 	verticalPanel=new VerticalPanel();
++	slidersPanel = new ScrollPanel();
++	verticalPanel2=new VerticalPanel();
+ 
+ 	// make buttons side by side if there's room
+ 	buttonPanel=(VERTICALPANELWIDTH == 166) ? new HorizontalPanel() : new VerticalPanel();
+@@ -525,6 +579,26 @@
  
  	optionsMenuBar = m = new MenuBar(true );
  	menuBar.addItem(LS("Options"), optionsMenuBar);
-+	m.addItem(fullscreenCheckItem = new CheckboxMenuItem(LS("Fullscreen Mode"),
++	/*m.addItem(fullscreenCheckItem = new CheckboxMenuItem(LS("Fullscreen Mode"),
 +	 		new Command() { public void execute(){
 +	 		    	if (fullscreenCheckItem.getState()) {
 +	 		    	ScriptInjector.fromString("nw.Window.get().enterFullscreen();")
@@ -118,17 +180,161 @@
 +		 		  .setRemoveTag(false)
 +		 		  .setWindow(ScriptInjector.TOP_WINDOW)
 +		 		  .inject();
-+	 		    	}
++	 		    	}*/
 +	 		    /*  (new CheckboxAlignedMenuItem)
 +	 		    String fullscreenScript = "nw.Window.get().toggleFullscreen();";
 +	 		    ScriptInjector.fromString(fullscreenScript).inject();
 +	 		    */
-+	 		    }
-+	 		}));
++	 		  /*  }
++	 		}));*/
  	m.addItem(dotsCheckItem = new CheckboxMenuItem(LS("Show Current")));
  	dotsCheckItem.setState(true);
  	m.addItem(voltsCheckItem = new CheckboxMenuItem(LS("Show Voltage"),
-@@ -3132,6 +3200,10 @@
+@@ -630,6 +704,7 @@
+ 	Window.addResizeHandler(new ResizeHandler() {
+ 	    public void onResize(ResizeEvent event) {
+ 		repaint();
++		setSlidersPanelHeight();
+ 	    }
+ 	});
+ 
+@@ -637,6 +712,7 @@
+ 	setCanvasSize();
+ 	layoutPanel.add(cv);
+ 	verticalPanel.add(buttonPanel);
++	buttonPanel.addStyleName("sidePanelElm");
+ 	buttonPanel.add(resetButton = new Button(LS("Reset")));
+ 	resetButton.addClickHandler(new ClickHandler() {
+ 	    public void onClick(ClickEvent event) {
+@@ -658,40 +734,70 @@
+ 	verticalPanel.add(dumpMatrixButton);// IES for debugging
+ 	 */
+ 
+-	if (LoadFile.isSupported())
++	if (LoadFile.isSupported()){
+ 	    verticalPanel.add(loadFileInput = new LoadFile(this));
++		loadFileInput.addStyleName("sidePanelElm");
++		setSlidersPanelHeight();
++	}
+ 
+ 	Label l;
+ 	verticalPanel.add(l = new Label(LS("Simulation Speed")));
+ 	l.addStyleName("topSpace");
++	l.addStyleName("sidePanelElm");
+ 
+ 	// was max of 140
+ 	verticalPanel.add( speedBar = new Scrollbar(Scrollbar.HORIZONTAL, 3, 1, 0, 260));
++	speedBar.addStyleName("sidePanelElm");
+ 
+ 	verticalPanel.add( l = new Label(LS("Current Speed")));
+ 	l.addStyleName("topSpace");
++	l.addStyleName("sidePanelElm");
++
+ 	currentBar = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 1, 100);
+ 	verticalPanel.add(currentBar);
++	currentBar.addStyleName("sidePanelElm");
++
+ 	verticalPanel.add(powerLabel = new Label (LS("Power Brightness")));
+ 	powerLabel.addStyleName("topSpace");
++	powerLabel.addStyleName("sidePanelElm");
++
+ 	verticalPanel.add(powerBar = new Scrollbar(Scrollbar.HORIZONTAL,
+ 		50, 1, 1, 100));
++	powerBar.addStyleName("sidePanelElm");
+ 	setPowerBarEnable();
+ 
+ 	//	verticalPanel.add(new Label(""));
+ 	//        Font f = new Font("SansSerif", 0, 10);
+ 	l = new Label(LS("Current Circuit:"));
+ 	l.addStyleName("topSpace");
++	l.addStyleName("sidePanelElm");
+ 	//        l.setFont(f);
+ 	titleLabel = new Label("Label");
++	titleLabel.addStyleName("sidePanelElm");
+ 	//        titleLabel.setFont(f);
+ 	verticalPanel.add(l);
+ 	verticalPanel.add(titleLabel);
+ 
++	Label sab;
++	sab = new Label(LS("Sliders and buttons")+":");
++	sab.addStyleName("sabLabel");
++	verticalPanel.add(sab);
++
++	verticalPanel.add(slidersPanel);
++	slidersPanel.add(verticalPanel2);
++	verticalPanel2.addStyleName("sidePanelvp2");
++	verticalPanel2.setWidth("150px");
++
++	//slidersPanel.setAlwaysShowScrollBars(true);
++	slidersPanel.getElement().getStyle().setOverflowX(Overflow.HIDDEN);
++	slidersPanel.getElement().getStyle().setOverflowY(Overflow.SCROLL);
++
++/*
+ 	verticalPanel.add(iFrame = new Frame("iframe.html"));
+ 	iFrame.setWidth(VERTICALPANELWIDTH+"px");
+ 	iFrame.setHeight("100 px");
+ 	iFrame.getElement().setAttribute("scrolling", "no");
++*/
+ 
+ 	setGrid();
+ 	elmList = new Vector<CircuitElm>();
+@@ -736,8 +842,8 @@
+ 	    if (stopMessage == null && startCircuitLink!=null) {
+ 		readCircuit("");
+ 		getSetupList(false);
+-		ImportFromDropboxDialog.setSim(this);
+-		ImportFromDropboxDialog.doImportDropboxLink(startCircuitLink, false);
++		//ImportFromDropboxDialog.setSim(this);
++		//ImportFromDropboxDialog.doImportDropboxLink(startCircuitLink, false);
+ 	    } else {
+ 		readCircuit("");
+ 		if (stopMessage == null && startCircuit != null) {
+@@ -754,6 +860,7 @@
+ 
+ 	enableUndoRedo();
+ 	enablePaste();
++	setSlidersPanelHeight();
+ 	setiFrameHeight();
+ 	cv.addMouseDownHandler(this);
+ 	cv.addMouseMoveHandler(this);
+@@ -1201,7 +1308,7 @@
+     public void setiFrameHeight() {
+     	if (iFrame==null)
+     		return;
+-    	int i;
++    	/*int i;
+     	int cumheight=0;
+     	for (i=0; i < verticalPanel.getWidgetIndex(iFrame); i++) {
+     		if (verticalPanel.getWidget(i) !=loadFileInput) {
+@@ -1213,10 +1320,25 @@
+     	int ih=RootLayoutPanel.get().getOffsetHeight()-MENUBARHEIGHT-cumheight;
+     	if (ih<0)
+     		ih=0;
+-    	iFrame.setHeight(ih+"px");
++    	iFrame.setHeight(ih+"px");*/
+     }
+-    
+ 
++// The void is the same as setiFrameHeight():
++    public void setSlidersPanelHeight() {
++    	int i;
++    	int cumheight=0;
++    	for (i=0; i < verticalPanel.getWidgetIndex(slidersPanel); i++) {
++    		if (verticalPanel.getWidget(i) !=loadFileInput) {
++    			cumheight=cumheight+verticalPanel.getWidget(i).getOffsetHeight();
++    			if (verticalPanel.getWidget(i).getStyleName().contains("topSpace"))
++    					cumheight+=12;
++    		}
++    	}
++    	int ih=RootLayoutPanel.get().getOffsetHeight()-MENUBARHEIGHT-cumheight;
++    	if (ih<0)
++    		ih=0;
++    	slidersPanel.setHeight(ih+"px");
++    }
+ 
+     
+ 
+@@ -3132,6 +3254,10 @@
  	    Window.alert(LS("Editing disabled.  Re-enable from the Options menu."));
  	    return;
  	}
@@ -139,7 +345,37 @@
      	if (item=="about")
      		aboutBox = new AboutBox(circuitjs1.versionString);
      	if (item=="importfromlocalfile") {
-@@ -3674,6 +3746,42 @@
+@@ -3151,9 +3277,9 @@
+     	if (item=="importfromtext") {
+     		dialogShowing = new ImportFromTextDialog(this);
+     	}
+-    	if (item=="importfromdropbox") {
++    	/*if (item=="importfromdropbox") {
+     		importFromDropboxDialog = new ImportFromDropboxDialog(this);
+-    	}
++    	}*/
+     	if (item=="exportasurl") {
+     		doExportAsUrl();
+     		unsavedChanges = false;
+@@ -3403,11 +3529,15 @@
+     		tempMouseMode = mouseMode;
+     	}
+     	if (item=="fullscreen") {
+-    	    if (! Graphics.isFullScreen)
++    	    if (! Graphics.isFullScreen){
+     		Graphics.viewFullScreen();
+-    	    else
++			setSlidersPanelHeight();
++			}
++    	    else{
+     		Graphics.exitFullScreen();
+     	    centreCircuit();
++			setSlidersPanelHeight();
++			}
+     	}
+     
+ 	repaint();
+@@ -3674,6 +3804,42 @@
      	currentMenuBar=new MenuBar(true);
      	currentMenuBar.setAutoOpen(true);
      	menuBar.addItem(LS("Circuits"), currentMenuBar);
@@ -182,14 +418,68 @@
      	stack[stackptr++] = currentMenuBar;
      	int p;
      	for (p = 0; p < len; ) {
-@@ -5214,6 +5322,10 @@
+@@ -3707,6 +3873,7 @@
+     				if (file.equals(startCircuit) && startLabel == null) {
+     				    startLabel = title;
+     				    titleLabel.setText(title);
++						setSlidersPanelHeight();
+     				}
+     				if (first && startCircuit == null) {
+     					startCircuit = file;
+@@ -3724,16 +3891,19 @@
+ 	readCircuit(text.getBytes(), flags);
+ 	if ((flags & RC_KEEP_TITLE) == 0)
+ 	    titleLabel.setText(null);
++		setSlidersPanelHeight();
+     }
+ 
+     void readCircuit(String text) {
+ 	readCircuit(text.getBytes(), 0);
+ 	titleLabel.setText(null);
++	setSlidersPanelHeight();
+     }
+ 
+     void setCircuitTitle(String s) {
+ 	if (s != null)
+ 	    titleLabel.setText(s);
++		setSlidersPanelHeight();
+     }
+     
+ 	void readSetupFile(String str, String title) {
+@@ -3743,6 +3913,7 @@
+ 		loadFileFromURL(url);
+ 		if (title != null)
+ 		    titleLabel.setText(title);
++			setSlidersPanelHeight();
+ 		unsavedChanges = false;
+ 	}
+ 	
+@@ -5214,8 +5385,12 @@
      		return true;
      	if (aboutBox !=null && aboutBox.isShowing())
      		return true;
+-    	if (importFromDropboxDialog != null && importFromDropboxDialog.isShowing())
+-    		return true;
 +    	if (helpDialog !=null && helpDialog.isShowing())
 +			return true;
 +    	if (licenseDialog !=null && licenseDialog.isShowing())
 +			return true;
-     	if (importFromDropboxDialog != null && importFromDropboxDialog.isShowing())
-     		return true;
++    	/*if (importFromDropboxDialog != null && importFromDropboxDialog.isShowing())
++    		return true;*/
      	return false;
+     }
+     
+@@ -5504,11 +5679,11 @@
+     		setiFrameHeight();
+     	}
+     	else
+-    		verticalPanel.add(w);
++    		verticalPanel2.add(w);
+     }
+     
+     void removeWidgetFromVerticalPanel(Widget w){
+-    	verticalPanel.remove(w);
++    	verticalPanel2.remove(w);
+     	if (iFrame!=null)
+     		setiFrameHeight();
+     }

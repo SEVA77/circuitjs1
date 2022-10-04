@@ -22,14 +22,18 @@ package com.lushprojects.circuitjs1.client;
 import java.util.Vector;
 
 import com.google.gwt.canvas.dom.client.CanvasGradient;
+import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.LineCap;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.storage.client.Storage;
+import com.google.gwt.user.client.Random;
 
 // circuit element class
 public abstract class CircuitElm implements Editable {
     static double voltageRange = 5;
-    static int colorScaleCount = 32;
+    static int colorScaleCount = 201; // odd so ground = gray 
     static Color colorScale[];
     static double currentMult, powerMult;
     
@@ -360,6 +364,8 @@ public abstract class CircuitElm implements Editable {
 	return a;
     }
 
+    final int CURRENT_TOO_FAST = 100;
+
     // draw current dots from point a to b
     void drawDots(Graphics g, Point pa, Point pb, double pos) {
 	 if ((!sim.simIsRunning()) || pos == 0 || !sim.dotsCheckItem.getState())
@@ -369,6 +375,20 @@ public abstract class CircuitElm implements Editable {
 	double dn = Math.sqrt(dx*dx+dy*dy);
 	g.setColor(currentColor);
 	int ds = 16;
+	if (pos == CURRENT_TOO_FAST || pos == -CURRENT_TOO_FAST) {
+	    // current is moving too fast, avoid aliasing by drawing dots at
+	    // random position with transparent yellow line underneath
+	    g.save();
+	    Context2d ctx = g.context;
+	    ctx.setLineWidth(4);
+	    ctx.setGlobalAlpha(.5);
+	    ctx.beginPath();
+	    ctx.moveTo(pa.x, pa.y);
+	    ctx.lineTo(pb.x, pb.y);
+	    ctx.stroke();
+	    g.restore();
+	    pos = Random.nextDouble()*ds;
+	}
 	pos %= ds;
 	if (pos < 0)
 	    pos += ds;
@@ -380,6 +400,12 @@ public abstract class CircuitElm implements Editable {
 	}
     }
 
+    double addCurCount(double c, double a) {
+	if (c == CURRENT_TOO_FAST || c == -CURRENT_TOO_FAST)
+	    return c;
+	return c+a;
+    }
+    
     Polygon calcArrow(Point a, Point b, double al, double aw) {
 	Polygon poly = new Polygon();
 	Point p1 = new Point();
@@ -577,8 +603,6 @@ public abstract class CircuitElm implements Editable {
     }
     
     int getNodeAtPoint(int xp, int yp) {
-	if (getPostCount() == 2)
-	    return (x == xp && y == yp) ? 0 : 1;
 	int i;
 	for (i = 0; i != getPostCount(); i++) {
 	    Point p = getPost(i);
@@ -866,7 +890,9 @@ public abstract class CircuitElm implements Editable {
 	    return format(v*1e-3, sf) + sp + "k" + u;
 	if (va < 1e9)
 	    return format(v*1e-6, sf) + sp + "M" + u;
-	return format(v*1e-9, sf) + sp + "G" + u;
+	if (va < 1e12)
+	    return format(v*1e-9, sf) + sp + "G" + u;
+	return NumberFormat.getFormat("#.##E000").format(v) + sp + u;
     }
     
     static String getCurrentText(double i) {
@@ -877,6 +903,8 @@ public abstract class CircuitElm implements Editable {
     }
 
     static String getUnitTextWithScale(double val, String utext, int scale) {
+	if (Math.abs(val) > 1e12)
+	    return getUnitText(val, utext);
 	if (scale == SCALE_1)
 	    return showFormat.format(val) + " " + utext;
 	if (scale == SCALE_M)
@@ -897,13 +925,11 @@ public abstract class CircuitElm implements Editable {
 	 if (!sim.simIsRunning())
 	    return cc;
 	double cadd = cur*currentMult;
-	/*if (cur != 0 && cadd <= .05 && cadd >= -.05)
-	  cadd = (cadd < 0) ? -.05 : .05;*/
+	if (cadd > 6 || cadd < -6)
+	    return CURRENT_TOO_FAST;
+	if (cc == CURRENT_TOO_FAST)
+	    cc = 0;
 	cadd %= 8;
-	/*if (cadd > 8)
-	  cadd = 8;
-	  if (cadd < -8)
-	  cadd = -8;*/
 	return cc + cadd;
     }
     
@@ -1089,4 +1115,38 @@ public abstract class CircuitElm implements Editable {
 	y2 = oldy;
 	setPoints();
     }
+    
+    String getClassName() { return getClass().getName().replace("com.lushprojects.circuitjs1.client.", ""); }
+    
+    native JsArrayString getJsArrayString() /*-{ return []; }-*/;
+    
+    JsArrayString getInfoJS() {
+	JsArrayString jsarr = getJsArrayString();
+	String arr[] = new String[20];
+	getInfo(arr);
+	int i;
+	for (i = 0; arr[i] != null; i++)
+	    jsarr.push(arr[i]);
+	return jsarr;
+    }
+    
+    double getVoltageJS(int n) {
+	if (n >= volts.length)
+	    return 0;
+	return volts[n];
+    }
+    
+    native void addJSMethods() /*-{
+        var that = this;
+        this.getType = $entry(function() { return that.@com.lushprojects.circuitjs1.client.CircuitElm::getClassName()(); });
+        this.getInfo = $entry(function() { return that.@com.lushprojects.circuitjs1.client.CircuitElm::getInfoJS()(); });
+        this.getVoltageDiff = $entry(function() { return that.@com.lushprojects.circuitjs1.client.CircuitElm::getVoltageDiff()(); });
+        this.getVoltage = $entry(function(n) { return that.@com.lushprojects.circuitjs1.client.CircuitElm::getVoltageJS(I)(n); });
+        this.getCurrent = $entry(function() { return that.@com.lushprojects.circuitjs1.client.CircuitElm::getCurrent()(); });
+        this.getLabelName = $entry(function() { return that.@com.lushprojects.circuitjs1.client.LabeledNodeElm::getName()(); });
+        this.getPostCount = $entry(function() { return that.@com.lushprojects.circuitjs1.client.CircuitElm::getPostCount()(); });
+    }-*/;
+    
+    native JavaScriptObject getJavaScriptObject() /*-{ return this; }-*/;
+    
 }

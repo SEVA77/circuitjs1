@@ -93,9 +93,11 @@ public class ExportAsUrlDialog extends DialogBox {
 	
 	public ExportAsUrlDialog( String dump) {
 		super();
-		String start[] = Location.getHref().split("\\?");
+		//String start[] = Location.getHref().split("\\?");
+		String start = "https://www.falstad.com/circuit/circuitjs.html";
 		String query="?ctz=" + compress(dump);
-		dump = start[0] + query;
+		//dump = start[0] + query;
+		dump = start + query;
 		requrl = URL.encodeQueryString(query);
 		Button okButton, copyButton;
 	

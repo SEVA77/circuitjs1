@@ -1,3 +1,4 @@
+"Sliders and buttons"=""
 "Help"=""
 "User Guide"=""
 "License"=""

@@ -190,13 +190,13 @@ class ScopePlot {
 class Scope {
     final int FLAG_YELM = 32;
     
-    // bunch of other flags go here, see dump()
+    // bunch of other flags go here, see getFlags()
     final int FLAG_IVALUE = 2048; // Flag to indicate if IVALUE is included in dump
     final int FLAG_PLOTS = 4096; // new-style dump with multiple plots
-    final int FLAG_PERPLOTFLAGS = 1<< 18; // new-new style dump with plot flags
+    final int FLAG_PERPLOTFLAGS = 1<<18; // new-new style dump with plot flags
     final int FLAG_PERPLOT_MAN_SCALE = 1<<19; // new-new style dump with manual included in each plot
     final int FLAG_MAN_SCALE = 16;
-    // other flags go here too, see dump()
+    // other flags go here too, see getFlags()
     
     static final int VAL_POWER = 7;
     static final int VAL_POWER_OLD = 1;
@@ -232,15 +232,13 @@ class Scope {
     boolean maxScale;
 
     boolean logSpectrum;
-    boolean showFFT, showNegative, showRMS, showAverage, showDutyCycle;
+    boolean showFFT, showNegative, showRMS, showAverage, showDutyCycle, showElmInfo;
     Vector<ScopePlot> plots, visiblePlots;
-    int pixels[];
     int draw_ox, draw_oy;
-    float dpixels[];
     CirSim sim;
     Canvas imageCanvas;
     Context2d imageContext;
-    int alphadiv =0;
+    int alphaCounter =0;
     // scopeTimeStep to check if sim timestep has changed from previous value when redrawing
     double scopeTimeStep;
     double scale[]; // Max value to scale the display to show - indexed for each value of UNITS - e.g. UNITS_V, UNITS_A etc.
@@ -255,6 +253,10 @@ class Scope {
     int manDivisions = 8; // Number of vertical divisions when in manual mode
     boolean drawGridLines;
     boolean somethingSelected;
+    
+    static double cursorTime;
+    static int cursorUnits;
+    static Scope cursorScope;
     
     Scope(CirSim s) {
     	sim = s;
@@ -363,7 +365,7 @@ class Scope {
     	speed = 64;
     	showMax = true;
     	showV = showI = false;
-    	showScale = showFreq = manualScale = showMin = false;
+    	showScale = showFreq = manualScale = showMin = showElmInfo = false;
     	showFFT = false;
     	plot2d = false;
     	if (!loadDefaults()) {
@@ -793,10 +795,11 @@ class Scope {
     	g.context.translate(rect.x, rect.y);
     	g.clipRect(0, 0, rect.width, rect.height);
     	
-    	alphadiv++;
+    	alphaCounter++;
     	
-    	if (alphadiv>2) {
-    		alphadiv=0;
+    	if (alphaCounter>2) {
+    		// fade out plot
+    		alphaCounter=0;
     		imageContext.setGlobalAlpha(0.01);
     		if (sim.printableCheckItem.getState()) {
     			imageContext.setFillStyle("#ffffff");
@@ -857,7 +860,7 @@ class Scope {
  	    info[0]=px.getUnitText(xValue);
     	    info[1]=py.getUnitText(yValue);
     	    
-    	    drawCrosshairsInfo(g, info, 2, true);
+    	    drawCursorInfo(g, info, 2, sim.mouseCursorX, true);
     	    
     	}
     }
@@ -876,7 +879,30 @@ class Scope {
 		sim.mouseCursorY <= rect.y + rect.height;
     }
     
-
+    // does another scope have something selected?
+    void checkForSelectionElsewhere() {
+	// if mouse is here, then selection is already set by checkForSelection()
+	if (cursorScope == this)
+	    return;
+	
+	if (cursorScope == null || visiblePlots.size() == 0) {
+	    selectedPlot = -1;
+	    return;
+	}
+	
+	// find a plot with same units as selected plot
+	int i;
+	for (i = 0; i != visiblePlots.size(); i++) {
+	    ScopePlot p = visiblePlots.get(i);
+	    if (p.units == cursorUnits) {
+		selectedPlot = i;
+		return;
+	    }
+	}
+	
+	// default if we can't find anything with matching units
+	selectedPlot = 0;
+    }
     
     void draw(Graphics g) {
 	if (plots.size() == 0)
@@ -923,7 +949,7 @@ class Scope {
     	    reduceRange[plot.units] = true;
     	}
     	
-    	checkForSelection();
+    	checkForSelectionElsewhere();
     	if (selectedPlot >= 0)
     	    somethingSelected = true;
 
@@ -954,12 +980,11 @@ class Scope {
     	if (selectedPlot >= 0 && selectedPlot < visiblePlots.size())
     	    drawPlot(g, visiblePlots.get(selectedPlot), allPlotsSameUnits, true);
     	
-        if (visiblePlots.size() > 0)
-            drawInfoTexts(g);
+        drawInfoTexts(g);
     	
     	g.restore();
     	
-    	drawCrosshairs(g);
+    	drawCursor(g);
     	
     	if (plots.get(0).ptr > 5 && !manualScale) {
     	    for (i = 0; i != UNITS_COUNT; i++)
@@ -1044,9 +1069,6 @@ class Scope {
 	    return;
     	int i;
     	String col;
-//    	int col = (sim.printableCheckItem.getState()) ? 0xFFFFFFFF : 0;
-//    	for (i = 0; i != pixels.length; i++)
-//    		pixels[i] = col;
     	
     	double gridMid, positionOffset;
     	int multptr=0;
@@ -1201,16 +1223,32 @@ class Scope {
         
     }
 
+    static void clearCursorInfo() {
+	cursorScope = null;
+	cursorTime = -1;
+    }
+    
+    void selectScope(int mouseX, int mouseY) {
+	if (!rect.contains(mouseX, mouseY))
+	    return;
+	if (plot2d || visiblePlots.size() == 0)
+	    cursorTime = -1;
+	else
+	    cursorTime = sim.t-sim.maxTimeStep*speed*(rect.x+rect.width-mouseX);
+    	checkForSelection(mouseX, mouseY);
+    	cursorScope = this;
+    }
+    
     // find selected plot
-    void checkForSelection() {
+    void checkForSelection(int mouseX, int mouseY) {
 	if (sim.dialogIsShowing())
 	    return;
-	if (!rect.contains(sim.mouseCursorX, sim.mouseCursorY)) {
+	if (!rect.contains(mouseX, mouseY)) {
 	    selectedPlot = -1;
 	    return;
 	}
 	int ipa = plots.get(0).startIndex(rect.width);
-	int ip = (sim.mouseCursorX-rect.x+ipa) & (scopePointCount-1);
+	int ip = (mouseX-rect.x+ipa) & (scopePointCount-1);
     	int maxy = (rect.height-1)/2;
     	int y = maxy;
     	int i;
@@ -1219,47 +1257,66 @@ class Scope {
     	for (i = 0; i != visiblePlots.size(); i++) {
     	    ScopePlot plot = visiblePlots.get(i);
     	    int maxvy = (int) (plot.gridMult*(plot.maxValues[ip]+plot.plotOffset));
-    	    int dist = Math.abs(sim.mouseCursorY-(rect.y+y-maxvy));
+    	    int dist = Math.abs(mouseY-(rect.y+y-maxvy));
     	    if (dist < bestdist) {
     		bestdist = dist;
     		best = i;
     	    }
     	}
     	selectedPlot = best;
+    	if (selectedPlot >= 0)
+    	    cursorUnits = visiblePlots.get(selectedPlot).units;
     }
     
-    void drawCrosshairs(Graphics g) {
+    void drawCursor(Graphics g) {
 	if (sim.dialogIsShowing())
 	    return;
-	if (!rect.contains(sim.mouseCursorX, sim.mouseCursorY))
-	    return;
-	if (selectedPlot < 0 && !showFFT)
+	if (cursorScope == null)
 	    return;
 	String info[] = new String[4];
-	int ipa = plots.get(0).startIndex(rect.width);
-	int ip = (sim.mouseCursorX-rect.x+ipa) & (scopePointCount-1);
+	int cursorX = -1;
 	int ct = 0;
-    	int maxy = (rect.height-1)/2;
-    	int y = maxy;
-    	if (selectedPlot >= 0) {
-    	    ScopePlot plot = visiblePlots.get(selectedPlot);
-    	    info[ct++] = plot.getUnitText(plot.maxValues[ip]);
-    	    int maxvy = (int) (plot.gridMult*(plot.maxValues[ip]+plot.plotOffset));
-    	    g.setColor(plot.color);
-    	    g.fillOval(sim.mouseCursorX-2, rect.y+y-maxvy-2, 5, 5);
-    	}
-        if (showFFT) {
-    		double maxFrequency = 1 / (sim.maxTimeStep * speed * 2);
-    		info[ct++] = CircuitElm.getUnitText(maxFrequency*(sim.mouseCursorX-rect.x)/rect.width, "Hz");
-        }
-	if (visiblePlots.size() > 0) {
-	    double t = sim.t-sim.maxTimeStep*speed*(rect.x+rect.width-sim.mouseCursorX);
-	    info[ct++] = CircuitElm.getTimeText(t);
+	if (cursorTime >= 0) {
+	    cursorX = -(int) ((sim.t-cursorTime)/(sim.maxTimeStep*speed) - rect.x - rect.width);
+	    if (cursorX >= rect.x) {
+		int ipa = plots.get(0).startIndex(rect.width);
+		int ip = (cursorX-rect.x+ipa) & (scopePointCount-1);
+		int maxy = (rect.height-1)/2;
+		int y = maxy;
+		if (visiblePlots.size() > 0) {
+		    ScopePlot plot = visiblePlots.get(selectedPlot >= 0 ? selectedPlot : 0);
+		    info[ct++] = plot.getUnitText(plot.maxValues[ip]);
+		    int maxvy = (int) (plot.gridMult*(plot.maxValues[ip]+plot.plotOffset));
+		    g.setColor(plot.color);
+		    g.fillOval(cursorX-2, rect.y+y-maxvy-2, 5, 5);
+		}
+	    }
 	}
-	drawCrosshairsInfo(g, info, ct, false);
+	
+	// show FFT even if there's no plots (in which case cursorTime/cursorX will be invalid)
+        if (showFFT && cursorScope == this) {
+            double maxFrequency = 1 / (sim.maxTimeStep * speed * 2);
+            if (cursorX < 0)
+        	cursorX = sim.mouseCursorX;
+            info[ct++] = CircuitElm.getUnitText(maxFrequency*(sim.mouseCursorX-rect.x)/rect.width, "Hz");
+        } else if (cursorX < rect.x)
+            return;
+        
+	if (visiblePlots.size() > 0)
+	    info[ct++] = CircuitElm.getTimeText(cursorTime);
+	
+	if (cursorScope != this) {
+	    // don't show cursor info if not enough room, or stacked with selected one
+	    // (position == -1 for embedded scopes)
+	    if (rect.height < 40 || (position >= 0 && cursorScope.position == position)) {
+		drawCursorInfo(g, null, 0, cursorX, false);
+		return;
+	    }
+	}
+	drawCursorInfo(g, info, ct, cursorX, false);
     }
     
-    void drawCrosshairsInfo(Graphics g, String[] info, int ct, Boolean drawY) {
+    void drawCursorInfo(Graphics g, String[] info, int ct, int x, Boolean drawY) {
 	int szw = 0, szh = 15*ct;
 	int i;
 	for (i = 0; i != ct; i++) {
@@ -1269,11 +1326,11 @@ class Scope {
 	}
 
 	g.setColor(CircuitElm.whiteColor);
-	g.drawLine(sim.mouseCursorX, rect.y, sim.mouseCursorX, rect.y+rect.height);
+	g.drawLine(x, rect.y, x, rect.y+rect.height);
 	if (drawY)
 	    g.drawLine(rect.x, sim.mouseCursorY, rect.x+rect.width, sim.mouseCursorY);
 	g.setColor(sim.printableCheckItem.getState() ? Color.white : Color.black);
-	int bx = sim.mouseCursorX;
+	int bx = x;
 	if (bx < szw/2)
 	    bx = szw/2;
 	g.fillRect(bx-szw/2, rect.y-szh, szw, szh);
@@ -1577,6 +1634,14 @@ class Scope {
 	    drawInfoText(g, CircuitElm.getUnitText(freq, "Hz"));
     }
 
+    void drawElmInfo(Graphics g) {
+	String info[] = new String[1];
+	getElm().getInfo(info);
+	int i;
+	for (i = 0; info[i] != null; i++)
+	    drawInfoText(g, info[i]);
+    }
+    
     int textY;
     
     void drawInfoText(Graphics g, String text) {
@@ -1589,20 +1654,12 @@ class Scope {
     void drawInfoTexts(Graphics g) {
     	g.setColor(CircuitElm.whiteColor);
     	textY = 10;
-    	/*
-    	String x = position +" " + plots.size()+" ";
-	int i;
-    	for (i = 0; i < plots.size(); i++) {
-    	    x+=",";
-    	    ScopePlot p = plots.get(i);
-    	  //  if (i > 0)
-    		x += " " + sim.locateElm(p.elm) + " " + p.value;
-    	    // dump scale if units are not V or A
-    	    if (p.units > UNITS_A)
-    		x += " " + scale[p.units];
+    	
+    	if (visiblePlots.size() == 0) {
+    	    if (showElmInfo)
+    		drawElmInfo(g);
+    	    return;
     	}
-    	drawInfoText(g, x);
-    	*/
     	ScopePlot plot = visiblePlots.firstElement();
     	if (showScale) 
     	    drawScale(plot, g);
@@ -1620,11 +1677,13 @@ class Scope {
     	    drawAverage(g);
     	if (showDutyCycle)
     	    drawDutyCycle(g);
-    	String t = getScopeLabelOrText();
+    	String t = getScopeLabelOrText(true);
     	if (t != null &&  t!= "") 
     	    drawInfoText(g, t);
     	if (showFreq)
     	    drawFrequency(g);
+    	if (showElmInfo)
+    	    drawElmInfo(g);
     }
 
     String getScopeText() {
@@ -1648,10 +1707,18 @@ class Scope {
 	else
 	    	return plot.elm.getScopeText(plot.value);
     }
-    
+
     String getScopeLabelOrText() {
+	return getScopeLabelOrText(false);
+    }
+
+    String getScopeLabelOrText(boolean forInfo) {
     	String t = text;
     	if (t == null) {
+    	    // if we're drawing the info and showElmInfo is true, return null so we don't print redundant info.
+    	    // But don't do that if we're getting the scope label to generate "Add to Existing Scope" menu.
+    	    if (forInfo && showElmInfo)
+    		return null;
     	    t = getScopeText();
     	    if (t==null)
     		return "";
@@ -1726,7 +1793,7 @@ class Scope {
 			(plotXY ? 128 : 0) | (showMin ? 256 : 0) | (showScale? 512:0) |
 			(showFFT ? 1024 : 0) | (maxScale ? 8192 : 0) | (showRMS ? 16384 : 0) |
 			(showDutyCycle ? 32768 : 0) | (logSpectrum ? 65536 : 0) |
-			(showAverage ? (1<<17) : 0);
+			(showAverage ? (1<<17) : 0) | (showElmInfo ? (1<<20) : 0);
 	flags |= FLAG_PLOTS; // 4096
 	int allPlotFlags = 0;
 	for (ScopePlot p : plots) {
@@ -1896,6 +1963,7 @@ class Scope {
     	showDutyCycle = (flags & 32768) != 0;
     	logSpectrum = (flags & 65536) != 0;
     	showAverage = (flags & (1<<17)) != 0;
+    	showElmInfo = (flags & (1<<20)) != 0;
     }
     
     void saveAsDefault() {
@@ -1959,6 +2027,8 @@ class Scope {
 	    	showAverage = state;
     	if (mi == "showduty")
     	    	showDutyCycle = state;
+    	if (mi == "showelminfo")
+	    	showElmInfo = state;
     	if (mi == "showpower")
     		setValue(VAL_POWER);
     	if (mi == "showib")

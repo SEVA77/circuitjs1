@@ -80,6 +80,8 @@ package com.lushprojects.circuitjs1.client;
 		    diodes[i].doStep(volts[sizeX+iy]-volts[ix]);
 	}
         boolean nonLinear() { return true; }
+        @Override boolean isDigitalChip() { return false; }
+
 	void draw(Graphics g) {
 	    drawChip(g);
 	    int ix, iy;
@@ -99,6 +101,11 @@ package com.lushprojects.circuitjs1.client;
 	    int ix, iy, i = 0;
 	    for (ix = 0; ix != sizeX; ix++)
 		pins[ix].current = 0;
+	    
+	    // avoid exception if this is called before stamp() 
+	    if (diodes == null)
+		return;
+	    
 	    for (iy = 0; iy != sizeY; iy++) {
 		double cur = 0;
 		for (ix = 0; ix != sizeX; ix++, i++) {

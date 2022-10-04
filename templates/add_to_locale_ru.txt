@@ -1,3 +1,4 @@
+"Sliders and buttons"="Ползунки и кнопки"
 "Help"="Помощь"
 "User Guide"="Руководство пользователя"
 "License"="Лицензия"

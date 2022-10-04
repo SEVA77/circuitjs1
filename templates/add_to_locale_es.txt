@@ -1,3 +1,4 @@
+"Sliders and buttons"="Controles deslizantes y botones"
 "Help"="Ayuda"
 "User Guide"="Guía del usuario"
 "License"="Licencia"

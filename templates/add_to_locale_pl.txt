@@ -1,3 +1,4 @@
+"Sliders and buttons"="Suwaki i przyciski"
 "Help"="Wsparcie"
 "User Guide"="Podręcznik użytkownika"
 "License"="Licencja"

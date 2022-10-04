@@ -10,13 +10,13 @@ The program supports the following languages: English, Russian, Danish, German, 
 
 For a web version of the application see:
 
-Paul's Page: http://www.falstad.com/circuit/ \
+Paul's Page: https://www.falstad.com/circuit/ \
 Source code: https://github.com/pfalstad/circuitjs1
 
-Iain's Page: http://lushprojects.com/circuitjs/ \
+Iain's Page: https://lushprojects.com/circuitjs/ \
 Source code: https://github.com/sharpie7/circuitjs1
 
-# Downloads:
+## Downloads:
 
 You can download this program for Windows (x32, x64), Linux (x32, x64) and Mac OS X (x64):
 - [Latest release](https://github.com/SEVA77/circuitjs1/releases/latest)
@@ -24,7 +24,7 @@ You can download this program for Windows (x32, x64), Linux (x32, x64) and Mac O
 
 > If you have problems with this application, you can try to use [this offline application of the main developer](http://www.falstad.com/circuit/offline/) based on Electron.
 
-# Building the program
+## Building the program
 
 The tools you will need to build the project are:
 
@@ -36,7 +36,7 @@ Simply run `mvn install` from the circuitjs1 directory to build the project. Cop
 
 After compiling the web application, you can then compile it into the local executables for a variety of platforms with the help of NW.js. To build a program on NW.js you will need a **Web2Executable** program. You can download it by following the link: https://github.com/jyapayne/Web2Executable/releases.
 
-# License
+## License
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
@@ -52,9 +52,9 @@ You should have received a copy of the GNU General Public License along with thi
     NW.js - Distributed under the MIT License
     Circuit Simulator - Distributed under the GNU General Public License version 2
     
-    © Usevalad Khatkevich 2021
+    © Usevalad Khatkevich 2022
 
-# Credits
+## Credits
 	 Paul Falstad - Creator
 	 Iain Sharp - JavaScript conversion, so there are more opportunities for the development of this application.
      Brian Gordon - Mavenized version of circuitjs1

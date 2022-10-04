@@ -24,29 +24,32 @@ package com.lushprojects.circuitjs1.client;
 // contributed by Edward Calver
 
 class TriStateElm extends CircuitElm {
-    double resistance, r_on, r_off;
+    double resistance, r_on, r_off, r_off_ground;
     final int FLAG_FLIP = 1;
 
     public TriStateElm(int xx, int yy) {
 	super(xx, yy);
 	r_on = 0.1;
 	r_off = 1e10;
+	r_off_ground = 1e8;
     }
 
     public TriStateElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
 	super(xa, ya, xb, yb, f);
 	r_on = 0.1;
 	r_off = 1e10;
+	r_off_ground = 0;
 	try {
 	    r_on = new Double(st.nextToken()).doubleValue();
 	    r_off = new Double(st.nextToken()).doubleValue();
+	    r_off_ground = new Double(st.nextToken()).doubleValue();
 	} catch (Exception e) {
 	}
 
     }
 
     String dump() {
-	return super.dump() + " " + r_on + " " + r_off;
+	return super.dump() + " " + r_on + " " + r_off + " " + r_off_ground;
     }
 
     int getDumpType() {
@@ -94,7 +97,14 @@ class TriStateElm extends CircuitElm {
     }
 
     void calculateCurrent() {
-	current = (volts[0] - volts[1]) / resistance;
+	// current from node 3 to node 1
+	double current31 = (volts[3]-volts[1])/resistance;
+	
+	// current from node 1 through pulldown
+	double current10 = (r_off_ground == 0) ? 0 : volts[1]/r_off_ground;
+
+	// output current is difference of these
+	current = current31-current10;
     }
 
     double getCurrentIntoNode(int n) {
@@ -108,6 +118,12 @@ class TriStateElm extends CircuitElm {
 	return true;
     }
 
+    // node 0: input
+    // node 1: output
+    // node 2: control input
+    // node 3: internal node
+    // there is a voltage source connected to node 3, and a resistor (r_off or r_on) from node 3 to 1.
+    // then there is a pulldown resistor from node 1 to ground.
     void stamp() {
 	sim.stampVoltageSource(0, nodes[3], voltSource);
 	sim.stampNonLinear(nodes[3]);
@@ -118,6 +134,12 @@ class TriStateElm extends CircuitElm {
 	open = (volts[2] < 2.5);
 	resistance = (open) ? r_off : r_on;
 	sim.stampResistor(nodes[3], nodes[1], resistance);
+	
+	// Add pulldown resistor for output, so that disabled tristate has output near ground if nothing
+	// else is driving the output.  Otherwise people get confused.
+	if (r_off_ground > 0)
+	    sim.stampResistor(nodes[1], 0, r_off_ground);
+	
 	sim.updateVoltageSource(0, nodes[3], voltSource, volts[0] > 2.5 ? 5 : 0);
     }
 
@@ -183,6 +205,8 @@ class TriStateElm extends CircuitElm {
 	    return new EditInfo("On Resistance (ohms)", r_on, 0, 0);
 	if (n == 1)
 	    return new EditInfo("Off Resistance (ohms)", r_off, 0, 0);
+	if (n == 2)
+	    return new EditInfo("Output Pulldown Resistance (ohms)", r_off_ground, 0, 0);
 	return null;
     }
 
@@ -192,5 +216,7 @@ class TriStateElm extends CircuitElm {
 	    r_on = ei.value;
 	if (n == 1 && ei.value > 0)
 	    r_off = ei.value;
+	if (n == 2 && ei.value > 0)
+	    r_off_ground = ei.value;
     }
 }

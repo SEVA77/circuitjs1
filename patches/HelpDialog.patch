@@ -1,5 +1,5 @@
 --- /dev/null
-+++ ../src/main/java/com/lushprojects/circuitjs1/client/HelpDialog.java
++++ src/main/java/com/lushprojects/circuitjs1/client/HelpDialog.java
 @@ -0,0 +1,89 @@
 +/*    
 +    Copyright (C) Usevalad Khatkevich
@@ -63,7 +63,7 @@
 +		tp.add(vpDA = new VerticalPanel(), tab5Title);
 +		vpDA.setWidth("500px");
 +		vpDA.add(new HTML("<iframe style=\"border:0;\" src=\"help/DA.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
-+*/		
++*/
 +		HorizontalPanel hp = new HorizontalPanel();
 +		hp.setWidth("100%");
 +		hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
