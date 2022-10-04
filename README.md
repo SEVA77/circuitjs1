@@ -52,7 +52,7 @@ You should have received a copy of the GNU General Public License along with thi
     NW.js - Distributed under the MIT License
     Circuit Simulator - Distributed under the GNU General Public License version 2
     
-    © Usevalad Khatkevich 2021
+    © Usevalad Khatkevich 2022
 
 ## Credits
 	 Paul Falstad - Creator
