@@ -1,5 +1,5 @@
 --- /dev/null
-+++ ./../src/main/java/com/lushprojects/circuitjs1/client/Scrollbar.java
++++ src/main/java/com/lushprojects/circuitjs1/client/Scrollbar.java
 @@ -78,9 +78,9 @@
  		val=value;
  		 pan = new VerticalPanel();

@@ -1,5 +1,5 @@
 --- /dev/null
-+++ ./../src/main/java/com/lushprojects/circuitjs1/client/CirSim.java
++++ src/main/java/com/lushprojects/circuitjs1/client/CirSim.java
 @@ -21,6 +21,8 @@
  
  // GWT conversion (c) 2015 by Iain Sharp
