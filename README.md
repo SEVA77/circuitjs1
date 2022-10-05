@@ -1,6 +1,6 @@
 # Circuit Simulator (CircuitJS1)
 
-![](https://my77thblog.pp.ua/projects/demo/circuitjs1/circuitjs_1_2_1.PNG)
+![](https://my77thblog.pp.ua/images/PROJECTS/circuit-simulator/circuitjs1-1-2-3-en.png)
 
 The source code for offline version of the **Circuit Simulator** based on [NW.js](https://github.com/nwjs/nw.js). It was originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT. The program was compiled to offline version for Windows (x32, x64), Linux (x32, x64) and MacOS (x64) by Usevalad Khatkevich.
 
