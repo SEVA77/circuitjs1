@@ -30,11 +30,15 @@ The tools you will need to build the project are:
 
 * JDK 8+
 * Maven 3+
-* [Web2Executable](https://github.com/jyapayne/Web2Executable) (will be changed in the future)
+* [Web2Executable](https://github.com/jyapayne/Web2Executable) or [nw-builder](https://github.com/nwutils/nw-builder) (more preferably)
 
-Simply run `mvn install` from the circuitjs1 directory to build the project. Copy the `target/site` directory to any location convenient for you.
+Simply run `mvn install` from the circuitjs1 directory to build the project. Project directory after compilation for further building or debugging: `target/site`
 
-After compiling the web application, you can then compile it into the local executables for a variety of platforms with the help of NW.js. To build a program on NW.js you will need a **Web2Executable** program. You can download it by following the link: https://github.com/jyapayne/Web2Executable/releases.
+After compiling the web application, you can then compile it into the local executables for a variety of platforms with the help of NW.js. To build this program on NW.js you will need a [Web2Executable](https://github.com/jyapayne/Web2Executable) or [nw-builder](https://github.com/nwutils/nw-builder). Command to compile the program via nw-builder:
+
+```
+nwbuild --glob=false target/site
+```
 
 ## License
 
@@ -52,9 +56,9 @@ You should have received a copy of the GNU General Public License along with thi
     NW.js - Distributed under the MIT License
     Circuit Simulator - Distributed under the GNU General Public License version 2
     
-    © Usevalad Khatkevich 2022
+    © Usevalad Khatkevich 2023
 
 ## Credits
 	 Paul Falstad - Creator
 	 Iain Sharp - JavaScript conversion, so there are more opportunities for the development of this application.
-     Brian Gordon - Mavenized version of circuitjs1
+	 Brian Gordon - Mavenized version of circuitjs1
