@@ -3,7 +3,7 @@
     "chromium-args": "--ignore-gpu-blacklist --enable-gpu-rasterization --force-gpu-rasterization --enable-zero-copy",
     "description": "Circuit Simulator version 1.2.3",
     "main": "circuitjs.html",
-    "name": "circuitjs1",
+    "name": "CircuitSimulator",
     "version": "1.2.3",
     "webexe_settings": {
         "blacklist": "",
@@ -34,5 +34,22 @@
         "min_width": 640,
         "position": "center",
         "title": "Circuit Simulator 1.2.3"
+    },
+    "devDependencies": {
+        "nw-builder": "^4.3.2"
+    },
+    "nwbuild": {
+        "mode": "build",
+        "version": "0.20.0",
+        "flavor": "normal",
+        "platform": "linux",
+        "arch": "x64",
+        "downloadUrl": "https://dl.nwjs.io",
+        "manifestUrl": "https://nwjs.io/versions",
+        "cacheDir": "./target/cache",
+        "srcDir": "./target/site",
+        "outDir": "./target/out",
+        "cache": true,
+        "ffmpeg": false
     }
 }
