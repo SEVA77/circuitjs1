@@ -140,7 +140,7 @@
 			<compilerArg>OBFUSCATED</compilerArg>
           </compilerArgs>
           <!-- DevMode configuration -->
-          <warDir>${project.build.directory}/site</warDir>
+          <warDir>war</warDir>
           <classpathScope>compile+runtime</classpathScope>
           <!-- URL(s) that should be opened by DevMode (gwt:devmode). -->
           <startupUrls>
