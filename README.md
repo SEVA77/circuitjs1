@@ -40,6 +40,14 @@ After compiling the web application, you can then compile it into the local exec
 nwbuild --glob=false target/site
 ```
 
+For development run devmode:
+
+```
+mvn gwt:devmode
+```
+
+Devmode works directly in the `war` directory separate from the `target/site` directory.
+
 ## License
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.

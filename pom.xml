@@ -166,6 +166,12 @@
 							<resources>
 								<resource>
 									<directory>war</directory>
+									<filtering>false</filtering>
+									<excludes>
+										<exclude>circuitjs1/*</exclude>
+										<exclude>circuitjs1/**/*</exclude>
+										<exclude>circuitjs1/**/**/*</exclude>
+									</excludes>
 								</resource>
 								<resource>
 									<directory>${project.build.directory}/${project.name}-${project.version}/circuitjs1</directory>
