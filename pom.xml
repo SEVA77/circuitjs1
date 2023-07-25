@@ -168,9 +168,12 @@
 									<directory>war</directory>
 									<filtering>false</filtering>
 									<excludes>
-										<exclude>circuitjs1/*</exclude>
-										<exclude>circuitjs1/**/*</exclude>
-										<exclude>circuitjs1/**/**/*</exclude>
+										<exclude>circuitjs1/</exclude>
+										<exclude>*.md</exclude>
+										<exclude>*frame.html</exclude>
+										<exclude>WEB-INF/</exclude>
+										<exclude>avr8js/</exclude>
+										<exclude>font/*.json</exclude>
 									</excludes>
 								</resource>
 								<resource>
