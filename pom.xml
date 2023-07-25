@@ -4,7 +4,7 @@
 	<groupId>com.lushprojects.circuitjs1</groupId>
 	<artifactId>circuitjs</artifactId>
 	<version>2.5.7</version>
-	<packaging>gwt-app</packaging>
+	<packaging>war</packaging>
 
 	<dependencyManagement>
 		<dependencies>
@@ -20,19 +20,37 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!-- Setting maven.compiler.source to something different to 1.8
+			needs that you configure the sourceLevel in gwt-maven-plugin since
+			GWT compiler 2.8 requires 1.8 (see gwt-maven-plugin block below) -->
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 
+		<!-- Don't let your Mac use a crazy non-standard encoding -->
 		<!-- generating dependency report is slow; disable it -->
 		<dependency.locations.enabled>false</dependency.locations.enabled>
 	</properties>
 	<dependencies>
-
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-servlet</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-dev</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -93,25 +111,44 @@
 				</configuration>
 			</plugin>
 
-			<!-- gwt compiler -->
-			<plugin>
-				<groupId>net.ltgt.gwt.maven</groupId>
-				<artifactId>gwt-maven-plugin</artifactId>
-				<version>1.0-rc-9</version>
-				<extensions>true</extensions>
-				<configuration>
-					<moduleName>com.lushprojects.circuitjs1.circuitjs1</moduleName>
-					<!-- this is the best setting for a laptop with 2 cores and HT -->
-					<localWorkers>0.5C</localWorkers>
-					<warName>circuitjs</warName>
-					<optimize>9</optimize>
-					<compilerArgs>
-						<compilerArg>-style</compilerArg>
-						<compilerArg>OBFUSCATED</compilerArg>
-					</compilerArgs>
-					<codeServerPort>8888</codeServerPort>
-				</configuration>
-			</plugin>
+      <!-- GWT Maven Plugin-->
+      <plugin>
+        <groupId>net.ltgt.gwt.maven</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0-rc-9</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <moduleName>com.lushprojects.circuitjs1.circuitjs1</moduleName>
+          <moduleShortName>circuitjs1</moduleShortName>
+          <localWorkers>0.5C</localWorkers>
+          <warName>circuitjs</warName>
+          <failOnError>true</failOnError>
+          <!-- GWT compiler 2.8 requires 1.8, hence define sourceLevel here if you use
+               a different source language for java compilation -->
+          <sourceLevel>1.8</sourceLevel>
+          <!-- Compiler configuration -->
+          <compilerArgs>
+            <!-- Ask GWT to create the Story of Your Compile (SOYC) (gwt:compile) -->
+            <compilerArg>-style</compilerArg>
+			<compilerArg>OBFUSCATED</compilerArg>
+          </compilerArgs>
+          <!-- DevMode configuration -->
+          <warDir>${project.build.directory}/site</warDir>
+          <classpathScope>compile+runtime</classpathScope>
+          <!-- URL(s) that should be opened by DevMode (gwt:devmode). -->
+          <startupUrls>
+            <startupUrl>circuitjs.html</startupUrl>
+          </startupUrls>
+          <codeServerPort>8888</codeServerPort>
+        </configuration>
+      </plugin>
 
 			<!-- copy a few things around before packaging the website -->
 			<plugin>
@@ -138,6 +175,20 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+		<!-- Skip normal test execution, we use gwt:test instead -->
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.18</version>
+				<configuration>
+				<skip>true</skip>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

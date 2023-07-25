@@ -46,9 +46,9 @@
         "arch": "x64",
         "downloadUrl": "https://dl.nwjs.io",
         "manifestUrl": "https://nwjs.io/versions",
-        "cacheDir": "./target/cache",
+        "cacheDir": "./nwjs_cache",
         "srcDir": "./target/site",
-        "outDir": "./target/out",
+        "outDir": "./CircuitSimulator",
         "cache": true,
         "ffmpeg": false
     }
