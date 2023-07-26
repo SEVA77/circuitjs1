@@ -174,6 +174,12 @@
 										<exclude>WEB-INF/</exclude>
 										<exclude>avr8js/</exclude>
 										<exclude>font/*.json</exclude>
+										<exclude>blink-test.html</exclude>
+										<exclude>jsinterface.html</exclude>
+										<exclude>help/DA.html</exclude>
+										<exclude>help/DE.html</exclude>
+										<exclude>help/PL.html</exclude>
+										<exclude>help/*.zip</exclude>
 									</excludes>
 								</resource>
 								<resource>
