@@ -759,6 +759,7 @@ MouseOutHandler, MouseWheelHandler {
 	setCanvasSize();
 	layoutPanel.add(cv);
 	verticalPanel.add(buttonPanel);
+	buttonPanel.addStyleName("sidePanelElm");
 	buttonPanel.add(resetButton = new Button(Locale.LS("Reset")));
 	resetButton.addClickHandler(new ClickHandler() {
 	    public void onClick(ClickEvent event) {
