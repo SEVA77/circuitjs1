@@ -23,10 +23,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
-
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.Window;
@@ -34,6 +30,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.lushprojects.circuitjs1.client.ChipElm.Pin;
+import com.lushprojects.circuitjs1.client.util.Locale;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -45,14 +42,15 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.i18n.client.DateTimeFormat;
 
-public class EditCompositeModelDialog extends DialogBox implements MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, MouseOverHandler {
+public class EditCompositeModelDialog extends Dialog implements MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, MouseOverHandler {
 	
 	VerticalPanel vp;
 	boolean error;
@@ -69,7 +67,7 @@ public class EditCompositeModelDialog extends DialogBox implements MouseDownHand
             if (model == null)
         	return false;
             if (model.extList.size() == 0) {
-        	Window.alert(CirSim.LS("Device has no external inputs/outputs!"));
+        	Window.alert(Locale.LS("Device has no external inputs/outputs!"));
         	return false;
             }
             Collections.sort(model.extList, new Comparator<ExtListEntry>() {
@@ -79,39 +77,54 @@ public class EditCompositeModelDialog extends DialogBox implements MouseDownHand
             });
             int i;
             int postCount = model.extList.size();
-
-            model.sizeX = 2;
-            model.sizeY = (postCount+1)/2;
+            int sideCounts[] = new int[] { 0, 0, 0, 0 };
             for (i = 0; i != postCount; i++) {
-        	boolean left = i < model.sizeY;
-        	int side = (left) ? ChipElm.SIDE_W : ChipElm.SIDE_E;
         	ExtListEntry pin = model.extList.get(i);
-        	pin.pos = left ? i : i-model.sizeY;
-        	pin.side = side;
+                sideCounts[pin.side] += 1;
+
         	if (nodeSet.contains(pin.node)) {
-        	    Window.alert(CirSim.LS("Can't have two input/output nodes connected!"));
+        	    Window.alert(Locale.LS("Can't have two input/output nodes connected!"));
         	    return false;
         	}
         	nodeSet.add(pin.node);
             }
+
+            int xOffsetLeft = (sideCounts[ChipElm.SIDE_W] > 0) ? 1 : 0;
+            int xOffsetRight = (sideCounts[ChipElm.SIDE_E] > 0) ? 1 : 0;
+            for (i = 0; i != postCount; i++) {
+                ExtListEntry pin = model.extList.get(i);
+                if (pin.side == ChipElm.SIDE_N || pin.side == ChipElm.SIDE_S) {
+                    pin.pos += xOffsetLeft;
+                }
+            }
+
+            int minHeight = (sideCounts[ChipElm.SIDE_N] > 0 && sideCounts[ChipElm.SIDE_S] > 0) ? 2 : 1;
+            int minWidth = 2;
+            int pinsNS = Math.max(sideCounts[ChipElm.SIDE_N], sideCounts[ChipElm.SIDE_S]);
+            int pinsWE = Math.max(sideCounts[ChipElm.SIDE_W], sideCounts[ChipElm.SIDE_E]);
+            model.sizeX = Math.max(minWidth, pinsNS + xOffsetLeft + xOffsetRight);
+            model.sizeY = Math.max(minHeight, pinsWE);
+
             model.modelCircuit = CirSim.theSim.dumpCircuit();
             return true;
         }
         
 	public EditCompositeModelDialog() {
 		super();
+		closeOnEnter = true;
 	}
 	
 	TextBox modelNameTextBox = null;
 	Checkbox saveCheck = null;
+	Checkbox labelCheck = null;
 
 	void createDialog() {
 		Button okButton;
 		Anchor a;
 		vp=new VerticalPanel();
 		setWidget(vp);
-		setText(CirSim.LS("Edit Subcircuit Pin Layout"));
-		vp.add(new Label(CirSim.LS("Drag the pins to the desired position")));
+		setText(Locale.LS("Edit Subcircuit Pin Layout"));
+		vp.add(new Label(Locale.LS("Drag the pins to the desired position")));
 		Date date = new Date();
 
 		Canvas canvas = Canvas.createIfSupported();
@@ -130,14 +143,20 @@ public class EditCompositeModelDialog extends DialogBox implements MouseDownHand
 		createPinsFromModel();
 		
 		if (model.name == null) {
-		    vp.add(new Label(CirSim.LS("Model Name")));
+		    vp.add(new Label(Locale.LS("Model Name")));
 		    modelNameTextBox = new TextBox();
 		    vp.add(modelNameTextBox);
+		    modelNameTextBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+			    drawChip();
+			}
+		    });
 //		    modelNameTextBox.setText(model.name);
 		}
 		
 		HorizontalPanel hp = new HorizontalPanel();
-		hp.add(new Label(CirSim.LS("Width")));
+		hp.add(new Label(Locale.LS("Width")));
 		Button b;
 		hp.add(b = new Button("+"));
 		b.addClickHandler(new ClickHandler() {
@@ -151,7 +170,7 @@ public class EditCompositeModelDialog extends DialogBox implements MouseDownHand
                 	adjustChipSize(-1, 0);
                     }
                 });
-		hp.add(new Label(CirSim.LS("Height")));
+		hp.add(new Label(Locale.LS("Height")));
 		hp.add(b = new Button("+"));
 		b.addClickHandler(new ClickHandler() {
                     public void onClick(ClickEvent event) {
@@ -166,7 +185,15 @@ public class EditCompositeModelDialog extends DialogBox implements MouseDownHand
                 });
 		vp.add(hp);
 		hp.addStyleName("topSpace");
-		vp.add(saveCheck = new Checkbox(CirSim.LS("Save Across Sessions")));
+		vp.add(labelCheck = new Checkbox(Locale.LS("Show Label")));
+		labelCheck.setState(model.showLabel());
+		labelCheck.addClickHandler(new ClickHandler() {
+		    public void onClick(ClickEvent event) {
+			model.setShowLabel(labelCheck.getValue());
+			drawChip();
+		    }
+		});
+		vp.add(saveCheck = new Checkbox(Locale.LS("Save Across Sessions")));
 		saveCheck.setState(model.isSaved());
 	
                 canvas.addMouseDownHandler(this);
@@ -180,11 +207,11 @@ public class EditCompositeModelDialog extends DialogBox implements MouseDownHand
                 hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
                 hp.setStyleName("topSpace");
                 vp.add(hp);
-                hp.add(okButton = new Button(CirSim.LS("OK")));
+                hp.add(okButton = new Button(Locale.LS("OK")));
                 hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
                 Button cancelButton;
 		if (model.name == null) {
-		    hp.add(cancelButton = new Button(CirSim.LS("Cancel")));
+		    hp.add(cancelButton = new Button(Locale.LS("Cancel")));
 		    cancelButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 			    closeDialog();
@@ -196,7 +223,7 @@ public class EditCompositeModelDialog extends DialogBox implements MouseDownHand
 			    if (modelNameTextBox != null) {
 				String name = modelNameTextBox.getText();
 				if (name.length() == 0) {
-				    Window.alert(CirSim.LS("Please enter a model name."));
+				    Window.alert(Locale.LS("Please enter a model name."));
 				    return;
 				}
 				model.setName(CustomCompositeElm.lastModelName = name);
@@ -236,6 +263,7 @@ public class EditCompositeModelDialog extends DialogBox implements MouseDownHand
 		context.setTransform(1, 0, 0, 1, 0, 0);
 	    context.fillRect(0, 0, context.getCanvas().getWidth(), context.getCanvas().getHeight());
 	    context.setTransform(1/scale, 0, 0, 1/scale, 0, 0);
+	    chip.setLabel(!labelCheck.getValue() ? null : (modelNameTextBox != null) ? modelNameTextBox.getText() : model.name);
 	    chip.draw(g);
 	}
 	
@@ -243,9 +271,9 @@ public class EditCompositeModelDialog extends DialogBox implements MouseDownHand
 	    if (dx < 0 || dy < 0) {
 		for (int i = 0; i != postCount; i++) {
 		    Pin p = chip.pins[i];
-		    if (dx < 0 && (p.side == chip.SIDE_N || p.side == chip.SIDE_S) && p.pos >= chip.sizeX+dx)
+		    if (dx < 0 && (p.side == ChipElm.SIDE_N || p.side == ChipElm.SIDE_S) && p.pos >= chip.sizeX+dx)
 			return;
-		    if (dy < 0 && (p.side == chip.SIDE_E || p.side == chip.SIDE_W) && p.pos >= chip.sizeY+dy)
+		    if (dy < 0 && (p.side == ChipElm.SIDE_E || p.side == ChipElm.SIDE_W) && p.pos >= chip.sizeY+dy)
 			return;
 		}
 	    }
@@ -257,11 +285,6 @@ public class EditCompositeModelDialog extends DialogBox implements MouseDownHand
 	    drawChip();
 	}
 	
-	protected void closeDialog()
-	{
-		this.hide();
-	}
-
 	boolean dragging;
 	
 	public void onMouseOver(MouseOverEvent event) {

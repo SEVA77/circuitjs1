@@ -19,37 +19,27 @@
 
 package com.lushprojects.circuitjs1.client;
 
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.lushprojects.circuitjs1.client.util.Locale;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
-import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 
 import java.util.Vector;
 import java.util.Collections;
 import java.util.Comparator;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.safehtml.shared.SafeHtml;
 
-public class SearchDialog extends DialogBox {
+public class SearchDialog extends Dialog {
 	
 	VerticalPanel vp;
 	CirSim sim;
@@ -71,24 +61,16 @@ public class SearchDialog extends DialogBox {
 			new KeyUpHandler() {
 		    public void onKeyUp(KeyUpEvent ev) {
 			search();
-			if (ev.getNativeKeyCode() == 13)
-			    ok();
 		    }
 		});
 
-		setText(sim.LS("Find Component"));
+		setText(Locale.LS("Find Component"));
 		
 		listBox = new ListBox();
 		listBox.setWidth("100%");
 		listBox.addDoubleClickHandler(new DoubleClickHandler() {
 		    public void onDoubleClick(DoubleClickEvent ev) {
-			ok();
-		    }
-		});
-		listBox.addKeyDownHandler(new KeyDownHandler() {
-		    public void onKeyDown(KeyDownEvent ev) {
-			if (ev.getNativeKeyCode() == 13)
-			    ok();
+			apply();
 		    }
 		});
 		listBox.setVisibleItemCount(10);
@@ -106,12 +88,12 @@ public class SearchDialog extends DialogBox {
 		hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 		hp.setStyleName("topSpace");
 		vp.add(hp);
-		hp.add(okButton = new Button(sim.LS("OK")));
+		hp.add(okButton = new Button(Locale.LS("OK")));
 		hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-		hp.add(cancelButton = new Button(sim.LS("Cancel")));
+		hp.add(cancelButton = new Button(Locale.LS("Cancel")));
 		okButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-			    ok();
+			    apply();
 			}
 		});
 		cancelButton.addClickHandler(new ClickHandler() {
@@ -123,7 +105,7 @@ public class SearchDialog extends DialogBox {
 		textBox.setFocus(true);
 	}
 	
-	void ok() {
+	void apply() {
 	    String s = listBox.getSelectedItemText();
 	    
 	    int i;
@@ -160,10 +142,4 @@ public class SearchDialog extends DialogBox {
             if (items.size() > 0)
 		listBox.setItemSelected(0, true);
 	}
-	
-	protected void closeDialog()
-	{
-		this.hide();
-	}
-
 }

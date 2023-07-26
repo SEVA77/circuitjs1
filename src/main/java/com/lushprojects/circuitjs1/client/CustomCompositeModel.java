@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.google.gwt.storage.client.Storage;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.TextArea;
 
 // model for subcircuits
 
@@ -32,6 +30,7 @@ public class CustomCompositeModel implements Comparable<CustomCompositeModel> {
     boolean dumped;
     boolean builtin;
     static int sequenceNumber;
+    static final int FLAG_SHOW_LABEL = 1;
     
     void setName(String n) {
 	modelMap.remove(name);
@@ -194,6 +193,12 @@ public class CustomCompositeModel implements Comparable<CustomCompositeModel> {
 	return x;
     }
     
+    boolean showLabel() { return (flags & FLAG_SHOW_LABEL) != 0; }
+    
+    void setShowLabel(boolean sl) {
+	flags = (sl) ? (flags | FLAG_SHOW_LABEL) : (flags & ~FLAG_SHOW_LABEL);
+    }
+
     String [] listToArray(String arr) {
 	return arr.split(",");
     }
@@ -202,7 +207,7 @@ public class CustomCompositeModel implements Comparable<CustomCompositeModel> {
 	if (builtin)
 	    return "";
 	dumped = true;
-	String str = ". " + CustomLogicModel.escape(name) + " 0 " + sizeX + " " + sizeY + " " + extList.size() + " ";
+	String str = ". " + CustomLogicModel.escape(name) + " " + flags + " " + sizeX + " " + sizeY + " " + extList.size() + " ";
         int i;
         for (i = 0; i != extList.size(); i++) {
             ExtListEntry ent = extList.get(i);

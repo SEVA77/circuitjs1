@@ -19,7 +19,9 @@
 
 package com.lushprojects.circuitjs1.client;
 
-    class JfetElm extends MosfetElm {
+import com.lushprojects.circuitjs1.client.util.Locale;
+
+class JfetElm extends MosfetElm {
 	Diode diode;
 	double gateCurrent;
 	
@@ -65,9 +67,9 @@ package com.lushprojects.circuitjs1.client;
 	    curcounts = updateDotCount(-gateCurrent-ids, curcounts);
 	    if (curcountd != 0 || curcounts != 0) {
 		drawDots(g, src[0], src[1], curcounts);
-		drawDots(g, src[1], src[2], curcounts+8);
+		drawDots(g, src[1], src[2], addCurCount(curcounts, 8));
 		drawDots(g, drn[0], drn[1], -curcountd);
-		drawDots(g, drn[1], drn[2], -(curcountd+8));
+		drawDots(g, drn[1], drn[2], -addCurCount(curcountd, 8));
 		drawDots(g, point1, gatePt, curcountg);
 	    }
 	    drawPosts(g);
@@ -144,6 +146,6 @@ package com.lushprojects.circuitjs1.client;
 	}
 
 	@Override String getScopeText(int v) { 
-	    return sim.LS(((pnp == -1) ? "p-" : "n-") + "JFET");
+	    return Locale.LS(((pnp == -1) ? "p-" : "n-") + "JFET");
 	}
     }

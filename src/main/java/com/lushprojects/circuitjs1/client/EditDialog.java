@@ -20,10 +20,10 @@
 package com.lushprojects.circuitjs1.client;
 
 
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.lushprojects.circuitjs1.client.util.Locale;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -42,8 +42,7 @@ interface Editable {
     void setEditValue(int n, EditInfo ei);
 }
 
-// class EditDialog extends Dialog implements AdjustmentListener, ActionListener, ItemListener {
-class EditDialog extends DialogBox  {
+class EditDialog extends Dialog {
 	Editable elm;
 	CirSim cframe;
 	Button applyButton, okButton, cancelButton;
@@ -52,13 +51,12 @@ class EditDialog extends DialogBox  {
 	final int barmax = 1000;
 	VerticalPanel vp;
 	HorizontalPanel hp;
-	boolean closeOnEnter = true;
 	static NumberFormat noCommaFormat = NumberFormat.getFormat("####.##########");
 
 	EditDialog(Editable ce, CirSim f) {
 //		super(f, "Edit Component", false);
 		super(); // Do we need this?
-		setText(CirSim.LS("Edit Component"));
+		setText(Locale.LS("Edit Component"));
 		cframe = f;
 		elm = ce;
 //		setLayout(new EditDialogLayout());
@@ -73,14 +71,14 @@ class EditDialog extends DialogBox  {
 		hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 		hp.setStyleName("topSpace");
 		vp.add(hp);
-		applyButton = new Button(CirSim.LS("Apply"));
+		applyButton = new Button(Locale.LS("Apply"));
 		hp.add(applyButton);
 		applyButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				apply();
 			}
 		});
-		hp.add(okButton = new Button(CirSim.LS("OK")));
+		hp.add(okButton = new Button(Locale.LS("OK")));
 		okButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				apply();
@@ -88,7 +86,7 @@ class EditDialog extends DialogBox  {
 			}
 		});
 		hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-		hp.add(cancelButton = new Button(CirSim.LS("Cancel")));
+		hp.add(cancelButton = new Button(Locale.LS("Cancel")));
 		cancelButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				closeDialog();
@@ -108,7 +106,7 @@ class EditDialog extends DialogBox  {
 				break;
 			final EditInfo ei = einfos[i];
 			idx = vp.getWidgetIndex(hp);
-			String name = CirSim.LS(ei.name);
+			String name = Locale.LS(ei.name);
 			if (ei.name.startsWith("<"))
 			    vp.insert(l = new HTML(name),idx);
 			else
@@ -311,18 +309,13 @@ class EditDialog extends DialogBox  {
 			vp.remove(0);
 	}
 	
-	protected void closeDialog()
+	public void closeDialog()
 	{
-		EditDialog.this.hide();
-		if (cframe.editDialog == this)
-		    cframe.editDialog = null;
-	}
-	
-	public void enterPressed() {
-	    if (closeOnEnter) {
-		apply();
-		closeDialog();
-	    }
+		super.closeDialog();
+		if (CirSim.editDialog == this)
+		    CirSim.editDialog = null;
+		if (CirSim.customLogicEditDialog == this)
+		    CirSim.customLogicEditDialog = null;
 	}
 }
 

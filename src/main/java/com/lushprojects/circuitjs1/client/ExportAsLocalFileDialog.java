@@ -20,12 +20,12 @@
 package com.lushprojects.circuitjs1.client;
 
 import java.util.Date;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.lushprojects.circuitjs1.client.util.Locale;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -35,7 +35,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.i18n.client.DateTimeFormat;
 
-public class ExportAsLocalFileDialog extends DialogBox implements ValueChangeHandler<String> {
+public class ExportAsLocalFileDialog extends Dialog implements ValueChangeHandler<String> {
 	
 	VerticalPanel vp;
 	
@@ -75,8 +75,8 @@ public class ExportAsLocalFileDialog extends DialogBox implements ValueChangeHan
 		Button okButton, cancelButton;
 		vp=new VerticalPanel();
 		setWidget(vp);
-		setText(CirSim.LS("Export as Local File"));
-		vp.add(new Label(CirSim.LS("File name:")));
+		setText(Locale.LS("Export as Local File"));
+		vp.add(new Label(Locale.LS("File name:")));
 		textBox = new TextBox();
                 textBox.addValueChangeHandler(this);
 		textBox.setWidth("250px"); // "90%");
@@ -97,12 +97,12 @@ public class ExportAsLocalFileDialog extends DialogBox implements ValueChangeHan
                 hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
                 hp.setStyleName("topSpace");
                 vp.add(hp);
-                hp.add(okButton = new Button(CirSim.LS("OK")));
+                hp.add(okButton = new Button(Locale.LS("OK")));
                 hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-		hp.add(cancelButton = new Button(CirSim.LS("Cancel")));
+		hp.add(cancelButton = new Button(Locale.LS("Cancel")));
 		okButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-			    download();
+			    apply();
 			    closeDialog();
 			}
 		});
@@ -118,7 +118,7 @@ public class ExportAsLocalFileDialog extends DialogBox implements ValueChangeHan
 	    elem.click();
 	}-*/;
 	
-	void download() {
+	void apply() {
 	    String fname = textBox.getText();
 	    if (!fname.contains("."))
 		fname += ".txt";
@@ -135,10 +135,4 @@ public class ExportAsLocalFileDialog extends DialogBox implements ValueChangeHan
 		return;
 	    lastFileName = fname;
 	}
-	
-	protected void closeDialog()
-	{
-		this.hide();
-	}
-
 }

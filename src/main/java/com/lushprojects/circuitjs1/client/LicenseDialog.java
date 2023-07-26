@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Button;
+import com.lushprojects.circuitjs1.client.util.Locale;
 
 public class LicenseDialog extends DialogBox {
 	
@@ -21,7 +22,7 @@ public class LicenseDialog extends DialogBox {
 		super();
 		vp = new VerticalPanel();
 		setWidget(vp);
-		setText(sim.LS("License"));
+		setText(Locale.LS("License"));
 		vp.setWidth("500px");
 		vp.add(new HTML("<iframe style=\"border:0;\" src=\"help/license.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
 		vp.add(okButton = new Button("OK"));

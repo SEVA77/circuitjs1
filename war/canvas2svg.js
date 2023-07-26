@@ -348,6 +348,7 @@
      * @private
      */
     ctx.prototype.__applyStyleToCurrentElement = function (type) {
+	this.lineCap = 'round';
     	var currentElement = this.__currentElement;
     	var currentStyleGroup = this.__currentElementsToStyle;
     	if (currentStyleGroup) {
@@ -1012,6 +1013,7 @@
         }
         startAngle = startAngle % (2*Math.PI);
         endAngle = endAngle % (2*Math.PI);
+	if (endAngle == 6.28318) endAngle = 6.27; // fix for missing posts
         if (startAngle === endAngle) {
             //circle time! subtract some of the angle so svg is happy (svg elliptical arc can't draw a full circle)
             endAngle = ((endAngle + (2*Math.PI)) - 0.001 * (counterClockwise ? -1 : 1)) % (2*Math.PI);
@@ -1038,6 +1040,44 @@
         this.lineTo(startX, startY);
         this.__addPathCommand(format("A {rx} {ry} {xAxisRotation} {largeArcFlag} {sweepFlag} {endX} {endY}",
             {rx:radius, ry:radius, xAxisRotation:0, largeArcFlag:largeArcFlag, sweepFlag:sweepFlag, endX:endX, endY:endY}));
+
+        this.__currentPosition = {x: endX, y: endY};
+    };
+
+    // simple implementation of ellipse.  rotation is not supported
+    ctx.prototype.ellipse = function (x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterClockwise) {
+        // in canvas no circle is drawn if no angle is provided.
+        if (startAngle === endAngle) {
+            return;
+        }
+        startAngle = startAngle % (2*Math.PI);
+        endAngle = endAngle % (2*Math.PI);
+        if (startAngle === endAngle) {
+            //circle time! subtract some of the angle so svg is happy (svg elliptical arc can't draw a full circle)
+            endAngle = ((endAngle + (2*Math.PI)) - 0.001 * (counterClockwise ? -1 : 1)) % (2*Math.PI);
+        }
+        var endX = x+radiusX*Math.cos(endAngle),
+            endY = y+radiusY*Math.sin(endAngle),
+            startX = x+radiusX*Math.cos(startAngle),
+            startY = y+radiusY*Math.sin(startAngle),
+            sweepFlag = counterClockwise ? 0 : 1,
+            largeArcFlag = 0,
+            diff = endAngle - startAngle;
+
+        // https://github.com/gliffy/canvas2svg/issues/4
+        if (diff < 0) {
+            diff += 2*Math.PI;
+        }
+
+        if (counterClockwise) {
+            largeArcFlag = diff > Math.PI ? 0 : 1;
+        } else {
+            largeArcFlag = diff > Math.PI ? 1 : 0;
+        }
+
+        this.lineTo(startX, startY);
+        this.__addPathCommand(format("A {rx} {ry} {xAxisRotation} {largeArcFlag} {sweepFlag} {endX} {endY}",
+            {rx:radiusX, ry:radiusY, xAxisRotation:0, largeArcFlag:largeArcFlag, sweepFlag:sweepFlag, endX:endX, endY:endY}));
 
         this.__currentPosition = {x: endX, y: endY};
     };

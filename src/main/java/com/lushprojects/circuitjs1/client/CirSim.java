@@ -21,23 +21,20 @@ package com.lushprojects.circuitjs1.client;
 
 // GWT conversion (c) 2015 by Iain Sharp
 
-/*The file was changed for desktop program by Usevalad Khatkevich*/
-
 // For information about the theory behind this, see Electronic Circuit & System Simulation Methods by Pillage
 // or https://github.com/sharpie7/circuitjs1/blob/master/INTERNALS.md
 
 import java.util.Vector;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.lang.Math;
 
-import com.gargoylesoftware.htmlunit.javascript.host.Console;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CellPanel;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
@@ -59,7 +56,6 @@ import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
-import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -76,6 +72,8 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -87,28 +85,29 @@ import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.dom.client.CanvasElement;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.MetaElement;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.ui.MenuItem;
-import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.ui.PopupPanel;
 import static com.google.gwt.event.dom.client.KeyCodes.*;
 import com.google.gwt.user.client.ui.Frame;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Widget;
+import com.lushprojects.circuitjs1.client.util.Locale;
 import com.lushprojects.circuitjs1.client.util.PerfMonitor;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.Window.Navigator;
-import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ScrollPanel;
 
 public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandler,
 ClickHandler, DoubleClickHandler, ContextMenuHandler, NativePreviewHandler,
 MouseOutHandler, MouseWheelHandler {
-    
+
     Random random;
     Button resetButton;
     Button runStopButton;
@@ -121,11 +120,10 @@ MouseOutHandler, MouseWheelHandler {
     MenuItem aboutCircuitsPLItem;
     MenuItem closeItem;
     //CheckboxMenuItem fullscreenCheckItem;
-    MenuItem importFromLocalFileItem, importFromTextItem,
-    	exportAsUrlItem, exportAsLocalFileItem, exportAsTextItem, printItem, recoverItem, saveFileItem;
+    MenuItem importFromLocalFileItem, importFromTextItem, exportAsUrlItem, exportAsLocalFileItem, exportAsTextItem,
+            printItem, recoverItem, saveFileItem;
     //MenuItem importFromDropboxItem;
-    MenuItem undoItem, redoItem,
-	cutItem, copyItem, pasteItem, selectAllItem, optionsItem;
+    MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem;
     MenuBar optionsMenuBar;
     CheckboxMenuItem dotsCheckItem;
     CheckboxMenuItem voltsCheckItem;
@@ -161,17 +159,19 @@ MouseOutHandler, MouseWheelHandler {
     MenuItem combineAllItem;
     MenuItem separateAllItem;
     MenuBar mainMenuBar;
+	boolean hideMenu = false;
     MenuBar selectScopeMenuBar;
+    Vector<MenuItem> selectScopeMenuItems;
     MenuBar subcircuitMenuBar[];
     MenuItem scopeRemovePlotMenuItem;
     MenuItem scopeSelectYMenuItem;
     ScopePopupMenu scopePopupMenu;
-    static HashMap<String,String> localizationMap;
+    Element sidePanelCheckboxLabel;
    
     String lastCursorStyle;
-    boolean mouseWasOverSplitter = false; 
+    boolean mouseWasOverSplitter = false;
 
-//    Class addingClass;
+    // Class addingClass;
     PopupPanel contextPanel = null;
     int mouseMode = MODE_SELECT;
     int tempMouseMode = MODE_SELECT;
@@ -197,30 +197,32 @@ MouseOutHandler, MouseWheelHandler {
     boolean analyzeFlag, needsStamp, savedFlag;
     boolean dumpMatrix;
     boolean dcAnalysisFlag;
- //   boolean useBufferedImage;
+    // boolean useBufferedImage;
     boolean isMac;
     String ctrlMetaKey;
     double t;
     int pause = 10;
     int scopeSelected = -1;
+    int scopeMenuSelected = -1;
     int menuScope = -1;
     int menuPlot = -1;
     int hintType = -1, hintItem1, hintItem2;
     String stopMessage;
-    
+
     // current timestep (time between iterations)
     double timeStep;
-    
-    // maximum timestep (== timeStep unless we reduce it because of trouble converging)
+
+    // maximum timestep (== timeStep unless we reduce it because of trouble
+    // converging)
     double maxTimeStep;
     double minTimeStep;
-    
+
     // accumulated time since we incremented timeStepCount
     double timeStepAccum;
-    
+
     // incremented each time we advance t by maxTimeStep
     int timeStepCount;
-    
+
     boolean adjustTimeStep;
     boolean developerMode;
     static final int HINT_LC = 1;
@@ -230,18 +232,17 @@ MouseOutHandler, MouseWheelHandler {
     static final int HINT_3DB_L = 5;
     Vector<CircuitElm> elmList;
     Vector<Adjustable> adjustables;
-//    Vector setupList;
+    // Vector setupList;
     CircuitElm dragElm, menuElm, stopElm;
     CircuitElm elmArr[];
     ScopeElm scopeElmArr[];
-    private CircuitElm mouseElm=null;
+    private CircuitElm mouseElm = null;
     boolean didSwitch = false;
     int mousePost = -1;
     CircuitElm plotXElm, plotYElm;
     int draggingPost;
     SwitchElm heldSwitchElm;
-    double circuitMatrix[][], circuitRightSide[], lastNodeVoltages[], nodeVoltages[],
-	origRightSide[], origMatrix[][];
+    double circuitMatrix[][], circuitRightSide[], lastNodeVoltages[], nodeVoltages[], origRightSide[], origMatrix[][];
     RowInfo circuitRowInfo[];
     int circuitPermute[];
     boolean simRunning;
@@ -249,24 +250,20 @@ MouseOutHandler, MouseWheelHandler {
     int voltageSourceCount;
     int circuitMatrixSize, circuitMatrixFullSize;
     boolean circuitNeedsMap;
- //   public boolean useFrame;
+    // public boolean useFrame;
     int scopeCount;
     Scope scopes[];
     boolean showResistanceInVoltageSources;
-   int scopeColCount[];
+    boolean hideInfoBox;
+    int scopeColCount[];
     static EditDialog editDialog, customLogicEditDialog, diodeModelEditDialog;
-    static SliderDialog sliderDialog;
-    //static ImportFromDropbox importFromDropbox;
-    static ScrollValuePopup scrollValuePopup;
-    static DialogBox dialogShowing;
-    static AboutBox aboutBox;
     static HelpDialog helpDialog;
     static LicenseDialog licenseDialog;
-    //static ImportFromDropboxDialog importFromDropboxDialog;
-//    Class dumpTypes[], shortcuts[];
+    static ScrollValuePopup scrollValuePopup;
+    static Dialog dialogShowing;
+    static AboutBox aboutBox;
+    // Class dumpTypes[], shortcuts[];
     String shortcuts[];
-    static String muString = "\u03bc";
-    static String ohmString = "\u03a9";
     String clipboard;
     String recovery;
     Rectangle circuitArea;
@@ -274,61 +271,75 @@ MouseOutHandler, MouseWheelHandler {
     double transform[];
     boolean unsavedChanges;
 
-	DockLayoutPanel layoutPanel;
-	MenuBar menuBar;
-	MenuBar fileMenuBar;
-	VerticalPanel verticalPanel;
-	VerticalPanel verticalPanel2;
-	ScrollPanel slidersPanel;
-	CellPanel buttonPanel;
-	private boolean mouseDragging;
-	double scopeHeightFraction=0.2;
-	
-	Vector<CheckboxMenuItem> mainMenuItems = new Vector<CheckboxMenuItem>();
-	Vector<String> mainMenuItemNames = new Vector<String>();
+    DockLayoutPanel layoutPanel;
+    MenuBar menuBar;
+    MenuBar fileMenuBar;
+    VerticalPanel verticalPanel;
+    VerticalPanel verticalPanel2;
+    ScrollPanel slidersPanel;
+    CellPanel buttonPanel;
+    private boolean mouseDragging;
+    double scopeHeightFraction = 0.2;
 
-	LoadFile loadFileInput;
-	Frame iFrame=null;
-	
+    Vector<CheckboxMenuItem> mainMenuItems = new Vector<CheckboxMenuItem>();
+    Vector<String> mainMenuItemNames = new Vector<String>();
+
+    LoadFile loadFileInput;
+    Frame iFrame=null;
+
     Canvas cv;
     Context2d cvcontext;
-    
-    // canvas width/height in px (before device pixel ratio scaling) 
+
+    // canvas width/height in px (before device pixel ratio scaling)
     int canvasWidth, canvasHeight;
-    
-    static final int MENUBARHEIGHT=30;
-    static int VERTICALPANELWIDTH=166; // default
-    static final int POSTGRABSQ=25;
+
+    static final int MENUBARHEIGHT = 30;
+    static int VERTICALPANELWIDTH = 166; // default
+    static final int POSTGRABSQ = 25;
     static final int MINPOSTGRABSIZE = 256;
     final Timer timer = new Timer() {
-	      public void run() {
-	        updateCircuit();
-	      }
-	    };
-	 final int FASTTIMER=16;
-    
-	int getrand(int x) {
-		int q = random.nextInt();
-		if (q < 0)
-			q = -q;
-		return q % x;
-	}
-	
-    static native float devicePixelRatio() /*-{ 
-	return window.devicePixelRatio;
-    }-*/;
-    
-    void checkCanvasSize() {
-	if (cv.getCoordinateSpaceWidth() != (int)(canvasWidth*devicePixelRatio()))
-	    setCanvasSize();
+        public void run() {
+            updateCircuit();
+        }
+    };
+    final int FASTTIMER = 16;
+
+    int getrand(int x) {
+        int q = random.nextInt();
+        if (q < 0)
+            q = -q;
+        return q % x;
     }
+
+    static native float devicePixelRatio() /*-{
+        return window.devicePixelRatio;
+    }-*/;
+
+    void checkCanvasSize() {
+        if (cv.getCoordinateSpaceWidth() != (int) (canvasWidth * devicePixelRatio()))
+            setCanvasSize();
+    }
+
+    native boolean isMobile(Element element) /*-{
+	if (!element)
+	    return false;
+	var style = getComputedStyle(element);
+	return style.display != 'none';
+    }-*/;
     
     public void setCanvasSize(){
     	int width, height;
     	width=(int)RootLayoutPanel.get().getOffsetWidth();
     	height=(int)RootLayoutPanel.get().getOffsetHeight();
-    	height=height-MENUBARHEIGHT;
-    	width=width-VERTICALPANELWIDTH;
+    	height=height-(hideMenu?0:MENUBARHEIGHT);
+
+    	//not needed on mobile since the width of the canvas' container div is set to 100% in ths CSS file
+    	if (!isMobile(sidePanelCheckboxLabel))
+    	    width=width-VERTICALPANELWIDTH;
+
+    	width = Math.max(width, 0);   // avoid exception when setting negative width
+    	height = Math.max(height, 0);
+    	
 		if (cv != null) {
 			cv.setWidth(width + "PX");
 			cv.setHeight(height + "PX");
@@ -340,6 +351,10 @@ MouseOutHandler, MouseWheelHandler {
 		}
 
     	setCircuitArea();
+
+	// recenter circuit in case canvas was hidden at startup
+    	if (transform[0] == 0)
+    	    centreCircuit();
     }
     
     void setCircuitArea() {
@@ -374,14 +389,20 @@ MouseOutHandler, MouseWheelHandler {
     
     public void init() {
 
+	//sets the meta tag to allow the css media queries to work
+	MetaElement meta = Document.get().createMetaElement();
+	meta.setName("viewport");
+	meta.setContent("width=device-width");
+	NodeList<com.google.gwt.dom.client.Element> node = Document.get().getElementsByTagName("head");
+	node.getItem(0).appendChild(meta);
 
+	
 	boolean printable = false;
 	boolean convention = true;
 	boolean euroRes = false;
 	boolean usRes = false;
 	boolean running = true;
 	boolean hideSidebar = false;
-	boolean hideMenu = false;
 	boolean noEditing = false;
 	boolean mouseWheelEdit = false;
 	MenuBar m;
@@ -392,6 +413,7 @@ MouseOutHandler, MouseWheelHandler {
 	QueryParameters qp = new QueryParameters();
 	String positiveColor = null;
 	String negativeColor = null;
+	String neutralColor = null;
 	String selectColor = null;
 	String currentColor = null;
 	String mouseModeReq = null;
@@ -425,9 +447,11 @@ MouseOutHandler, MouseWheelHandler {
 	    mouseWheelEdit = qp.getBooleanValue("mouseWheelEdit", getOptionFromStorage("mouseWheelEdit", true));
 	    positiveColor = qp.getValue("positiveColor");
 	    negativeColor = qp.getValue("negativeColor");
+	    neutralColor = qp.getValue("neutralColor");
 	    selectColor = qp.getValue("selectColor");
 	    currentColor = qp.getValue("currentColor");
 	    mouseModeReq = qp.getValue("mouseMode");
+	    hideInfoBox = qp.getBooleanValue("hideInfoBox", false);
 	} catch (Exception e) { }
 
 	boolean euroSetting = false;
@@ -441,7 +465,7 @@ MouseOutHandler, MouseWheelHandler {
 	transform = new double[6];
 	String os = Navigator.getPlatform();
 	isMac = (os.toLowerCase().contains("mac"));
-	ctrlMetaKey = (isMac) ? LS("Cmd-") : LS("Ctrl-");
+	ctrlMetaKey = (isMac) ? Locale.LS("Cmd-") : Locale.LS("Ctrl-");
 
 	shortcuts = new String[127];
 
@@ -449,9 +473,9 @@ MouseOutHandler, MouseWheelHandler {
 
 	fileMenuBar = new MenuBar(true);
 	if (isElectron())
-	    fileMenuBar.addItem(menuItemWithShortcut("window", "New Window...", LS(ctrlMetaKey + "N"),
+	    fileMenuBar.addItem(menuItemWithShortcut("window", "New Window...", Locale.LS(ctrlMetaKey + "N"),
 		    new MyCommand("file", "newwindow")));
-
+	
 	fileMenuBar = new MenuBar(true);
 	fileMenuBar.addItem(iconMenuItem("popup", "New Window...",
 		new Command() { public void execute(){
@@ -461,8 +485,9 @@ MouseOutHandler, MouseWheelHandler {
 					.inject();
 			}
 			}));
+
 	fileMenuBar.addItem(iconMenuItem("doc-new", "New Blank Circuit", new MyCommand("file", "newblankcircuit")));
-	importFromLocalFileItem = menuItemWithShortcut("folder", "Open File...", LS(ctrlMetaKey + "O"),
+	importFromLocalFileItem = menuItemWithShortcut("folder", "Open File...", Locale.LS(ctrlMetaKey + "O"),
 		new MyCommand("file","importfromlocalfile"));
 	importFromLocalFileItem.setEnabled(LoadFile.isSupported());
 	fileMenuBar.addItem(importFromLocalFileItem);
@@ -471,11 +496,11 @@ MouseOutHandler, MouseWheelHandler {
 	//importFromDropboxItem = iconMenuItem("dropbox", "Import From Dropbox...", new MyCommand("file", "importfromdropbox"));
 	//fileMenuBar.addItem(importFromDropboxItem);
 	if (isElectron()) {
-	    saveFileItem = fileMenuBar.addItem(menuItemWithShortcut("floppy", "Save", LS(ctrlMetaKey + "S"),
+	    saveFileItem = fileMenuBar.addItem(menuItemWithShortcut("floppy", "Save", Locale.LS(ctrlMetaKey + "S"),
 		    new MyCommand("file", "save")));
 	    fileMenuBar.addItem(iconMenuItem("floppy", "Save As...", new MyCommand("file", "saveas")));
 	} else {
-	    exportAsLocalFileItem = menuItemWithShortcut("floppy", "Save As...", LS(ctrlMetaKey + "S"),
+	    exportAsLocalFileItem = menuItemWithShortcut("floppy", "Save As...", Locale.LS(ctrlMetaKey + "S"),
 		    new MyCommand("file","exportaslocalfile"));
 	    exportAsLocalFileItem.setEnabled(ExportAsLocalFileDialog.downloadIsSupported());
 	    fileMenuBar.addItem(exportAsLocalFileItem);
@@ -491,7 +516,7 @@ MouseOutHandler, MouseWheelHandler {
 	recoverItem = iconMenuItem("back-in-time", "Recover Auto-Save", new MyCommand("file","recover"));
 	recoverItem.setEnabled(recovery != null);
 	fileMenuBar.addItem(recoverItem);
-	printItem = menuItemWithShortcut("print", "Print...", LS(ctrlMetaKey + "P"), new MyCommand("file","print"));
+	printItem = menuItemWithShortcut("print", "Print...", Locale.LS(ctrlMetaKey + "P"), new MyCommand("file","print"));
 	fileMenuBar.addItem(printItem);
 	fileMenuBar.addSeparator();
 	/*
@@ -523,7 +548,7 @@ MouseOutHandler, MouseWheelHandler {
 					.inject();
 			}
 		}));
-	/*  
+	/* 
 	aboutItem = iconMenuItem("info-circled", "About...", (Command)null);
 	fileMenuBar.addItem(aboutItem);
 	aboutItem.setScheduledCommand(new MyCommand("file","about"));
@@ -531,54 +556,66 @@ MouseOutHandler, MouseWheelHandler {
 	int width=(int)RootLayoutPanel.get().getOffsetWidth();
 	VERTICALPANELWIDTH = 166; /* = width/5;
 	if (VERTICALPANELWIDTH > 166)
-		VERTICALPANELWIDTH = 166;
+	    VERTICALPANELWIDTH = 166;
 	if (VERTICALPANELWIDTH < 128)
-		VERTICALPANELWIDTH = 128;*/
+	    VERTICALPANELWIDTH = 128;*/
 
 	menuBar = new MenuBar();
-	menuBar.addItem(LS("File"), fileMenuBar);
+	menuBar.addItem(Locale.LS("File"), fileMenuBar);
 	verticalPanel=new VerticalPanel();
 	slidersPanel = new ScrollPanel();
 	verticalPanel2=new VerticalPanel();
+
+	verticalPanel.getElement().addClassName("verticalPanel");
+	verticalPanel.getElement().setId("painel");
+	Element sidePanelCheckbox = DOM.createInputCheck();
+	sidePanelCheckboxLabel = DOM.createLabel();
+	sidePanelCheckboxLabel.addClassName("triggerLabel");
+	sidePanelCheckbox.setId("trigger");
+	sidePanelCheckboxLabel.setAttribute("for", "trigger" );
+	sidePanelCheckbox.addClassName("trigger");
+	Element topPanelCheckbox = DOM.createInputCheck(); 
+	Element topPanelCheckboxLabel = DOM.createLabel();
+	topPanelCheckbox.setId("toptrigger");
+	topPanelCheckbox.addClassName("toptrigger");
+	topPanelCheckboxLabel.addClassName("toptriggerlabel");
+	topPanelCheckboxLabel.setAttribute("for", "toptrigger");
 
 	// make buttons side by side if there's room
 	buttonPanel=(VERTICALPANELWIDTH == 166) ? new HorizontalPanel() : new VerticalPanel();
 
 	m = new MenuBar(true);
-	m.addItem(undoItem = menuItemWithShortcut("ccw", "Undo", LS(ctrlMetaKey + "Z"), new MyCommand("edit","undo")));
-	m.addItem(redoItem = menuItemWithShortcut("cw", "Redo", LS(ctrlMetaKey + "Y"), new MyCommand("edit","redo")));
+	m.addItem(undoItem = menuItemWithShortcut("ccw", "Undo", Locale.LS(ctrlMetaKey + "Z"), new MyCommand("edit","undo")));
+	m.addItem(redoItem = menuItemWithShortcut("cw", "Redo", Locale.LS(ctrlMetaKey + "Y"), new MyCommand("edit","redo")));
 	m.addSeparator();
-	m.addItem(cutItem = menuItemWithShortcut("scissors", "Cut", LS(ctrlMetaKey + "X"), new MyCommand("edit","cut")));
-	m.addItem(copyItem = menuItemWithShortcut("copy", "Copy", LS(ctrlMetaKey + "C"), new MyCommand("edit","copy")));
-	m.addItem(pasteItem = menuItemWithShortcut("paste", "Paste", LS(ctrlMetaKey + "V"), new MyCommand("edit","paste")));
+	m.addItem(cutItem = menuItemWithShortcut("scissors", "Cut", Locale.LS(ctrlMetaKey + "X"), new MyCommand("edit","cut")));
+	m.addItem(copyItem = menuItemWithShortcut("copy", "Copy", Locale.LS(ctrlMetaKey + "C"), new MyCommand("edit","copy")));
+	m.addItem(pasteItem = menuItemWithShortcut("paste", "Paste", Locale.LS(ctrlMetaKey + "V"), new MyCommand("edit","paste")));
 	pasteItem.setEnabled(false);
 
-	m.addItem(menuItemWithShortcut("clone", "Duplicate", LS(ctrlMetaKey + "D"), new MyCommand("edit","duplicate")));
+	m.addItem(menuItemWithShortcut("clone", "Duplicate", Locale.LS(ctrlMetaKey + "D"), new MyCommand("edit","duplicate")));
 
 	m.addSeparator();
-	m.addItem(selectAllItem = menuItemWithShortcut("select-all", "Select All", LS(ctrlMetaKey + "A"), new MyCommand("edit","selectAll")));
+	m.addItem(selectAllItem = menuItemWithShortcut("select-all", "Select All", Locale.LS(ctrlMetaKey + "A"), new MyCommand("edit","selectAll")));
 	m.addSeparator();
 	m.addItem(menuItemWithShortcut("search", "Find Component...", "/", new MyCommand("edit", "search")));
 	m.addItem(iconMenuItem("target", weAreInUS(false) ? "Center Circuit" : "Centre Circuit", new MyCommand("edit", "centrecircuit")));
 	m.addItem(menuItemWithShortcut("zoom-11", "Zoom 100%", "0", new MyCommand("zoom", "zoom100")));
 	m.addItem(menuItemWithShortcut("zoom-in", "Zoom In", "+", new MyCommand("zoom", "zoomin")));
 	m.addItem(menuItemWithShortcut("zoom-out", "Zoom Out", "-", new MyCommand("zoom", "zoomout")));
-	menuBar.addItem(LS("Edit"),m);
+	menuBar.addItem(Locale.LS("Edit"),m);
 
 	MenuBar drawMenuBar = new MenuBar(true);
 	drawMenuBar.setAutoOpen(true);
 
-	menuBar.addItem(LS("Draw"), drawMenuBar);
+	menuBar.addItem(Locale.LS("Draw"), drawMenuBar);
 
 	m = new MenuBar(true);
 	m.addItem(stackAllItem = iconMenuItem("lines", "Stack All", new MyCommand("scopes", "stackAll")));
 	m.addItem(unstackAllItem = iconMenuItem("columns", "Unstack All", new MyCommand("scopes", "unstackAll")));
 	m.addItem(combineAllItem = iconMenuItem("object-group", "Combine All", new MyCommand("scopes", "combineAll")));
 	m.addItem(separateAllItem = iconMenuItem("object-ungroup", "Separate All", new MyCommand("scopes", "separateAll")));
-	menuBar.addItem(LS("Scopes"), m);
-
-	optionsMenuBar = m = new MenuBar(true );
-	menuBar.addItem(LS("Options"), optionsMenuBar);
+	menuBar.addItem(Locale.LS("Scopes"), m);
 	/*m.addItem(fullscreenCheckItem = new CheckboxMenuItem(LS("Fullscreen Mode"),
 	 		new Command() { public void execute(){
 	 		    	if (fullscreenCheckItem.getState()) {
@@ -599,9 +636,12 @@ MouseOutHandler, MouseWheelHandler {
 	 		    */
 	 		  /*  }
 	 		}));*/
-	m.addItem(dotsCheckItem = new CheckboxMenuItem(LS("Show Current")));
+	optionsMenuBar = m = new MenuBar(true );
+	menuBar.addItem(Locale.LS("Options"), optionsMenuBar);
+
+	m.addItem(dotsCheckItem = new CheckboxMenuItem(Locale.LS("Show Current")));
 	dotsCheckItem.setState(true);
-	m.addItem(voltsCheckItem = new CheckboxMenuItem(LS("Show Voltage"),
+	m.addItem(voltsCheckItem = new CheckboxMenuItem(Locale.LS("Show Voltage"),
 		new Command() { public void execute(){
 		    if (voltsCheckItem.getState())
 			powerCheckItem.setState(false);
@@ -609,34 +649,34 @@ MouseOutHandler, MouseWheelHandler {
 		}
 	}));
 	voltsCheckItem.setState(true);
-	m.addItem(powerCheckItem = new CheckboxMenuItem(LS("Show Power"),
+	m.addItem(powerCheckItem = new CheckboxMenuItem(Locale.LS("Show Power"),
 		new Command() { public void execute(){
 		    if (powerCheckItem.getState())
 			voltsCheckItem.setState(false);
 		    setPowerBarEnable();
 		}
 	}));
-	m.addItem(showValuesCheckItem = new CheckboxMenuItem(LS("Show Values")));
+	m.addItem(showValuesCheckItem = new CheckboxMenuItem(Locale.LS("Show Values")));
 	showValuesCheckItem.setState(true);
 	//m.add(conductanceCheckItem = getCheckItem(LS("Show Conductance")));
-	m.addItem(smallGridCheckItem = new CheckboxMenuItem(LS("Small Grid"),
+	m.addItem(smallGridCheckItem = new CheckboxMenuItem(Locale.LS("Small Grid"),
 		new Command() { public void execute(){
 		    setGrid();
 		}
 	}));
-	m.addItem(crossHairCheckItem = new CheckboxMenuItem(LS("Show Cursor Cross Hairs"),
+	m.addItem(crossHairCheckItem = new CheckboxMenuItem(Locale.LS("Show Cursor Cross Hairs"),
 		new Command() { public void execute(){
 		    setOptionInStorage("crossHair", crossHairCheckItem.getState());
 		}
 	}));
 	crossHairCheckItem.setState(getOptionFromStorage("crossHair", false));
-	m.addItem(euroResistorCheckItem = new CheckboxMenuItem(LS("European Resistors"),
+	m.addItem(euroResistorCheckItem = new CheckboxMenuItem(Locale.LS("European Resistors"),
 		new Command() { public void execute(){
 		    setOptionInStorage("euroResistors", euroResistorCheckItem.getState());
 		}
 	}));
 	euroResistorCheckItem.setState(euroSetting);
-	m.addItem(euroGatesCheckItem = new CheckboxMenuItem(LS("IEC Gates"),
+	m.addItem(euroGatesCheckItem = new CheckboxMenuItem(Locale.LS("IEC Gates"),
 		new Command() { public void execute(){
 		    setOptionInStorage("euroGates", euroGatesCheckItem.getState());
 		    int i;
@@ -645,7 +685,7 @@ MouseOutHandler, MouseWheelHandler {
 		}
 	}));
 	euroGatesCheckItem.setState(euroGates);
-	m.addItem(printableCheckItem = new CheckboxMenuItem(LS("White Background"),
+	m.addItem(printableCheckItem = new CheckboxMenuItem(Locale.LS("White Background"),
 		new Command() { public void execute(){
 		    int i;
 		    for (i=0;i<scopeCount;i++)
@@ -655,7 +695,7 @@ MouseOutHandler, MouseWheelHandler {
 	}));
 	printableCheckItem.setState(printable);
 
-	m.addItem(conventionCheckItem = new CheckboxMenuItem(LS("Conventional Current Motion"),
+	m.addItem(conventionCheckItem = new CheckboxMenuItem(Locale.LS("Conventional Current Motion"),
 		new Command() { public void execute(){
 		    setOptionInStorage("conventionalCurrent", conventionCheckItem.getState());
 		    String cc = CircuitElm.currentColor.getHexValue();
@@ -665,20 +705,20 @@ MouseOutHandler, MouseWheelHandler {
 		}
 	}));
 	conventionCheckItem.setState(convention);
-	m.addItem(noEditCheckItem = new CheckboxMenuItem(LS("Disable Editing")));
+	m.addItem(noEditCheckItem = new CheckboxMenuItem(Locale.LS("Disable Editing")));
 	noEditCheckItem.setState(noEditing);
 
-	m.addItem(mouseWheelEditCheckItem = new CheckboxMenuItem(LS("Edit Values With Mouse Wheel"),
+	m.addItem(mouseWheelEditCheckItem = new CheckboxMenuItem(Locale.LS("Edit Values With Mouse Wheel"),
 		new Command() { public void execute(){
 		    setOptionInStorage("mouseWheelEdit", mouseWheelEditCheckItem.getState());
 		}
 	}));
 	mouseWheelEditCheckItem.setState(mouseWheelEdit);
 
-	m.addItem(new CheckboxAlignedMenuItem(LS("Shortcuts..."), new MyCommand("options", "shortcuts")));
-	m.addItem(optionsItem = new CheckboxAlignedMenuItem(LS("Other Options..."), new MyCommand("options","other")));
+	m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Shortcuts..."), new MyCommand("options", "shortcuts")));
+	m.addItem(optionsItem = new CheckboxAlignedMenuItem(Locale.LS("Other Options..."), new MyCommand("options","other")));
 	if (isElectron())
-	    m.addItem(new CheckboxAlignedMenuItem(LS("Toggle Dev Tools"), new MyCommand("options","devtools")));
+	    m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Toggle Dev Tools"), new MyCommand("options","devtools")));
 
 	mainMenuBar = new MenuBar(true);
 	mainMenuBar.setAutoOpen(true);
@@ -686,13 +726,20 @@ MouseOutHandler, MouseWheelHandler {
 	composeMainMenu(drawMenuBar, 1);
 	loadShortcuts();
 
+	DOM.appendChild(layoutPanel.getElement(), topPanelCheckbox);
+	DOM.appendChild(layoutPanel.getElement(), topPanelCheckboxLabel);	
 	if (!hideMenu)
 	    layoutPanel.addNorth(menuBar, MENUBARHEIGHT);
 
 	if (hideSidebar)
 	    VERTICALPANELWIDTH = 0;
-	else
+	else {
+		DOM.appendChild(layoutPanel.getElement(), sidePanelCheckbox);
+		DOM.appendChild(layoutPanel.getElement(), sidePanelCheckboxLabel);
 	    layoutPanel.addEast(verticalPanel, VERTICALPANELWIDTH);
+	}
+	menuBar.getElement().insertFirst(menuBar.getElement().getChild(1));
+	menuBar.getElement().getFirstChildElement().setAttribute("onclick", "document.getElementsByClassName('toptrigger')[0].checked = false");
 	RootLayoutPanel.get().add(layoutPanel);
 
 	cv =Canvas.createIfSupported();
@@ -712,15 +759,14 @@ MouseOutHandler, MouseWheelHandler {
 	setCanvasSize();
 	layoutPanel.add(cv);
 	verticalPanel.add(buttonPanel);
-	buttonPanel.addStyleName("sidePanelElm");
-	buttonPanel.add(resetButton = new Button(LS("Reset")));
+	buttonPanel.add(resetButton = new Button(Locale.LS("Reset")));
 	resetButton.addClickHandler(new ClickHandler() {
 	    public void onClick(ClickEvent event) {
 		resetAction();
 	    }
 	});
 	resetButton.setStylePrimaryName("topButton");
-	buttonPanel.add(runStopButton = new Button(LSHTML("<Strong>RUN</Strong>&nbsp;/&nbsp;Stop")));
+	buttonPanel.add(runStopButton = new Button(Locale.LSHTML("<Strong>RUN</Strong>&nbsp;/&nbsp;Stop")));
 	runStopButton.addClickHandler(new ClickHandler() {
 	    public void onClick(ClickEvent event) {
 		setSimRunning(!simIsRunning());
@@ -741,7 +787,7 @@ MouseOutHandler, MouseWheelHandler {
 	}
 
 	Label l;
-	verticalPanel.add(l = new Label(LS("Simulation Speed")));
+	verticalPanel.add(l = new Label(Locale.LS("Simulation Speed")));
 	l.addStyleName("topSpace");
 	l.addStyleName("sidePanelElm");
 
@@ -749,7 +795,7 @@ MouseOutHandler, MouseWheelHandler {
 	verticalPanel.add( speedBar = new Scrollbar(Scrollbar.HORIZONTAL, 3, 1, 0, 260));
 	speedBar.addStyleName("sidePanelElm");
 
-	verticalPanel.add( l = new Label(LS("Current Speed")));
+	verticalPanel.add( l = new Label(Locale.LS("Current Speed")));
 	l.addStyleName("topSpace");
 	l.addStyleName("sidePanelElm");
 
@@ -757,7 +803,7 @@ MouseOutHandler, MouseWheelHandler {
 	verticalPanel.add(currentBar);
 	currentBar.addStyleName("sidePanelElm");
 
-	verticalPanel.add(powerLabel = new Label (LS("Power Brightness")));
+	verticalPanel.add(powerLabel = new Label (Locale.LS("Power Brightness")));
 	powerLabel.addStyleName("topSpace");
 	powerLabel.addStyleName("sidePanelElm");
 
@@ -768,7 +814,7 @@ MouseOutHandler, MouseWheelHandler {
 
 	//	verticalPanel.add(new Label(""));
 	//        Font f = new Font("SansSerif", 0, 10);
-	l = new Label(LS("Current Circuit:"));
+	l = new Label(Locale.LS("Current Circuit:"));
 	l.addStyleName("topSpace");
 	l.addStyleName("sidePanelElm");
 	//        l.setFont(f);
@@ -779,7 +825,7 @@ MouseOutHandler, MouseWheelHandler {
 	verticalPanel.add(titleLabel);
 
 	Label sab;
-	sab = new Label(LS("Sliders and buttons")+":");
+	sab = new Label(Locale.LS("Sliders and buttons")+":");
 	sab.addStyleName("sabLabel");
 	verticalPanel.add(sab);
 
@@ -791,13 +837,6 @@ MouseOutHandler, MouseWheelHandler {
 	//slidersPanel.setAlwaysShowScrollBars(true);
 	slidersPanel.getElement().getStyle().setOverflowX(Overflow.HIDDEN);
 	slidersPanel.getElement().getStyle().setOverflowY(Overflow.SCROLL);
-
-/*
-	verticalPanel.add(iFrame = new Frame("iframe.html"));
-	iFrame.setWidth(VERTICALPANELWIDTH+"px");
-	iFrame.setHeight("100 px");
-	iFrame.getElement().setAttribute("scrolling", "no");
-*/
 
 	setGrid();
 	elmList = new Vector<CircuitElm>();
@@ -817,22 +856,47 @@ MouseOutHandler, MouseWheelHandler {
 
 	elmMenuBar = new MenuBar(true);
 	elmMenuBar.setAutoOpen(true);
-	selectScopeMenuBar = new MenuBar(true);
-	elmMenuBar.addItem(elmEditMenuItem = new MenuItem(LS("Edit..."),new MyCommand("elm","edit")));
-	elmMenuBar.addItem(elmScopeMenuItem = new MenuItem(LS("View in New Scope"), new MyCommand("elm","viewInScope")));
-	elmMenuBar.addItem(elmFloatScopeMenuItem  = new MenuItem(LS("View in New Undocked Scope"), new MyCommand("elm","viewInFloatScope")));
-	elmMenuBar.addItem(elmAddScopeMenuItem = new MenuItem(LS("Add to Existing Scope"), new MyCommand("elm", "addToScope0")));
-	elmMenuBar.addItem(elmCutMenuItem = new MenuItem(LS("Cut"),new MyCommand("elm","cut")));
-	elmMenuBar.addItem(elmCopyMenuItem = new MenuItem(LS("Copy"),new MyCommand("elm","copy")));
-	elmMenuBar.addItem(elmDeleteMenuItem = new MenuItem(LS("Delete"),new MyCommand("elm","delete")));
-	elmMenuBar.addItem(                    new MenuItem(LS("Duplicate"),new MyCommand("elm","duplicate")));
-	elmMenuBar.addItem(elmFlipMenuItem = new MenuItem(LS("Swap Terminals"),new MyCommand("elm","flip")));
-	elmMenuBar.addItem(elmSplitMenuItem = menuItemWithShortcut("", "Split Wire", LS(ctrlMetaKey + "click"), new MyCommand("elm","split")));
-	elmMenuBar.addItem(elmSliderMenuItem = new MenuItem(LS("Sliders..."),new MyCommand("elm","sliders")));
+	selectScopeMenuBar = new MenuBar(true) {
+	    @Override
+	    
+	    // when mousing over scope menu item, select associated scope
+	    public void onBrowserEvent(Event event) {
+		int currentItem = -1;
+		int i;
+		for (i = 0; i != selectScopeMenuItems.size(); i++) {
+		    MenuItem item = selectScopeMenuItems.get(i);
+		    if (DOM.isOrHasChild(item.getElement(), DOM.eventGetTarget(event))) {
+			//MenuItem found here
+			currentItem = i;
+		    }
+		}
+		switch (DOM.eventGetType(event)) {
+		case Event.ONMOUSEOVER:
+		    scopeMenuSelected = currentItem; 
+		    break;              
+		case Event.ONMOUSEOUT:
+		    scopeMenuSelected = -1;
+		    break;              
+		}
+		super.onBrowserEvent(event);
+	    }
+	};
+	
+	elmMenuBar.addItem(elmEditMenuItem = new MenuItem(Locale.LS("Edit..."),new MyCommand("elm","edit")));
+	elmMenuBar.addItem(elmScopeMenuItem = new MenuItem(Locale.LS("View in New Scope"), new MyCommand("elm","viewInScope")));
+	elmMenuBar.addItem(elmFloatScopeMenuItem  = new MenuItem(Locale.LS("View in New Undocked Scope"), new MyCommand("elm","viewInFloatScope")));
+	elmMenuBar.addItem(elmAddScopeMenuItem = new MenuItem(Locale.LS("Add to Existing Scope"), new MyCommand("elm", "addToScope0")));
+	elmMenuBar.addItem(elmCutMenuItem = new MenuItem(Locale.LS("Cut"),new MyCommand("elm","cut")));
+	elmMenuBar.addItem(elmCopyMenuItem = new MenuItem(Locale.LS("Copy"),new MyCommand("elm","copy")));
+	elmMenuBar.addItem(elmDeleteMenuItem = new MenuItem(Locale.LS("Delete"),new MyCommand("elm","delete")));
+	elmMenuBar.addItem(                    new MenuItem(Locale.LS("Duplicate"),new MyCommand("elm","duplicate")));
+	elmMenuBar.addItem(elmFlipMenuItem = new MenuItem(Locale.LS("Swap Terminals"),new MyCommand("elm","flip")));
+	elmMenuBar.addItem(elmSplitMenuItem = menuItemWithShortcut("", "Split Wire", Locale.LS(ctrlMetaKey + "click"), new MyCommand("elm","split")));
+	elmMenuBar.addItem(elmSliderMenuItem = new MenuItem(Locale.LS("Sliders..."),new MyCommand("elm","sliders")));
 
 	scopePopupMenu = new ScopePopupMenu();
 
-	setColors(positiveColor, negativeColor, selectColor, currentColor);
+	setColors(positiveColor, negativeColor, neutralColor, selectColor, currentColor);
 
 	if (startCircuitText != null) {
 	    getSetupList(false);
@@ -861,7 +925,6 @@ MouseOutHandler, MouseWheelHandler {
 	enableUndoRedo();
 	enablePaste();
 	setSlidersPanelHeight();
-	setiFrameHeight();
 	cv.addMouseDownHandler(this);
 	cv.addMouseMoveHandler(this);
 	cv.addMouseOutHandler(this);
@@ -882,7 +945,7 @@ MouseOutHandler, MouseWheelHandler {
 	    public void onWindowClosing(ClosingEvent event) {
 		// there is a bug in electron that makes it impossible to close the app if this warning is given
 		if (unsavedChanges && !isElectron())
-		    event.setMessage(LS("Are you sure?  There are unsaved changes."));
+		    event.setMessage(Locale.LS("Are you sure?  There are unsaved changes."));
 	    }
 	});
 	setupJSInterface();
@@ -890,13 +953,15 @@ MouseOutHandler, MouseWheelHandler {
 	setSimRunning(running);
     }
 
-    void setColors(String positiveColor, String negativeColor, String selectColor, String currentColor) {
+    void setColors(String positiveColor, String negativeColor, String neutralColor, String selectColor, String currentColor) {
         Storage stor = Storage.getLocalStorageIfSupported();
         if (stor != null) {
             if (positiveColor == null)
         	positiveColor = stor.getItem("positiveColor");
             if (negativeColor == null)
         	negativeColor = stor.getItem("negativeColor");
+            if (neutralColor == null)
+        	neutralColor = stor.getItem("neutralColor");
             if (selectColor == null)
         	selectColor = stor.getItem("selectColor");
             if (currentColor == null)
@@ -910,7 +975,9 @@ MouseOutHandler, MouseWheelHandler {
 	
 	if (negativeColor != null)
 	    CircuitElm.negativeColor = new Color(URL.decodeQueryString(negativeColor));
-	
+	if (neutralColor != null)
+	    CircuitElm.neutralColor = new Color(URL.decodeQueryString(neutralColor));
+
 	if (selectColor != null)
 	    CircuitElm.selectColor = new Color(URL.decodeQueryString(selectColor));
 	else
@@ -928,12 +995,12 @@ MouseOutHandler, MouseWheelHandler {
 	final String edithtml="<div style=\"white-space:nowrap\"><div style=\"display:inline-block;width:100%;\"><i class=\"cirjsicon-";
 	String nbsp = "&nbsp;";
 	if (icon=="") nbsp="";
-	String sn=edithtml + icon + "\"></i>" + nbsp + LS(text) + "</div>" + shortcut + "</div>";
+	String sn=edithtml + icon + "\"></i>" + nbsp + Locale.LS(text) + "</div>" + shortcut + "</div>";
 	return new MenuItem(SafeHtmlUtils.fromTrustedString(sn), cmd);
     }
     
     MenuItem iconMenuItem(String icon, String text, Command cmd) {
-        String icoStr = "<i class=\"cirjsicon-" + icon + "\"></i>&nbsp;" + LS(text); //<i class="cirjsicon-"></i>&nbsp;
+        String icoStr = "<i class=\"cirjsicon-" + icon + "\"></i>&nbsp;" + Locale.LS(text); //<i class="cirjsicon-"></i>&nbsp;
         return new MenuItem(SafeHtmlUtils.fromTrustedString(icoStr), cmd);
     }
     
@@ -1028,6 +1095,7 @@ MouseOutHandler, MouseWheelHandler {
 	cv.addEventListener("touchstart", function (e) {
         	mousePos = getTouchPos(cv, e);
   		var touch = e.touches[0];
+  		
   		var etype = "mousedown";
   		lastScale = 1;
   		clearTimeout(tmout);
@@ -1044,6 +1112,7 @@ MouseOutHandler, MouseWheelHandler {
   		
   		var touch1 = e.touches[0];
   		var touch2 = e.touches[e.touches.length-1];
+  		lastScale = Math.hypot(touch1.clientX-touch2.clientX, touch1.clientY-touch2.clientY);
   		var mouseEvent = new MouseEvent(etype, {
     			clientX: .5*(touch1.clientX+touch2.clientX),
     			clientY: .5*(touch1.clientY+touch2.clientY)
@@ -1061,12 +1130,13 @@ MouseOutHandler, MouseWheelHandler {
 	cv.addEventListener("touchmove", function (e) {
   		e.preventDefault();
   		clearTimeout(tmout);
-	        if (e.touches.length > 1) {
-	            sim.@com.lushprojects.circuitjs1.client.CirSim::zoomCircuit(D)(40*(Math.log(e.scale)-Math.log(lastScale)));
-	            lastScale = e.scale;
-	        }
   		var touch1 = e.touches[0];
   		var touch2 = e.touches[e.touches.length-1];
+	        if (e.touches.length > 1) {
+  		    var newScale = Math.hypot(touch1.clientX-touch2.clientX, touch1.clientY-touch2.clientY);
+	            sim.@com.lushprojects.circuitjs1.client.CirSim::zoomCircuit(D)(40*(Math.log(newScale)-Math.log(lastScale)));
+	            lastScale = newScale;
+	        }
   		var mouseEvent = new MouseEvent("mousemove", {
     			clientX: .5*(touch1.clientX+touch2.clientX),
     			clientY: .5*(touch1.clientY+touch2.clientY)
@@ -1089,180 +1159,180 @@ MouseOutHandler, MouseWheelHandler {
     
     // this is called twice, once for the Draw menu, once for the right mouse popup menu
     public void composeMainMenu(MenuBar mainMenuBar, int num) {
-    	mainMenuBar.addItem(getClassCheckItem(LS("Add Wire"), "WireElm"));
-    	mainMenuBar.addItem(getClassCheckItem(LS("Add Resistor"), "ResistorElm"));
+    	mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Wire"), "WireElm"));
+    	mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), "ResistorElm"));
 
     	MenuBar passMenuBar = new MenuBar(true);
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Capacitor"), "CapacitorElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Capacitor (polarized)"), "PolarCapacitorElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Inductor"), "InductorElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Switch"), "SwitchElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Push Switch"), "PushSwitchElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add SPDT Switch"), "Switch2Elm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Make-Before-Break Switch"), "MBBSwitchElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Potentiometer"), "PotElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Transformer"), "TransformerElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Tapped Transformer"), "TappedTransformerElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Transmission Line"), "TransLineElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Relay"), "RelayElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Memristor"), "MemristorElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Spark Gap"), "SparkGapElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Fuse"), "FuseElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Custom Transformer"), "CustomTransformerElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Crystal"), "CrystalElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Photoresistor"), "LDRElm"));
-    	passMenuBar.addItem(getClassCheckItem(LS("Add Thermistor"), "ThermistorNTCElm"));
-    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+LS("&nbsp;</div>Passive Components")), passMenuBar);
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), "CapacitorElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor (polarized)"), "PolarCapacitorElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Inductor"), "InductorElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), "SwitchElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Push Switch"), "PushSwitchElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add SPDT Switch"), "Switch2Elm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Make-Before-Break Switch"), "MBBSwitchElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Potentiometer"), "PotElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Transformer"), "TransformerElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Tapped Transformer"), "TappedTransformerElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Transmission Line"), "TransLineElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Relay"), "RelayElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Memristor"), "MemristorElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Spark Gap"), "SparkGapElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Fuse"), "FuseElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Custom Transformer"), "CustomTransformerElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Crystal"), "CrystalElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Photoresistor"), "LDRElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Thermistor"), "ThermistorNTCElm"));
+    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+Locale.LS("&nbsp;</div>Passive Components")), passMenuBar);
 
     	MenuBar inputMenuBar = new MenuBar(true);
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add Ground"), "GroundElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add Voltage Source (2-terminal)"), "DCVoltageElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add A/C Voltage Source (2-terminal)"), "ACVoltageElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add Voltage Source (1-terminal)"), "RailElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add A/C Voltage Source (1-terminal)"), "ACRailElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add Square Wave Source (1-terminal)"), "SquareRailElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add Clock"), "ClockElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add A/C Sweep"), "SweepElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add Variable Voltage"), "VarRailElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add Antenna"), "AntennaElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add AM Source"), "AMElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add FM Source"), "FMElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add Current Source"), "CurrentElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add Noise Generator"), "NoiseElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add Audio Input"), "AudioInputElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add Data Input"), "DataInputElm"));
-    	inputMenuBar.addItem(getClassCheckItem(LS("Add External Voltage (JavaScript)"), "ExtVoltageElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Ground"), "GroundElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Voltage Source (2-terminal)"), "DCVoltageElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add A/C Voltage Source (2-terminal)"), "ACVoltageElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Voltage Source (1-terminal)"), "RailElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add A/C Voltage Source (1-terminal)"), "ACRailElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Square Wave Source (1-terminal)"), "SquareRailElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Clock"), "ClockElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add A/C Sweep"), "SweepElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Variable Voltage"), "VarRailElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Antenna"), "AntennaElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add AM Source"), "AMElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add FM Source"), "FMElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Current Source"), "CurrentElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Noise Generator"), "NoiseElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Audio Input"), "AudioInputElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Data Input"), "DataInputElm"));
+    	inputMenuBar.addItem(getClassCheckItem(Locale.LS("Add External Voltage (JavaScript)"), "ExtVoltageElm"));
 
-    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+LS("&nbsp;</div>Inputs and Sources")), inputMenuBar);
+    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+Locale.LS("&nbsp;</div>Inputs and Sources")), inputMenuBar);
     	
     	MenuBar outputMenuBar = new MenuBar(true);
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Analog Output"), "OutputElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add LED"), "LEDElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Lamp"), "LampElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Text"), "TextElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Box"), "BoxElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Line"), "LineElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Voltmeter/Scope Probe"), "ProbeElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Ohmmeter"), "OhmMeterElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Labeled Node"), "LabeledNodeElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Test Point"), "TestPointElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Ammeter"), "AmmeterElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Decimal Display"), "DecimalDisplayElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Data Export"), "DataRecorderElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Audio Output"), "AudioOutputElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add LED Array"), "LEDArrayElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Stop Trigger"), "StopTriggerElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add DC Motor"), "DCMotorElm"));
-    	outputMenuBar.addItem(getClassCheckItem(LS("Add Wattmeter"), "WattmeterElm"));
-    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+LS("&nbsp;</div>Outputs and Labels")), outputMenuBar);
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Analog Output"), "OutputElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add LED"), "LEDElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Lamp"), "LampElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Text"), "TextElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Box"), "BoxElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Line"), "LineElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Voltmeter/Scope Probe"), "ProbeElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Ohmmeter"), "OhmMeterElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Labeled Node"), "LabeledNodeElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Test Point"), "TestPointElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Ammeter"), "AmmeterElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Decimal Display"), "DecimalDisplayElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Data Export"), "DataRecorderElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Audio Output"), "AudioOutputElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add LED Array"), "LEDArrayElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Stop Trigger"), "StopTriggerElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add DC Motor"), "DCMotorElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Wattmeter"), "WattmeterElm"));
+    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+Locale.LS("&nbsp;</div>Outputs and Labels")), outputMenuBar);
     	
     	MenuBar activeMenuBar = new MenuBar(true);
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add Diode"), "DiodeElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add Zener Diode"), "ZenerElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add Transistor (bipolar, NPN)"), "NTransistorElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add Transistor (bipolar, PNP)"), "PTransistorElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add MOSFET (N-Channel)"), "NMosfetElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add MOSFET (P-Channel)"), "PMosfetElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add JFET (N-Channel)"), "NJfetElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add JFET (P-Channel)"), "PJfetElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add SCR"), "SCRElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add DIAC"), "DiacElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add TRIAC"), "TriacElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add Darlington Pair (NPN)"), "NDarlingtonElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add Darlington Pair (PNP)"), "PDarlingtonElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add Varactor/Varicap"), "VaractorElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add Tunnel Diode"), "TunnelDiodeElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add Triode"), "TriodeElm"));
-    	activeMenuBar.addItem(getClassCheckItem(LS("Add Unijunction Transistor"), "UnijunctionElm"));
-    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+LS("&nbsp;</div>Active Components")), activeMenuBar);
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), "DiodeElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add Zener Diode"), "ZenerElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add Transistor (bipolar, NPN)"), "NTransistorElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add Transistor (bipolar, PNP)"), "PTransistorElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add MOSFET (N-Channel)"), "NMosfetElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add MOSFET (P-Channel)"), "PMosfetElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add JFET (N-Channel)"), "NJfetElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add JFET (P-Channel)"), "PJfetElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add SCR"), "SCRElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add DIAC"), "DiacElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add TRIAC"), "TriacElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add Darlington Pair (NPN)"), "NDarlingtonElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add Darlington Pair (PNP)"), "PDarlingtonElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add Varactor/Varicap"), "VaractorElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add Tunnel Diode"), "TunnelDiodeElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add Triode"), "TriodeElm"));
+    	activeMenuBar.addItem(getClassCheckItem(Locale.LS("Add Unijunction Transistor"), "UnijunctionElm"));
+    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+Locale.LS("&nbsp;</div>Active Components")), activeMenuBar);
 
     	MenuBar activeBlocMenuBar = new MenuBar(true);
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Op Amp (ideal, - on top)"), "OpAmpElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Op Amp (ideal, + on top)"), "OpAmpSwapElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Op Amp (real)"), "OpAmpRealElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Analog Switch (SPST)"), "AnalogSwitchElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Analog Switch (SPDT)"), "AnalogSwitch2Elm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Tristate Buffer"), "TriStateElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Schmitt Trigger"), "SchmittElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Schmitt Trigger (Inverting)"), "InvertingSchmittElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Delay Buffer"), "DelayBufferElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add CCII+"), "CC2Elm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add CCII-"), "CC2NegElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Comparator (Hi-Z/GND output)"), "ComparatorElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add OTA (LM13700 style)"), "OTAElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Voltage-Controlled Voltage Source (VCVS)"), "VCVSElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Voltage-Controlled Current Source (VCCS)"), "VCCSElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Current-Controlled Voltage Source (CCVS)"), "CCVSElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Current-Controlled Current Source (CCCS)"), "CCCSElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Optocoupler"), "OptocouplerElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Time Delay Relay"), "TimeDelayRelayElm"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add LM317"), "CustomCompositeElm:~LM317-v2"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add TL431"), "CustomCompositeElm:~TL431"));
-    	activeBlocMenuBar.addItem(getClassCheckItem(LS("Add Subcircuit Instance"), "CustomCompositeElm"));
-    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+LS("&nbsp;</div>Active Building Blocks")), activeBlocMenuBar);
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Op Amp (ideal, - on top)"), "OpAmpElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Op Amp (ideal, + on top)"), "OpAmpSwapElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Op Amp (real)"), "OpAmpRealElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Analog Switch (SPST)"), "AnalogSwitchElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Analog Switch (SPDT)"), "AnalogSwitch2Elm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Tristate Buffer"), "TriStateElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Schmitt Trigger"), "SchmittElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Schmitt Trigger (Inverting)"), "InvertingSchmittElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Delay Buffer"), "DelayBufferElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add CCII+"), "CC2Elm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add CCII-"), "CC2NegElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Comparator (Hi-Z/GND output)"), "ComparatorElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add OTA (LM13700 style)"), "OTAElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Voltage-Controlled Voltage Source (VCVS)"), "VCVSElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Voltage-Controlled Current Source (VCCS)"), "VCCSElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Current-Controlled Voltage Source (CCVS)"), "CCVSElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Current-Controlled Current Source (CCCS)"), "CCCSElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Optocoupler"), "OptocouplerElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Time Delay Relay"), "TimeDelayRelayElm"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add LM317"), "CustomCompositeElm:~LM317-v2"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add TL431"), "CustomCompositeElm:~TL431"));
+    	activeBlocMenuBar.addItem(getClassCheckItem(Locale.LS("Add Subcircuit Instance"), "CustomCompositeElm"));
+    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+Locale.LS("&nbsp;</div>Active Building Blocks")), activeBlocMenuBar);
     	
     	MenuBar gateMenuBar = new MenuBar(true);
-    	gateMenuBar.addItem(getClassCheckItem(LS("Add Logic Input"), "LogicInputElm"));
-    	gateMenuBar.addItem(getClassCheckItem(LS("Add Logic Output"), "LogicOutputElm"));
-    	gateMenuBar.addItem(getClassCheckItem(LS("Add Inverter"), "InverterElm"));
-    	gateMenuBar.addItem(getClassCheckItem(LS("Add NAND Gate"), "NandGateElm"));
-    	gateMenuBar.addItem(getClassCheckItem(LS("Add NOR Gate"), "NorGateElm"));
-    	gateMenuBar.addItem(getClassCheckItem(LS("Add AND Gate"), "AndGateElm"));
-    	gateMenuBar.addItem(getClassCheckItem(LS("Add OR Gate"), "OrGateElm"));
-    	gateMenuBar.addItem(getClassCheckItem(LS("Add XOR Gate"), "XorGateElm"));
-    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+LS("&nbsp;</div>Logic Gates, Input and Output")), gateMenuBar);
+    	gateMenuBar.addItem(getClassCheckItem(Locale.LS("Add Logic Input"), "LogicInputElm"));
+    	gateMenuBar.addItem(getClassCheckItem(Locale.LS("Add Logic Output"), "LogicOutputElm"));
+    	gateMenuBar.addItem(getClassCheckItem(Locale.LS("Add Inverter"), "InverterElm"));
+    	gateMenuBar.addItem(getClassCheckItem(Locale.LS("Add NAND Gate"), "NandGateElm"));
+    	gateMenuBar.addItem(getClassCheckItem(Locale.LS("Add NOR Gate"), "NorGateElm"));
+    	gateMenuBar.addItem(getClassCheckItem(Locale.LS("Add AND Gate"), "AndGateElm"));
+    	gateMenuBar.addItem(getClassCheckItem(Locale.LS("Add OR Gate"), "OrGateElm"));
+    	gateMenuBar.addItem(getClassCheckItem(Locale.LS("Add XOR Gate"), "XorGateElm"));
+    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+Locale.LS("&nbsp;</div>Logic Gates, Input and Output")), gateMenuBar);
 
     	MenuBar chipMenuBar = new MenuBar(true);
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add D Flip-Flop"), "DFlipFlopElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add JK Flip-Flop"), "JKFlipFlopElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add T Flip-Flop"), "TFlipFlopElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add 7 Segment LED"), "SevenSegElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add 7 Segment Decoder"), "SevenSegDecoderElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add Multiplexer"), "MultiplexerElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add Demultiplexer"), "DeMultiplexerElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add SIPO shift register"), "SipoShiftElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add PISO shift register"), "PisoShiftElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add Counter"), "CounterElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add Counter w/ Load"), "Counter2Elm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add Ring Counter"), "DecadeElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add Latch"), "LatchElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add Sequence generator"), "SeqGenElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add Adder"), "FullAdderElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add Half Adder"), "HalfAdderElm"));
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add Custom Logic"), "UserDefinedLogicElm")); // don't change this, it will break people's saved shortcuts
-    	chipMenuBar.addItem(getClassCheckItem(LS("Add Static RAM"), "SRAMElm"));
-    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+LS("&nbsp;</div>Digital Chips")), chipMenuBar);
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add D Flip-Flop"), "DFlipFlopElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add JK Flip-Flop"), "JKFlipFlopElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add T Flip-Flop"), "TFlipFlopElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add 7 Segment LED"), "SevenSegElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add 7 Segment Decoder"), "SevenSegDecoderElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add Multiplexer"), "MultiplexerElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add Demultiplexer"), "DeMultiplexerElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add SIPO shift register"), "SipoShiftElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add PISO shift register"), "PisoShiftElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add Counter"), "CounterElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add Counter w/ Load"), "Counter2Elm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add Ring Counter"), "DecadeElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add Latch"), "LatchElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add Sequence generator"), "SeqGenElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add Adder"), "FullAdderElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add Half Adder"), "HalfAdderElm"));
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add Custom Logic"), "UserDefinedLogicElm")); // don't change this, it will break people's saved shortcuts
+    	chipMenuBar.addItem(getClassCheckItem(Locale.LS("Add Static RAM"), "SRAMElm"));
+    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+Locale.LS("&nbsp;</div>Digital Chips")), chipMenuBar);
     	
     	MenuBar achipMenuBar = new MenuBar(true);
-    	achipMenuBar.addItem(getClassCheckItem(LS("Add 555 Timer"), "TimerElm"));
-    	achipMenuBar.addItem(getClassCheckItem(LS("Add Phase Comparator"), "PhaseCompElm"));
-    	achipMenuBar.addItem(getClassCheckItem(LS("Add DAC"), "DACElm"));
-    	achipMenuBar.addItem(getClassCheckItem(LS("Add ADC"), "ADCElm"));
-    	achipMenuBar.addItem(getClassCheckItem(LS("Add VCO"), "VCOElm"));
-    	achipMenuBar.addItem(getClassCheckItem(LS("Add Monostable"), "MonostableElm"));
-    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+LS("&nbsp;</div>Analog and Hybrid Chips")), achipMenuBar);
+    	achipMenuBar.addItem(getClassCheckItem(Locale.LS("Add 555 Timer"), "TimerElm"));
+    	achipMenuBar.addItem(getClassCheckItem(Locale.LS("Add Phase Comparator"), "PhaseCompElm"));
+    	achipMenuBar.addItem(getClassCheckItem(Locale.LS("Add DAC"), "DACElm"));
+    	achipMenuBar.addItem(getClassCheckItem(Locale.LS("Add ADC"), "ADCElm"));
+    	achipMenuBar.addItem(getClassCheckItem(Locale.LS("Add VCO"), "VCOElm"));
+    	achipMenuBar.addItem(getClassCheckItem(Locale.LS("Add Monostable"), "MonostableElm"));
+    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+Locale.LS("&nbsp;</div>Analog and Hybrid Chips")), achipMenuBar);
     	
     	if (subcircuitMenuBar == null)
     	    subcircuitMenuBar = new MenuBar[2];
     	subcircuitMenuBar[num] = new MenuBar(true);
-    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+LS("&nbsp;</div>Subcircuits")), subcircuitMenuBar[num]);
+    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+Locale.LS("&nbsp;</div>Subcircuits")), subcircuitMenuBar[num]);
     	
     	MenuBar otherMenuBar = new MenuBar(true);
     	CheckboxMenuItem mi;
-    	otherMenuBar.addItem(mi=getClassCheckItem(LS("Drag All"), "DragAll"));
-    	mi.setShortcut(LS("(Alt-drag)"));
-    	otherMenuBar.addItem(mi=getClassCheckItem(LS("Drag Row"), "DragRow"));
-    	mi.setShortcut(LS("(A-S-drag)"));
-    	otherMenuBar.addItem(mi=getClassCheckItem(LS("Drag Column"), "DragColumn"));
-    	mi.setShortcut(isMac ? LS("(A-Cmd-drag)") : LS("(A-M-drag)"));
-    	otherMenuBar.addItem(getClassCheckItem(LS("Drag Selected"), "DragSelected"));
-    	otherMenuBar.addItem(mi=getClassCheckItem(LS("Drag Post"), "DragPost"));
+    	otherMenuBar.addItem(mi=getClassCheckItem(Locale.LS("Drag All"), "DragAll"));
+    	mi.setShortcut(Locale.LS("(Alt-drag)"));
+    	otherMenuBar.addItem(mi=getClassCheckItem(Locale.LS("Drag Row"), "DragRow"));
+    	mi.setShortcut(Locale.LS("(A-S-drag)"));
+    	otherMenuBar.addItem(mi=getClassCheckItem(Locale.LS("Drag Column"), "DragColumn"));
+    	mi.setShortcut(isMac ? Locale.LS("(A-Cmd-drag)") : Locale.LS("(A-M-drag)"));
+    	otherMenuBar.addItem(getClassCheckItem(Locale.LS("Drag Selected"), "DragSelected"));
+    	otherMenuBar.addItem(mi=getClassCheckItem(Locale.LS("Drag Post"), "DragPost"));
     	mi.setShortcut("(" + ctrlMetaKey + "drag)");
 
-    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+LS("&nbsp;</div>Drag")), otherMenuBar);
+    	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+Locale.LS("&nbsp;</div>Drag")), otherMenuBar);
 
-    	mainMenuBar.addItem(mi=getClassCheckItem(LS("Select/Drag Sel"), "Select"));
-    	mi.setShortcut(LS("(space or Shift-drag)"));
+    	mainMenuBar.addItem(mi=getClassCheckItem(Locale.LS("Select/Drag Sel"), "Select"));
+    	mi.setShortcut(Locale.LS("(space or Shift-drag)"));
     }
     
     void composeSubcircuitMenu() {
@@ -1278,7 +1348,7 @@ MouseOutHandler, MouseWheelHandler {
 	    int i;
 	    for (i = 0; i != list.size(); i++) {
 		String name = list.get(i).name;
-		menu.addItem(getClassCheckItem(LS("Add ") + name, "CustomCompositeElm:" + name));
+		menu.addItem(getClassCheckItem(Locale.LS("Add ") + name, "CustomCompositeElm:" + name));
 	    }
 	}
 	lastSubcircuitMenuUpdate = CustomCompositeModel.sequenceNumber;
@@ -1286,44 +1356,28 @@ MouseOutHandler, MouseWheelHandler {
     
     public void composeSelectScopeMenu(MenuBar sb) {
 	sb.clearItems();
+	selectScopeMenuItems = new Vector<MenuItem>();
 	for( int i = 0; i < scopeCount; i++) {
 	    String s, l;
-	    s = LS("Scope")+" "+ Integer.toString(i+1);
+	    s = Locale.LS("Scope")+" "+ Integer.toString(i+1);
 	    l=scopes[i].getScopeLabelOrText();
 	    if (l!="")
 		s+=" ("+SafeHtmlUtils.htmlEscape(l)+")";
-	    sb.addItem(new MenuItem(s ,new MyCommand("elm", "addToScope"+Integer.toString(i))));
+	    selectScopeMenuItems.add(new MenuItem(s ,new MyCommand("elm", "addToScope"+Integer.toString(i))));
 	}
 	int c = countScopeElms();
 	for (int j = 0; j < c; j++) {
 	    String s,l;
-	    s = LS("Undocked Scope")+" "+ Integer.toString(j+1);
+	    s = Locale.LS("Undocked Scope")+" "+ Integer.toString(j+1);
 	    l = getNthScopeElm(j).elmScope.getScopeLabelOrText();
 	    if (l!="")
 		s += " ("+SafeHtmlUtils.htmlEscape(l)+")";
-	    sb.addItem(new MenuItem(s, new MyCommand("elm", "addToScope"+Integer.toString(scopeCount+j))));
+	    selectScopeMenuItems.add(new MenuItem(s, new MyCommand("elm", "addToScope"+Integer.toString(scopeCount+j))));
 	}
+	for (MenuItem mi : selectScopeMenuItems)
+	    sb.addItem(mi);
     }
     
-    public void setiFrameHeight() {
-    	if (iFrame==null)
-    		return;
-    	/*int i;
-    	int cumheight=0;
-    	for (i=0; i < verticalPanel.getWidgetIndex(iFrame); i++) {
-    		if (verticalPanel.getWidget(i) !=loadFileInput) {
-    			cumheight=cumheight+verticalPanel.getWidget(i).getOffsetHeight();
-    			if (verticalPanel.getWidget(i).getStyleName().contains("topSpace"))
-    					cumheight+=12;
-    		}
-    	}
-    	int ih=RootLayoutPanel.get().getOffsetHeight()-MENUBARHEIGHT-cumheight;
-    	if (ih<0)
-    		ih=0;
-    	iFrame.setHeight(ih+"px");*/
-    }
-
-// The void is the same as setiFrameHeight():
     public void setSlidersPanelHeight() {
     	int i;
     	int cumheight=0;
@@ -1337,8 +1391,10 @@ MouseOutHandler, MouseWheelHandler {
     	int ih=RootLayoutPanel.get().getOffsetHeight()-MENUBARHEIGHT-cumheight;
     	if (ih<0)
     		ih=0;
-    	slidersPanel.setHeight(ih+"px");
+	   	slidersPanel.setHeight(ih+"px");
     }
+    
+
 
     
 
@@ -1381,6 +1437,9 @@ MouseOutHandler, MouseWheelHandler {
 
     
     void centreCircuit() {
+	if (elmList == null)  // avoid exception if called during initialization
+	    return;
+	
 	Rectangle bounds = getCircuitBounds();
     	setCircuitArea();
 	
@@ -1443,12 +1502,12 @@ MouseOutHandler, MouseWheelHandler {
     	    	if (stopMessage != null)
     	    	    return;
     		simRunning = true;
-    		runStopButton.setHTML(LSHTML("<strong>RUN</strong>&nbsp;/&nbsp;Stop"));
+    		runStopButton.setHTML(Locale.LSHTML("<strong>RUN</strong>&nbsp;/&nbsp;Stop"));
     		runStopButton.setStylePrimaryName("topButton");
     		timer.scheduleRepeating(FASTTIMER);
     	} else {
     		simRunning = false;
-    		runStopButton.setHTML(LSHTML("Run&nbsp;/&nbsp;<strong>STOP</strong>"));
+    		runStopButton.setHTML(Locale.LSHTML("Run&nbsp;/&nbsp;<strong>STOP</strong>"));
     		runStopButton.setStylePrimaryName("topButton-red");
     		timer.cancel();
 		repaint();
@@ -1710,6 +1769,8 @@ MouseOutHandler, MouseWheelHandler {
 	    leftX = max(canvasWidth-infoWidth, 0);
 	    int h0 = (int) (canvasHeight * scopeHeightFraction);
 	    h = (mouseElm == null) ? 70 : h0;
+	    if (hideInfoBox)
+		h = 0;
 	}
 	if (stopMessage != null && circuitArea.height > canvasHeight-30)
 	    h = 30;
@@ -1738,15 +1799,15 @@ MouseOutHandler, MouseWheelHandler {
 
 	if (stopMessage != null) {
 	    g.drawString(stopMessage, 10, canvasHeight-10);
-	} else {
+	} else if (!hideInfoBox) {
 	    // in JS it doesn't matter how big this is, there's no out-of-bounds exception
 	    String info[] = new String[10];
 	    if (mouseElm != null) {
 		if (mousePost == -1) {
 		    mouseElm.getInfo(info);
-		    info[0] = LS(info[0]);
+		    info[0] = Locale.LS(info[0]);
 		    if (info[1] != null)
-			info[1] = LS(info[1]);
+			info[1] = Locale.LS(info[1]);
 		} else
 		    info[0] = "V = " +
 			CircuitElm.getUnitText(mouseElm.getPostVoltage(mousePost), "V");
@@ -1762,7 +1823,7 @@ MouseOutHandler, MouseWheelHandler {
 	    	double timerate = 160*getIterCount()*timeStep;
 	    	if (timerate >= .1)
 	    	    info[0] += " (" + CircuitElm.showFormat.format(timerate) + "x)";
-	    	info[1] = LS("time step = ") + CircuitElm.getTimeText(timeStep);
+	    	info[1] = Locale.LS("time step = ") + CircuitElm.getTimeText(timeStep);
 	    }
 	    if (hintType != -1) {
 		for (i = 0; info[i] != null; i++)
@@ -1785,7 +1846,7 @@ MouseOutHandler, MouseWheelHandler {
 	    int badnodes = badConnectionList.size();
 	    if (badnodes > 0)
 		info[i++] = badnodes + ((badnodes == 1) ?
-					LS(" bad connection") : LS(" bad connections"));
+					Locale.LS(" bad connection") : Locale.LS(" bad connections"));
 	    if (savedFlag)
 		info[i++] = "(saved)";
 
@@ -1802,6 +1863,14 @@ MouseOutHandler, MouseWheelHandler {
     }
     
     int oldScopeCount = -1;
+    
+    boolean scopeMenuIsSelected(Scope s) {
+	if (scopeMenuSelected < 0)
+	    return false;
+	if (scopeMenuSelected < scopeCount)
+	    return scopes[scopeMenuSelected] == s;
+	return getNthScopeElm(scopeMenuSelected-scopeCount).elmScope == s; 
+    }
     
     void setupScopes() {
     	int i;
@@ -1880,7 +1949,7 @@ MouseOutHandler, MouseWheelHandler {
 		return null;
 	    InductorElm ie = (InductorElm) c1;
 	    CapacitorElm ce = (CapacitorElm) c2;
-	    return LS("res.f = ") + CircuitElm.getUnitText(1/(2*pi*Math.sqrt(ie.inductance*
+	    return Locale.LS("res.f = ") + CircuitElm.getUnitText(1/(2*pi*Math.sqrt(ie.inductance*
 						    ce.capacitance)), "Hz");
 	}
 	if (hintType == HINT_RC) {
@@ -1900,7 +1969,7 @@ MouseOutHandler, MouseWheelHandler {
 		return null;
 	    ResistorElm re = (ResistorElm) c1;
 	    CapacitorElm ce = (CapacitorElm) c2;
-	    return LS("f.3db = ") +
+	    return Locale.LS("f.3db = ") +
 		CircuitElm.getUnitText(1/(2*pi*re.resistance*ce.capacitance), "Hz");
 	}
 	if (hintType == HINT_3DB_L) {
@@ -1910,7 +1979,7 @@ MouseOutHandler, MouseWheelHandler {
 		return null;
 	    ResistorElm re = (ResistorElm) c1;
 	    InductorElm ie = (InductorElm) c2;
-	    return LS("f.3db = ") +
+	    return Locale.LS("f.3db = ") +
 		CircuitElm.getUnitText(re.resistance/(2*pi*ie.inductance), "Hz");
 	}
 	if (hintType == HINT_TWINT) {
@@ -1920,7 +1989,7 @@ MouseOutHandler, MouseWheelHandler {
 		return null;
 	    ResistorElm re = (ResistorElm) c1;
 	    CapacitorElm ce = (CapacitorElm) c2;
-	    return LS("fc = ") +
+	    return Locale.LS("fc = ") +
 		CircuitElm.getUnitText(1/(2*pi*re.resistance*ce.capacitance), "Hz");
 	}
 	return null;
@@ -2791,7 +2860,7 @@ MouseOutHandler, MouseWheelHandler {
     }
 
     void stop(String s, CircuitElm ce) {
-	stopMessage = LS(s);
+	stopMessage = Locale.LS(s);
 	circuitMatrix = null;  // causes an exception
 	stopElm = ce;
 	setSimRunning(false);
@@ -2977,10 +3046,9 @@ MouseOutHandler, MouseWheelHandler {
 	
 	// keep track of iterations completed without convergence issues
 	int goodIterations = 100;
-	boolean goodIteration = true;
 	
 	for (iter = 1; ; iter++) {
-	    if (goodIterations >= 3 && timeStep < maxTimeStep && goodIteration) {
+	    if (goodIterations >= 3 && timeStep < maxTimeStep) {
 		// things are going well, double the time step
 		timeStep = Math.min(timeStep*2, maxTimeStep);
 		console("timestep up = " + timeStep + " at " + t);
@@ -3069,13 +3137,12 @@ MouseOutHandler, MouseWheelHandler {
 	    }
 	    if (subiter > 5 || timeStep < maxTimeStep)
 		console("converged after " + subiter + " iterations, timeStep = " + timeStep);
-	    if (subiter < 3 && goodIteration)
+	    if (subiter < 3)
 		goodIterations++;
 	    else
 		goodIterations = 0;
 	    t += timeStep;
 	    timeStepAccum += timeStep;
-	    goodIteration = true;
 	    if (timeStepAccum >= maxTimeStep) {
 		timeStepAccum -= maxTimeStep;
 		timeStepCount++;
@@ -3097,8 +3164,8 @@ MouseOutHandler, MouseWheelHandler {
 	    tm = System.currentTimeMillis();
 	    lit = tm;
 	    // Check whether enough time has elapsed to perform an *additional* iteration after
-	    // those we have already completed.  But limit total computation time to 50ms (20fps)
-	    if ((timeStepCount-timeStepCountAtFrameStart)*1000 >= steprate*(tm-lastIterTime) || (tm-lastFrameTime > 50))
+	    // those we have already completed.  But limit total computation time to 500ms (2fps)
+	    if ((timeStepCount-timeStepCountAtFrameStart)*1000 >= steprate*(tm-lastIterTime) || (tm-lastFrameTime > 500))
 		break;
 	    if (!simRunning)
 		break;
@@ -3251,7 +3318,7 @@ MouseOutHandler, MouseWheelHandler {
     
     public void menuPerformed(String menu, String item) {
 	if ((menu=="edit" || menu=="main" || menu=="scopes") && noEditCheckItem.getState()) {
-	    Window.alert(LS("Editing disabled.  Re-enable from the Options menu."));
+	    Window.alert(Locale.LS("Editing disabled.  Re-enable from the Options menu."));
 	    return;
 	}
     	if (item=="help")
@@ -3278,7 +3345,7 @@ MouseOutHandler, MouseWheelHandler {
     		dialogShowing = new ImportFromTextDialog(this);
     	}
     	/*if (item=="importfromdropbox") {
-    		importFromDropboxDialog = new ImportFromDropboxDialog(this);
+    		dialogShowing = new ImportFromDropboxDialog(this);
     	}*/
     	if (item=="exportasurl") {
     		doExportAsUrl();
@@ -3371,11 +3438,11 @@ MouseOutHandler, MouseWheelHandler {
     	if (item=="separateAll")
 		separateAll();
     	if (item=="zoomin")
-    	    zoomCircuit(20);
+    	    zoomCircuit(20, true);
     	if (item=="zoomout")
-    	    zoomCircuit(-20);
+    	    zoomCircuit(-20, true);
     	if (item=="zoom100")
-    	    setCircuitScale(1);
+    	    setCircuitScale(1, true);
     	if (menu=="elm" && item=="edit")
     		doEdit(menuElm);
     	if (item=="delete") {
@@ -3414,7 +3481,7 @@ MouseOutHandler, MouseWheelHandler {
     	    needAnalyze();
 	}
     	
-    	if (item.substring(0,10)=="addToScope" && menuElm != null) {
+    	if (item.startsWith("addToScope") && menuElm != null) {
     	    int n;
     	    n = Integer.parseInt(item.substring(10));
     	    if (n < scopeCount + countScopeElms()) {
@@ -3423,6 +3490,7 @@ MouseOutHandler, MouseWheelHandler {
     		else
     		    getNthScopeElm(n-scopeCount).elmScope.addElm(menuElm);
     	    }
+    	    scopeMenuSelected = -1;
     	}
     	
     	if (menu=="scopepop") {
@@ -3452,6 +3520,8 @@ MouseOutHandler, MouseWheelHandler {
     	    	    for (i = menuScope; i < scopeCount; i++)
     	    		scopes[i] = scopes[i+1];
     	    	    scopeCount--;
+
+    	            needAnalyze();      // need to rebuild scopeElmArr
     		}
     		if (item=="remove")
     		    	s.setElm(null);  // setupScopes() will clean this up
@@ -3675,12 +3745,8 @@ MouseOutHandler, MouseWheelHandler {
     void doSliders(CircuitElm ce) {
 	clearSelection();
 	pushUndo();
-	if (sliderDialog != null) {
-	    sliderDialog.setVisible(false);
-	    sliderDialog = null;
-	}
-	sliderDialog = new SliderDialog(ce, this);
-	sliderDialog.show();
+	dialogShowing = new SliderDialog(ce, this);
+	dialogShowing.show();
     }
 
 
@@ -3719,7 +3785,15 @@ MouseOutHandler, MouseWheelHandler {
     	dialogShowing = new ExportAsLocalFileDialog(dump);
     	dialogShowing.show();
     }
-    
+
+    public void importCircuitFromText(String circuitText, boolean subcircuitsOnly) {
+		int flags = subcircuitsOnly ? (CirSim.RC_SUBCIRCUITS | CirSim.RC_RETAIN) : 0;
+		if (circuitText != null) {
+			readCircuit(circuitText, flags);
+			allowSave(false);
+		}
+    }
+
     String dumpOptions() {
 	int f = (dotsCheckItem.getState()) ? 1 : 0;
 	f |= (smallGridCheckItem.getState()) ? 2 : 0;
@@ -3774,7 +3848,7 @@ MouseOutHandler, MouseWheelHandler {
 		try {
 			requestBuilder.sendRequest(null, new RequestCallback() {
 				public void onError(Request request, Throwable exception) {
-					Window.alert(LS("Can't load circuit list!"));
+					Window.alert(Locale.LS("Can't load circuit list!"));
 					GWT.log("File Error Response", exception);
 				}
 
@@ -3786,7 +3860,7 @@ MouseOutHandler, MouseWheelHandler {
 					// end or processing
 					}
 					else { 
-						Window.alert(LS("Can't load circuit list!"));
+						Window.alert(Locale.LS("Can't load circuit list!"));
 						GWT.log("Bad file server response:"+response.getStatusText() );
 					}
 				}
@@ -3803,12 +3877,8 @@ MouseOutHandler, MouseWheelHandler {
     	int stackptr = 0;
     	currentMenuBar=new MenuBar(true);
     	currentMenuBar.setAutoOpen(true);
-    	menuBar.addItem(LS("Circuits"), currentMenuBar);
-		//iconMenuItem("clone", "New Window...", new MyCommand("file", "newwindow"))
-			/*
-			exportAsTextItem = iconMenuItem("export", "Export As Text...", new MyCommand("file","exportastext"));
-		fileMenuBar.addItem(exportAsTextItem);
-			* */
+    	menuBar.addItem(Locale.LS("Circuits"), currentMenuBar);
+		
 		MenuBar h = new MenuBar(true);
 		helpItem=iconMenuItem("book-open", "User Guide", (Command)null);
 		h.addItem(helpItem);
@@ -3837,9 +3907,8 @@ MouseOutHandler, MouseWheelHandler {
 			}
 		}));
 
-		menuBar.addItem(LS("Help"), h);
+		menuBar.addItem(Locale.LS("Help"), h);
 		
-
     	stack[stackptr++] = currentMenuBar;
     	int p;
     	for (p = 0; p < len; ) {
@@ -3856,14 +3925,14 @@ MouseOutHandler, MouseWheelHandler {
     		//	MenuBar n = new Menu(line.substring(1));
     			MenuBar n = new MenuBar(true);
     			n.setAutoOpen(true);
-    			currentMenuBar.addItem(LS(line.substring(1)),n);
+    			currentMenuBar.addItem(Locale.LS(line.substring(1)),n);
     			currentMenuBar = stack[stackptr++] = n;
     		} else if (line.charAt(0) == '-') {
     			currentMenuBar = stack[--stackptr-1];
     		} else {
     			int i = line.indexOf(' ');
     			if (i > 0) {
-    				String title = LS(line.substring(i+1));
+    				String title = Locale.LS(line.substring(i+1));
     				boolean first = false;
     				if (line.charAt(0) == '>')
     					first = true;
@@ -3873,7 +3942,7 @@ MouseOutHandler, MouseWheelHandler {
     				if (file.equals(startCircuit) && startLabel == null) {
     				    startLabel = title;
     				    titleLabel.setText(title);
-						setSlidersPanelHeight();
+    				    setSlidersPanelHeight();
     				}
     				if (first && startCircuit == null) {
     					startCircuit = file;
@@ -3891,7 +3960,7 @@ MouseOutHandler, MouseWheelHandler {
 	readCircuit(text.getBytes(), flags);
 	if ((flags & RC_KEEP_TITLE) == 0)
 	    titleLabel.setText(null);
-		setSlidersPanelHeight();
+	    setSlidersPanelHeight();
     }
 
     void readCircuit(String text) {
@@ -3903,7 +3972,7 @@ MouseOutHandler, MouseWheelHandler {
     void setCircuitTitle(String s) {
 	if (s != null)
 	    titleLabel.setText(s);
-		setSlidersPanelHeight();
+	    setSlidersPanelHeight();
     }
     
 	void readSetupFile(String str, String title) {
@@ -3913,7 +3982,7 @@ MouseOutHandler, MouseWheelHandler {
 		loadFileFromURL(url);
 		if (title != null)
 		    titleLabel.setText(title);
-			setSlidersPanelHeight();
+		    setSlidersPanelHeight();
 		unsavedChanges = false;
 	}
 	
@@ -3923,7 +3992,7 @@ MouseOutHandler, MouseWheelHandler {
 	    try {
 		requestBuilder.sendRequest(null, new RequestCallback() {
 		    public void onError(Request request, Throwable exception) {
-			Window.alert(LS("Can't load circuit!"));
+			Window.alert(Locale.LS("Can't load circuit!"));
 			GWT.log("File Error Response", exception);
 		    }
 
@@ -3935,7 +4004,7 @@ MouseOutHandler, MouseWheelHandler {
 			    unsavedChanges = false;
 			}
 			else { 
-			    Window.alert(LS("Can't load circuit!"));
+			    Window.alert(Locale.LS("Can't load circuit!"));
 			    GWT.log("Bad file server response:"+response.getStatusText() );
 			}
 		    }
@@ -4495,6 +4564,7 @@ MouseOutHandler, MouseWheelHandler {
     		return;
     	}
     	mouseSelect(e);
+    	scopeMenuSelected = -1;
     }
     
     // convert screen coordinates to grid coordinates by inverting circuit transform
@@ -4977,30 +5047,36 @@ MouseOutHandler, MouseWheelHandler {
     	else if (scopeSelected != -1 && !zoomOnly)
     	    scopes[scopeSelected].onMouseWheel(e);
     	else if (!dialogIsShowing()) {
-    	    zoomCircuit(-e.getDeltaY());
+    	    mouseCursorX=e.getX();
+    	    mouseCursorY=e.getY();
+    	    zoomCircuit(-e.getDeltaY(), false);
     	    zoomTime = System.currentTimeMillis();
    	}
     	repaint();
     }
 
-    void zoomCircuit(double dy) {
+    void zoomCircuit(double dy) { zoomCircuit(dy, false); }
+
+    void zoomCircuit(double dy, boolean menu) {
 	double newScale;
     	double oldScale = transform[0];
     	double val = dy*.01;
     	newScale = Math.max(oldScale+val, .2);
     	newScale = Math.min(newScale, 2.5);
-    	setCircuitScale(newScale);
+    	setCircuitScale(newScale, menu);
     }
     
-    void setCircuitScale(double newScale) {
-	int cx = inverseTransformX(circuitArea.width/2);
-	int cy = inverseTransformY(circuitArea.height/2);
+    void setCircuitScale(double newScale, boolean menu) {
+	int constX = !menu ? mouseCursorX : circuitArea.width/2;
+	int constY = !menu ? mouseCursorY : circuitArea.height/2;
+	int cx = inverseTransformX(constX);
+	int cy = inverseTransformY(constY);
 	transform[0] = transform[3] = newScale;
 
 	// adjust translation to keep center of screen constant
 	// inverse transform = (x-t4)/t0
-	transform[4] = circuitArea.width /2 - cx*newScale;
-	transform[5] = circuitArea.height/2 - cy*newScale;
+	transform[4] = constX - cx*newScale;
+	transform[5] = constY - cy*newScale;
     }
     
     void setPowerBarEnable() {
@@ -5371,12 +5447,10 @@ MouseOutHandler, MouseWheelHandler {
     boolean dialogIsShowing() {
     	if (editDialog!=null && editDialog.isShowing())
     		return true;
-    	if (sliderDialog!=null && sliderDialog.isShowing())
-		return true;
-    	if (customLogicEditDialog!=null && customLogicEditDialog.isShowing())
-		return true;
-    	if (diodeModelEditDialog!=null && diodeModelEditDialog.isShowing())
-		return true;
+        if (customLogicEditDialog!=null && customLogicEditDialog.isShowing())
+                return true;
+        if (diodeModelEditDialog!=null && diodeModelEditDialog.isShowing())
+                return true;
        	if (dialogShowing != null && dialogShowing.isShowing())
        		return true;
     	if (contextPanel!=null && contextPanel.isShowing())
@@ -5386,11 +5460,9 @@ MouseOutHandler, MouseWheelHandler {
     	if (aboutBox !=null && aboutBox.isShowing())
     		return true;
     	if (helpDialog !=null && helpDialog.isShowing())
-			return true;
+    		return true;
     	if (licenseDialog !=null && licenseDialog.isShowing())
-			return true;
-    	/*if (importFromDropboxDialog != null && importFromDropboxDialog.isShowing())
-    		return true;*/
+    		return true;
     	return false;
     }
     
@@ -5407,13 +5479,15 @@ MouseOutHandler, MouseWheelHandler {
     				scrollValuePopup.close(true);
     		}
     		
-    		// process escape/enter for edit dialogs
+    		// process escape/enter for dialogs
     		// multiple edit dialogs could be displayed at once, pick the one in front
-    		EditDialog dlg = editDialog;
+    		Dialog dlg = editDialog;
     		if (diodeModelEditDialog != null)
     		    dlg = diodeModelEditDialog;
     		if (customLogicEditDialog != null)
     		    dlg = customLogicEditDialog;
+    		if (dialogShowing != null)
+    		    dlg = dialogShowing;
     		if (dlg!=null && dlg.isShowing() &&
     				(t & Event.ONKEYDOWN)!=0) {
     			if (code==KEY_ESCAPE)
@@ -5676,7 +5750,6 @@ MouseOutHandler, MouseWheelHandler {
     	if (iFrame!=null) {
     		int i=verticalPanel.getWidgetIndex(iFrame);
     		verticalPanel.insert(w, i);
-    		setiFrameHeight();
     	}
     	else
     		verticalPanel2.add(w);
@@ -5684,8 +5757,6 @@ MouseOutHandler, MouseWheelHandler {
     
     void removeWidgetFromVerticalPanel(Widget w){
     	verticalPanel2.remove(w);
-    	if (iFrame!=null)
-    		setiFrameHeight();
     }
     
     public static CircuitElm createCe(int tint, int x1, int y1, int x2, int y2, int f, StringTokenizer st) {
@@ -6110,27 +6181,6 @@ MouseOutHandler, MouseWheelHandler {
     }
     }-*/;
     
-    static String LS(String s) {
-	if (s == null)
-	    return null;
-	String sm = localizationMap.get(s);
-	if (sm != null)
-	    return sm;
-	
-	// use trailing ~ to differentiate strings that are the same in English but need different translations.
-	// remove these if there's no translation.
-	int ix = s.indexOf('~');
-	if (ix != s.length()-1)
-	    return s;
-	s = s.substring(0, ix);
-	sm = localizationMap.get(s);
-	if (sm != null)
-	    return sm;
-	return s;
-    }
-    static SafeHtml LSHTML(String s) { return SafeHtmlUtils.fromTrustedString(LS(s)); }
-    
-    
     // For debugging
     void dumpNodelist() {
 
@@ -6191,28 +6241,46 @@ MouseOutHandler, MouseWheelHandler {
 	    Canvas cv = getCircuitAsCanvas(CAC_PRINT);
 	    printCanvas(cv.getCanvasElement());
 	}
-	
+
 	boolean loadedCanvas2SVG = false;
-	
-	void doExportAsSVG() {
-	    // load canvas2svg if we haven't already
-	    if (!loadedCanvas2SVG) {
-		ScriptInjector.fromUrl("canvas2svg.js").setCallback(
-			new Callback<Void,Exception>() {
-			    public void onFailure(Exception reason) {
-				Window.alert("Can't load canvas2svg.js.");
-			    }
-			    public void onSuccess(Void result) {
-				loadedCanvas2SVG = true;
-				doExportAsSVG();
-			    }
+
+	boolean initializeSVGScriptIfNecessary(final String followupAction) {
+		// load canvas2svg if we haven't already
+		if (!loadedCanvas2SVG) {
+			ScriptInjector.fromUrl("canvas2svg.js").setCallback(new Callback<Void,Exception>() {
+				public void onFailure(Exception reason) {
+					Window.alert("Can't load canvas2svg.js.");
+				}
+				public void onSuccess(Void result) {
+					loadedCanvas2SVG = true;
+					if (followupAction.equals("doExportAsSVG")) {
+						doExportAsSVG();
+					} else if (followupAction.equals("doExportAsSVGFromAPI")) {
+						doExportAsSVGFromAPI();
+					}
+				}
 			}).inject();
-		return;
-	    }
-	    dialogShowing = new ExportAsImageDialog(CAC_SVG);
-	    dialogShowing.show();
+			return false;
+		}
+		return true;
 	}
-	
+
+	void doExportAsSVG() {
+		if (!initializeSVGScriptIfNecessary("doExportAsSVG")) {
+			return;
+		}
+		dialogShowing = new ExportAsImageDialog(CAC_SVG);
+		dialogShowing.show();
+	}
+
+	public void doExportAsSVGFromAPI() {
+		if (!initializeSVGScriptIfNecessary("doExportAsSVGFromAPI")) {
+			return;
+		}
+		String svg = getCircuitAsSVG();
+		callSVGRenderedHook(svg);
+	}
+
 	static final int CAC_PRINT = 0;
 	static final int CAC_IMAGE = 1;
 	static final int CAC_SVG   = 2;
@@ -6326,6 +6394,10 @@ MouseOutHandler, MouseWheelHandler {
 	    CustomLogicModel.clearDumpedFlags();
 	    DiodeModel.clearDumpedFlags();
 	    TransistorModel.clearDumpedFlags();
+            Vector<LabeledNodeElm> sideLabels[] = new Vector[] {
+                new Vector<LabeledNodeElm>(), new Vector<LabeledNodeElm>(),
+                new Vector<LabeledNodeElm>(), new Vector<LabeledNodeElm>()
+            };
 	    Vector<ExtListEntry> extList = new Vector<ExtListEntry>();
 	    boolean sel = isSelection();
 	    
@@ -6347,13 +6419,30 @@ MouseOutHandler, MouseWheelHandler {
 		    if (extnodes[ce.getNode(0)])
 			continue;
 		    
+                    int side = ChipElm.SIDE_W;
+                    if (Math.abs(ce.dx) >= Math.abs(ce.dy) && ce.dx > 0) side = ChipElm.SIDE_E;
+                    if (Math.abs(ce.dx) <= Math.abs(ce.dy) && ce.dy < 0) side = ChipElm.SIDE_N;
+                    if (Math.abs(ce.dx) <= Math.abs(ce.dy) && ce.dy > 0) side = ChipElm.SIDE_S;
+                    
 		    // create ext list entry for external nodes
-		    ExtListEntry ent = new ExtListEntry(label, ce.getNode(0));
-		    extList.add(ent);
+                    sideLabels[side].add(lne);
 		    extnodes[ce.getNode(0)] = true;
 		}
 	    }
 	    
+            Collections.sort(sideLabels[ChipElm.SIDE_W], (LabeledNodeElm a, LabeledNodeElm b) -> Integer.signum(a.y - b.y));
+            Collections.sort(sideLabels[ChipElm.SIDE_E], (LabeledNodeElm a, LabeledNodeElm b) -> Integer.signum(a.y - b.y));
+            Collections.sort(sideLabels[ChipElm.SIDE_N], (LabeledNodeElm a, LabeledNodeElm b) -> Integer.signum(a.x - b.x));
+            Collections.sort(sideLabels[ChipElm.SIDE_S], (LabeledNodeElm a, LabeledNodeElm b) -> Integer.signum(a.x - b.x));
+
+            for (int side = 0; side < sideLabels.length; side++) {
+                for (int pos = 0; pos < sideLabels[side].size(); pos++) {
+                    LabeledNodeElm lne = sideLabels[side].get(pos);
+                    ExtListEntry ent = new ExtListEntry(lne.text, lne.getNode(0), pos, side);
+                    extList.add(ent);
+                }
+            }
+
 	    // output all the elements
 	    for (i = 0; i != elmList.size(); i++) {
 		CircuitElm ce = getElm(i);
@@ -6480,10 +6569,18 @@ MouseOutHandler, MouseWheelHandler {
 	    $wnd.CircuitJS1 = {
 	        setSimRunning: $entry(function(run) { that.@com.lushprojects.circuitjs1.client.CirSim::setSimRunning(Z)(run); } ),
 	        getTime: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::t; } ),
+	        getTimeStep: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::timeStep; } ),
+	        setTimeStep: $entry(function(ts) { that.@com.lushprojects.circuitjs1.client.CirSim::timeStep = ts; } ), // don't use this, see #843
+	        getMaxTimeStep: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::maxTimeStep; } ),
+	        setMaxTimeStep: $entry(function(ts) { that.@com.lushprojects.circuitjs1.client.CirSim::maxTimeStep = 
+                                                      that.@com.lushprojects.circuitjs1.client.CirSim::timeStep = ts; } ),
 	        isRunning: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::simIsRunning()(); } ),
 	        getNodeVoltage: $entry(function(n) { return that.@com.lushprojects.circuitjs1.client.CirSim::getLabeledNodeVoltage(Ljava/lang/String;)(n); } ),
 	        setExtVoltage: $entry(function(n, v) { that.@com.lushprojects.circuitjs1.client.CirSim::setExtVoltage(Ljava/lang/String;D)(n, v); } ),
-	        getElements: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::getJSElements()(); } )
+	        getElements: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::getJSElements()(); } ),
+	        getCircuitAsSVG: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::doExportAsSVGFromAPI()(); } ),
+	        exportCircuit: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::dumpCircuit()(); } ),
+	        importCircuit: $entry(function(circuit, subcircuitsOnly) { return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly); })
 	    };
 	    var hook = $wnd.oncircuitjsloaded;
 	    if (hook)
@@ -6509,6 +6606,12 @@ MouseOutHandler, MouseWheelHandler {
 	    	hook($wnd.CircuitJS1);
 	}-*/;
 	
+	native void callSVGRenderedHook(String svgData) /*-{
+		var hook = $wnd.CircuitJS1.onsvgrendered;
+		if (hook)
+			hook($wnd.CircuitJS1, svgData);
+	}-*/;
+
 	class UndoItem {
 	    public String dump;
 	    public double scale, transform4, transform5;

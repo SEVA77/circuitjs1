@@ -95,8 +95,9 @@ package com.lushprojects.circuitjs1.client;
 	    for (i = 0; i != inputCount; i++, i0++) {
 		if (i0 == 0 && (inputCount & 1) == 0)
 		    i0++;
-		inPosts[i] = interpPoint(point1, point2, 0, hs*i0);
-		inGates[i] = interpPoint(lead1,  lead2,  icircles != null ? -8/(ww*2.) : 0, hs*i0);
+		double adj = getLeadAdjustment(i);
+                inPosts[i] = interpPoint(point1, point2, 0, hs*i0);
+		inGates[i] = interpPoint(lead1,  lead2,  icircles != null ? -8/(ww*2.)+adj : adj, hs*i0);
 		if (icircles != null)
 		    icircles[i] = interpPoint(lead1, lead2,  -4/(ww*2.), hs*i0);
 		volts[i] = (lastOutput ^ isInverting()) ? 5 : 0;
@@ -107,6 +108,8 @@ package com.lushprojects.circuitjs1.client;
 		schmittPoly = getSchmittPolygon(gsize, .47f);
 	}
 	
+	double getLeadAdjustment(int ix) { return 0; }
+	
 	void createEuroGatePolygon() {
 	    Point pts[] = newPointArray(4);
 	    interpPoint2(lead1, lead2, pts[0], pts[1], 0, hs2);
@@ -116,6 +119,10 @@ package com.lushprojects.circuitjs1.client;
 
 	String getGateText() { return null; }
 	static boolean useEuroGates() { return sim.euroGatesCheckItem.getState(); }
+
+	void drawGatePolygon(Graphics g) {
+	    drawThickPolygon(g, gatePoly);
+	}
 	
 	void draw(Graphics g) {
 	    int i;
@@ -126,11 +133,12 @@ package com.lushprojects.circuitjs1.client;
 	    setVoltageColor(g, volts[inputCount]);
 	    drawThickLine(g, lead2, point2);
 	    g.setColor(needsHighlight() ? selectColor : lightGrayColor);
-	    drawThickPolygon(g, gatePoly);
 	    if (useEuroGates()) {
-		    Point center = interpPoint(point1, point2, .5);
-		    drawCenteredText(g, getGateText(), center.x, center.y-6*gsize, true);
-	    }
+		drawThickPolygon(g, gatePoly);
+		Point center = interpPoint(point1, point2, .5);
+		drawCenteredText(g, getGateText(), center.x, center.y-6*gsize, true);
+	    } else
+	        drawGatePolygon(g);
 	    g.setLineWidth(2);
 	    if (hasSchmittInputs())
 		drawPolygon(g, schmittPoly);
@@ -177,24 +185,29 @@ package com.lushprojects.circuitjs1.client;
 	abstract boolean calcFunction();
 	
 	int oscillationCount;
+	double lastTime;
 	
 	void doStep() {
 	    boolean f = calcFunction();
 	    if (isInverting())
 		f = !f;
 	    
-	    // detect oscillation (using same strategy as Atanua)
-	    if (lastOutput == !f) {
-		if (oscillationCount++ > 50) {
-		    // output is oscillating too much, randomly leave output the same
+	    if (lastTime != sim.t) {
+		// detect oscillation (using same strategy as Atanua)
+		if (lastOutput == !f) {
+		    if (oscillationCount++ > 50) {
+			// output is oscillating too much, randomly leave output the same
+			oscillationCount = 0;
+			if (sim.getrand(10) > 5)
+			    f = lastOutput;
+		    }
+		} else
 		    oscillationCount = 0;
-		    if (sim.getrand(10) > 5)
-			f = lastOutput;
-		}
-	    } else
-		oscillationCount = 0;
 	    
-	    lastOutput = f;
+		lastOutput = f;
+		lastTime = sim.t;
+	    }
+	    
 	    double res = f ? highVoltage : 0;
 	    sim.updateVoltageSource(0, nodes[inputCount], voltSource, res);
 	}

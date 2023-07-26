@@ -19,7 +19,6 @@
 
 package com.lushprojects.circuitjs1.client;
 
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -27,6 +26,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.lushprojects.circuitjs1.client.util.Locale;
 import com.google.gwt.event.dom.client.ClickHandler;
 
 import java.util.Vector;
@@ -34,11 +34,9 @@ import java.util.Vector;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.safehtml.shared.SafeHtml;
 
-public class ShortcutsDialog extends DialogBox {
+public class ShortcutsDialog extends Dialog {
 	
 	VerticalPanel vp;
 	CirSim sim;
@@ -56,7 +54,7 @@ public class ShortcutsDialog extends DialogBox {
 		vp.add(sp);
 		sp.setHeight("400px");
 		sp.setAlwaysShowScrollBars(true);
-		setText(sim.LS("Edit Shortcuts"));
+		setText(Locale.LS("Edit Shortcuts"));
 		textBoxes = new Vector<TextBox>();
 		
 		FlexTable table = new FlexTable();
@@ -84,28 +82,12 @@ public class ShortcutsDialog extends DialogBox {
 		hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 		hp.setStyleName("topSpace");
 		vp.add(hp);
-		hp.add(okButton = new Button(sim.LS("OK")));
+		hp.add(okButton = new Button(Locale.LS("OK")));
 		hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-		hp.add(cancelButton = new Button(sim.LS("Cancel")));
+		hp.add(cancelButton = new Button(Locale.LS("Cancel")));
 		okButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-			    int i;
-			    if (checkForDuplicates())
-				return;
-			    // clear existing shortcuts
-			    for (i = 0; i != sim.shortcuts.length; i++)
-				sim.shortcuts[i] = null;
-			    // load new ones
-			    for (i = 0; i != textBoxes.size(); i++) {
-				String str = textBoxes.get(i).getText();
-				CheckboxMenuItem item = sim.mainMenuItems.get(i);
-				item.setShortcut(str);
-				if (str.length() > 0)
-				    sim.shortcuts[str.charAt(0)] = sim.mainMenuItemNames.get(i);
-			    }
-			    // save to local storage
-			    sim.saveShortcuts();
-			    closeDialog();
+			    enterPressed();
 			}
 		});
 		cancelButton.addClickHandler(new ClickHandler() {
@@ -114,6 +96,26 @@ public class ShortcutsDialog extends DialogBox {
 			}
 		});
 		this.center();
+	}
+	
+	public void enterPressed() {
+	    int i;
+	    if (checkForDuplicates())
+		return;
+	    // clear existing shortcuts
+	    for (i = 0; i != sim.shortcuts.length; i++)
+		sim.shortcuts[i] = null;
+	    // load new ones
+	    for (i = 0; i != textBoxes.size(); i++) {
+		String str = textBoxes.get(i).getText();
+		CheckboxMenuItem item = sim.mainMenuItems.get(i);
+		item.setShortcut(str);
+		if (str.length() > 0)
+		    sim.shortcuts[str.charAt(0)] = sim.mainMenuItemNames.get(i);
+	    }
+	    // save to local storage
+	    sim.saveShortcuts();
+	    closeDialog();
 	}
 	
 	boolean checkForDuplicates() {
@@ -147,10 +149,4 @@ public class ShortcutsDialog extends DialogBox {
 	    okButton.setEnabled(!result);
 	    return result;
 	}
-	
-	protected void closeDialog()
-	{
-		this.hide();
-	}
-
 }

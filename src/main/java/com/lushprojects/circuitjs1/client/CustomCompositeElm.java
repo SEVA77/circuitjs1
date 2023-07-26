@@ -4,7 +4,7 @@ import java.util.Vector;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.lushprojects.circuitjs1.client.ChipElm.Pin;
+import com.lushprojects.circuitjs1.client.util.Locale;
 
 // instances of subcircuits
 
@@ -15,6 +15,7 @@ public class CustomCompositeElm extends CompositeElm {
     int inputCount, outputCount;
     CustomCompositeModel model;
     static String lastModelName = "default";
+    static final int FLAG_SMALL = 2;
     
     public CustomCompositeElm(int xx, int yy) {
 	super(xx, yy);
@@ -22,8 +23,10 @@ public class CustomCompositeElm extends CompositeElm {
 	// use last model as default when creating new element in UI.
 	// use default otherwise, to avoid infinite recursion when creating nested subcircuits.
 	modelName = (xx == 0 && yy == 0) ? "default" : lastModelName;
-	
+		
 	flags |= FLAG_ESCAPE;
+	if (sim.smallGridCheckItem.getState())
+	    flags |= FLAG_SMALL;
 	updateModels();
     }
 
@@ -31,6 +34,8 @@ public class CustomCompositeElm extends CompositeElm {
 	super(xx, yy);
 	modelName = name;
 	flags |= FLAG_ESCAPE;
+	if (sim.smallGridCheckItem.getState())
+	    flags |= FLAG_SMALL;
 	updateModels();
     }
     
@@ -89,6 +94,10 @@ public class CustomCompositeElm extends CompositeElm {
 	chip.x2 = x2;
 	chip.y2 = y2;
 	chip.flags = (flags & (ChipElm.FLAG_FLIP_X | ChipElm.FLAG_FLIP_Y | ChipElm.FLAG_FLIP_XY));
+        if (x2-x > model.sizeX*16 && this == sim.dragElm)
+	    flags &= ~FLAG_SMALL;
+	chip.setSize((flags & FLAG_SMALL) != 0 ? 1 : 2);
+	chip.setLabel((model.flags & CustomCompositeModel.FLAG_SHOW_LABEL) != 0 ? model.name : null);
 	
 	chip.sizeX = model.sizeX;
 	chip.sizeY = model.sizeY;
@@ -148,7 +157,7 @@ public class CustomCompositeElm extends CompositeElm {
 	}
         if (n == 1) {
             EditInfo ei = new EditInfo("", 0, -1, -1);
-            ei.button = new Button(sim.LS("Edit Pin Layout"));
+            ei.button = new Button(Locale.LS("Edit Pin Layout"));
             return ei;
         }
         if (n == 2) {
@@ -168,7 +177,7 @@ public class CustomCompositeElm extends CompositeElm {
         }
         if (n == 5 && model.canLoadModelCircuit()) {
             EditInfo ei = new EditInfo("", 0, -1, -1);
-            ei.button = new Button(sim.LS("Load Model Circuit"));
+            ei.button = new Button(Locale.LS("Load Model Circuit"));
             return ei;
         }
 	return null;
@@ -186,7 +195,7 @@ public class CustomCompositeElm extends CompositeElm {
 	}
         if (n == 1) {
             if (model.name.equals("default")) {
-        	Window.alert(CirSim.LS("Can't edit this model."));
+        	Window.alert(Locale.LS("Can't edit this model."));
         	return;
             }
             EditCompositeModelDialog dlg = new EditCompositeModelDialog();
@@ -210,7 +219,7 @@ public class CustomCompositeElm extends CompositeElm {
         }
         if (n == 5) {
             sim.readCircuit(model.modelCircuit);
-            sim.editDialog.closeDialog();
+            CirSim.editDialog.closeDialog();
         }
     }
     

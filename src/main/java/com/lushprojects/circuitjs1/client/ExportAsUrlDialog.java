@@ -19,26 +19,25 @@
 
 package com.lushprojects.circuitjs1.client;
 
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.lushprojects.circuitjs1.client.util.Locale;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.Request;
 
-public class ExportAsUrlDialog extends DialogBox {
+public class ExportAsUrlDialog extends Dialog {
 	
 	VerticalPanel vp;
 	Button shortButton;
@@ -93,10 +92,9 @@ public class ExportAsUrlDialog extends DialogBox {
 	
 	public ExportAsUrlDialog( String dump) {
 		super();
-		//String start[] = Location.getHref().split("\\?");
+		closeOnEnter = false;
 		String start = "https://www.falstad.com/circuit/circuitjs.html";
 		String query="?ctz=" + compress(dump);
-		//dump = start[0] + query;
 		dump = start + query;
 		requrl = URL.encodeQueryString(query);
 		Button okButton, copyButton;
@@ -104,10 +102,10 @@ public class ExportAsUrlDialog extends DialogBox {
 		Label la1, la2;
 		vp=new VerticalPanel();
 		setWidget(vp);
-		setText(CirSim.LS("Export as URL"));
-		vp.add(new Label(CirSim.LS("URL for this circuit is...")));
+		setText(Locale.LS("Export as URL"));
+		vp.add(new Label(Locale.LS("URL for this circuit is...")));
 		if (dump.length()>2000) {
-			vp.add( la1= new Label(CirSim.LS("Warning: this URL is longer than 2000 characters and may not work in some browsers."), true));
+			vp.add( la1= new Label(Locale.LS("Warning: this URL is longer than 2000 characters and may not work in some browsers."), true));
 			la1.setWidth("300px");
 		}
 		vp.add(textArea = new TextArea());
@@ -123,13 +121,13 @@ public class ExportAsUrlDialog extends DialogBox {
 		hp.setWidth("100%");
 		hp.setStyleName("topSpace");
 		hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-		hp.add(okButton = new Button(CirSim.LS("OK")));
-		hp.add(copyButton = new Button(CirSim.LS("Copy to Clipboard")));
+		hp.add(okButton = new Button(Locale.LS("OK")));
+		hp.add(copyButton = new Button(Locale.LS("Copy to Clipboard")));
 		vp.add(hp);
 		if (shortIsSupported()) {
 			hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 	
-			hp.add(shortButton = new Button(CirSim.LS("Create short URL")));
+			hp.add(shortButton = new Button(Locale.LS("Create short URL")));
 			shortButton.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					shortButton.setVisible(false);
@@ -151,11 +149,6 @@ public class ExportAsUrlDialog extends DialogBox {
 		    }
 		});
 		this.center();
-	}
-	
-	protected void closeDialog()
-	{
-		this.hide();
 	}
 	
 	private static native boolean copyToClipboard() /*-{

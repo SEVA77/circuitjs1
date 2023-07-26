@@ -20,16 +20,13 @@
 package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.event.dom.client.MouseWheelEvent;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.storage.client.Storage;
-
+import com.lushprojects.circuitjs1.client.util.Locale;
 
 import java.util.Vector;
 
-import com.gargoylesoftware.htmlunit.javascript.host.Console;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 
 // plot of single value on a scope
 class ScopePlot {
@@ -136,7 +133,7 @@ class ScopePlot {
 	case Scope.UNITS_A:
 	    return CircuitElm.getCurrentText(v);
 	case Scope.UNITS_OHMS:
-	    return CircuitElm.getUnitText(v, CirSim.ohmString);
+	    return CircuitElm.getUnitText(v, Locale.ohmString);
 	case Scope.UNITS_W:
 	    return CircuitElm.getUnitText(v, "W");
 	}
@@ -348,7 +345,7 @@ class Scope {
     static String getScaleUnitsText(int units) {
 	switch (units) {
 	case UNITS_A: return "A";
-	case UNITS_OHMS: return CirSim.ohmString;
+	case UNITS_OHMS: return Locale.ohmString;
 	case UNITS_W: return "W";
 	default: return "V";
 	}
@@ -949,6 +946,8 @@ class Scope {
     	    reduceRange[plot.units] = true;
     	}
     	
+    	boolean sel = sim.scopeMenuIsSelected(this);
+    	
     	checkForSelectionElsewhere();
     	if (selectedPlot >= 0)
     	    somethingSelected = true;
@@ -966,19 +965,19 @@ class Scope {
     	// draw volt plots on top (last), then current plots underneath, then everything else
     	for (i = 0; i != visiblePlots.size(); i++) {
     	    if (visiblePlots.get(i).units > UNITS_A && i != selectedPlot)
-    		drawPlot(g, visiblePlots.get(i), allPlotsSameUnits, false);
+    		drawPlot(g, visiblePlots.get(i), allPlotsSameUnits, false, sel);
     	}
     	for (i = 0; i != visiblePlots.size(); i++) {
     	    if (visiblePlots.get(i).units == UNITS_A && i != selectedPlot)
-    		drawPlot(g, visiblePlots.get(i), allPlotsSameUnits, false);
+    		drawPlot(g, visiblePlots.get(i), allPlotsSameUnits, false, sel);
     	}
     	for (i = 0; i != visiblePlots.size(); i++) {
     	    if (visiblePlots.get(i).units == UNITS_V && i != selectedPlot)
-    		drawPlot(g, visiblePlots.get(i), allPlotsSameUnits, false);
+    		drawPlot(g, visiblePlots.get(i), allPlotsSameUnits, false, sel);
     	}
     	// draw selection on top.  only works if selection chosen from scope
     	if (selectedPlot >= 0 && selectedPlot < visiblePlots.size())
-    	    drawPlot(g, visiblePlots.get(selectedPlot), allPlotsSameUnits, true);
+    	    drawPlot(g, visiblePlots.get(selectedPlot), allPlotsSameUnits, true, sel);
     	
         drawInfoTexts(g);
     	
@@ -1064,7 +1063,7 @@ class Scope {
 	return ((double)(manDivisions)/2+0.05)*plot.manScale;
     }
     
-    void drawPlot(Graphics g, ScopePlot plot, boolean allPlotsSameUnits, boolean selected) {
+    void drawPlot(Graphics g, ScopePlot plot, boolean allPlotsSameUnits, boolean selected, boolean allSelected) {
 	if (plot.elm == null)
 	    return;
     	int i;
@@ -1076,7 +1075,7 @@ class Scope {
     	final int maxy = (rect.height-1)/2;
 
     	String color = (somethingSelected) ? "#A0A0A0" : plot.color;
-	if (sim.scopeSelected == -1  && plot.elm.isMouseElm())
+	if (allSelected || (sim.scopeSelected == -1  && plot.elm.isMouseElm()))
     	    color = CircuitElm.selectColor.getHexValue();
 	else if (selected)
 	    color = plot.color;
@@ -1134,6 +1133,8 @@ class Scope {
     	    majorDiv = "#808080";
     	    curColor = "#A0A000";
     	}
+    	if (allSelected)
+    	    majorDiv = CircuitElm.selectColor.getHexValue();
     	
     	// Vertical (T) gridlines
     	double ts = sim.maxTimeStep*speed;
@@ -1244,6 +1245,10 @@ class Scope {
 	if (sim.dialogIsShowing())
 	    return;
 	if (!rect.contains(mouseX, mouseY)) {
+	    selectedPlot = -1;
+	    return;
+	}
+	if (plots.size() == 0) {
 	    selectedPlot = -1;
 	    return;
 	}
@@ -1516,7 +1521,7 @@ class Scope {
 	}
 	if (waveCount > 1) {
 	    avg = (endAvg/(end-start));
-	    drawInfoText(g, plot.getUnitText(avg) + CirSim.LS(" average"));
+	    drawInfoText(g, plot.getUnitText(avg) + Locale.LS(" average"));
 	}
     }
 
@@ -1574,7 +1579,7 @@ class Scope {
 	}
 	if (waveCount > 1) {
 	    int duty = 100*dutyLen/(end-start);
-	    drawInfoText(g, CirSim.LS("Duty cycle ") + duty + "%");
+	    drawInfoText(g, Locale.LS("Duty cycle ") + duty + "%");
 	}
     }
 
@@ -1722,7 +1727,7 @@ class Scope {
     	    t = getScopeText();
     	    if (t==null)
     		return "";
-    	    return CirSim.LS(t);
+    	    return Locale.LS(t);
     	}
     	else
     	    return t;

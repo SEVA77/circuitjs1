@@ -89,7 +89,7 @@ public class ScrollValuePopup extends PopupPanel implements MouseOutHandler, Mou
 	
 	private void setupValues() {
 		if (myElm instanceof ResistorElm) {
-			minpow=0;
+			minpow=-1;
 			maxpow=7;
 		} 
 		if (myElm instanceof CapacitorElm) {
@@ -184,12 +184,14 @@ public class ScrollValuePopup extends PopupPanel implements MouseOutHandler, Mou
 //    		close(true);
 //    }
     
+    static final int scale = 6;
+
     public void doDeltaY(int dy) {
-    	deltaY+=dy;
-    	if (currentidx+deltaY/3 < 0)
-    		deltaY=-3*currentidx;
-    	if (currentidx+deltaY/3>=nvalues)
-    		deltaY= (nvalues-currentidx-1)*3;
+    	deltaY += (int) (dy/getDevicePixelRatio());
+    	if (currentidx+deltaY/scale < 0)
+    		deltaY=-scale*currentidx;
+    	if (currentidx+deltaY/scale>=nvalues)
+    		deltaY= (nvalues-currentidx-1)*scale;
     	setElmValue();
     	setupLabels();
     }
@@ -209,9 +211,11 @@ public class ScrollValuePopup extends PopupPanel implements MouseOutHandler, Mou
     	}
     }
     
+    native double getDevicePixelRatio() /*-{ return window.devicePixelRatio || 1; }-*/;
+
     public int getSelIdx() {
     	int r;
-    	r=currentidx+deltaY/3;
+    	r=currentidx+deltaY/scale;
     	if (r<0)
     		r=0;
     	if (r>=nvalues)

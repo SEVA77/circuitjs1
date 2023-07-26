@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.lushprojects.circuitjs1.client.util.Locale;
 
 public class HelpDialog extends DialogBox {
 	
@@ -30,7 +31,7 @@ public class HelpDialog extends DialogBox {
 		super();
 		vp = new VerticalPanel();
 		setWidget(vp);
-		setText(sim.LS("Help"));
+		setText(Locale.LS("Help"));
 	
 		TabPanel tp = new TabPanel();
 		vp.add(tp);

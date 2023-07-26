@@ -19,16 +19,16 @@
 
 package com.lushprojects.circuitjs1.client;
 
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.lushprojects.circuitjs1.client.util.Locale;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Label;
 
-public class ImportFromTextDialog extends DialogBox {
+public class ImportFromTextDialog extends Dialog {
 	
 VerticalPanel vp;
 HorizontalPanel hp;
@@ -39,20 +39,21 @@ TextArea textArea;
 	public ImportFromTextDialog( CirSim asim) {
 		super();
 		sim=asim;
+		closeOnEnter = false;
 		Button okButton, cancelButton;
 		final Checkbox subCheck;
 		vp=new VerticalPanel();
 		setWidget(vp);
-		setText(sim.LS("Import from Text"));
-		vp.add(new Label(sim.LS("Paste the text file for your circuit here...")));
+		setText(Locale.LS("Import from Text"));
+		vp.add(new Label(Locale.LS("Paste the text file for your circuit here...")));
 //		vp.add(textBox = new RichTextArea());
 		vp.add(textArea = new TextArea());
 		textArea.setWidth("300px");
 		textArea.setHeight("200px");
-		vp.add(subCheck = new Checkbox(CirSim.LS("Load Subcircuits Only")));
+		vp.add(subCheck = new Checkbox(Locale.LS("Load Subcircuits Only")));
 		hp = new HorizontalPanel();
 		vp.add(hp);
-		hp.add(okButton = new Button(sim.LS("OK")));
+		hp.add(okButton = new Button(Locale.LS("OK")));
 		okButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				String s;
@@ -61,16 +62,10 @@ TextArea textArea;
 //				s=textBox.getHTML();
 //				s=s.replace("<br>", "\r");
 				s=textArea.getText();
-				int flags = 0;
-				if (subCheck.getState())
-				    flags |= CirSim.RC_SUBCIRCUITS | CirSim.RC_RETAIN;
-				if (s!=null) {
-					sim.readCircuit(s, flags);
-					sim.allowSave(false);
-				}
+				sim.importCircuitFromText(s, subCheck.getState());
 			}
 		});
-		hp.add(cancelButton = new Button(sim.LS("Cancel")));
+		hp.add(cancelButton = new Button(Locale.LS("Cancel")));
 		cancelButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				closeDialog();
@@ -79,10 +74,4 @@ TextArea textArea;
 		this.center();
 		show();
 	}
-	
-	protected void closeDialog()
-	{
-		this.hide();
-	}
-
 }

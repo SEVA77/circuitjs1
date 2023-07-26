@@ -19,10 +19,13 @@
 
 package com.lushprojects.circuitjs1.client;
 
+import com.lushprojects.circuitjs1.client.util.Locale;
+
 // much of this was adapted from Bill Collis's code in TestPointElm.java
 
 class ProbeElm extends CircuitElm {
     static final int FLAG_SHOWVOLTAGE = 1;
+    static final int FLAG_CIRCLE = 2;
     int meter;
     int units;
     int scale;
@@ -41,7 +44,7 @@ class ProbeElm extends CircuitElm {
     	meter = TP_VOL;
     	
     	// default for new elements
-    	flags = FLAG_SHOWVOLTAGE;
+    	flags = FLAG_SHOWVOLTAGE | FLAG_CIRCLE;
     	scale = SCALE_AUTO;
     }
     public ProbeElm(int xa, int ya, int xb, int yb, int f,
@@ -109,10 +112,12 @@ class ProbeElm extends CircuitElm {
 
     void draw(Graphics g) {
 	g.save();
-	int hs = 8;
+	int hs = (drawAsCircle()) ? circleSize : 8;
 	setBbox(point1, point2, hs);
 	boolean selected = needsHighlight();
 	double len = (selected || sim.dragElm == this || mustShowVoltage()) ? 16 : dn-32;
+	if (drawAsCircle())
+	    len = circleSize*2;
 	calcLeads((int) len);
 	setVoltageColor(g, volts[0]);
 	if (selected)
@@ -162,7 +167,7 @@ class ProbeElm extends CircuitElm {
 	                s = showFormat.format(dutyCycle);
 	                break;
 	        }
-	    drawValues(g, s, 4);
+	    drawValues(g, s, drawAsCircle() ? circleSize+3 : 4);
 	}
 	   g.setColor(whiteColor);
            g.setFont(unitsFont);
@@ -171,15 +176,23 @@ class ProbeElm extends CircuitElm {
 		plusPoint.y += 4;
 	    if (y > y2)
 		plusPoint.y += 3;
-           int w = (int)g.context.measureText("+").getWidth();;
+           int w = (int)g.context.measureText("+").getWidth();
            g.drawString("+", plusPoint.x-w/2, plusPoint.y);
+           if (drawAsCircle()) {
+               g.setColor(lightGrayColor);
+               drawThickCircle(g, center.x, center.y, circleSize);
+               drawCenteredText(g, "V", center.x, center.y, true);
+           }
 	drawPosts(g);
 	g.restore();
     }
 
+    final int circleSize = 12;
+    
     boolean mustShowVoltage() {
 	return (flags & FLAG_SHOWVOLTAGE) != 0;
     }
+    boolean drawAsCircle() { return (flags & FLAG_CIRCLE) != 0; }
     
     void stepFinished(){
         count++;//how many counts are in a cycle
@@ -290,12 +303,16 @@ class ProbeElm extends CircuitElm {
             ei.choice.add("Auto");
             ei.choice.add("V");
             ei.choice.add("mV");
-            ei.choice.add(CirSim.muString + "V");
+            ei.choice.add(Locale.muString + "V");
             ei.choice.select(scale);
             return ei;
         }
+        if (n == 3) {
+            EditInfo ei = EditInfo.createCheckbox("Use Circle Symbol", drawAsCircle());
+            return ei;
+        }
 
-return null;
+        return null;
     }
 
     public void setEditValue(int n, EditInfo ei) {
@@ -310,6 +327,8 @@ return null;
         }
         if (n == 2)
             scale = ei.choice.getSelectedIndex();
+        if (n == 3)
+            flags = ei.changeFlag(flags, FLAG_CIRCLE);
     }
 }
 

@@ -20,6 +20,7 @@
 package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.user.client.ui.Label;
+import com.lushprojects.circuitjs1.client.util.Locale;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
@@ -202,8 +203,7 @@ class PotElm extends CircuitElm implements Command, MouseWheelHandler {
 	    drawDots(g, point1, midpoint, curcount1);
 	    drawDots(g, point2, midpoint, curcount2);
 	    drawDots(g, post3, corner2, curcount3);
-	    drawDots(g, corner2, midpoint,
-		     curcount3+distance(post3, corner2));
+	    drawDots(g, corner2, midpoint, addCurCount(curcount3, distance(post3, corner2)));
 	}
 	drawPosts(g);
 
@@ -255,7 +255,7 @@ class PotElm extends CircuitElm implements Command, MouseWheelHandler {
 	    dpx = 0;
 	    dpy = -hs;
 	}
-	sim.console("dv " + dpx + " " + w);
+	CirSim.console("dv " + dpx + " " + w);
 	if (dpx == 0)
 	    g.drawString(s, xc-w/2, yc-abs(dpy)-2);
 	else {
@@ -293,8 +293,8 @@ class PotElm extends CircuitElm implements Command, MouseWheelHandler {
     void getInfo(String arr[]) {
 	arr[0] = "potentiometer";
 	arr[1] = "Vd = " + getVoltageDText(getVoltageDiff());
-	arr[2] = "R1 = " + getUnitText(resistance1, sim.ohmString);
-	arr[3] = "R2 = " + getUnitText(resistance2, sim.ohmString);
+	arr[2] = "R1 = " + getUnitText(resistance1, Locale.ohmString);
+	arr[3] = "R2 = " + getUnitText(resistance2, Locale.ohmString);
 	arr[4] = "I1 = " + getCurrentDText(current1);
 	arr[5] = "I2 = " + getCurrentDText(current2);
     }
@@ -320,7 +320,7 @@ class PotElm extends CircuitElm implements Command, MouseWheelHandler {
 	if (n == 1) {
 	    sliderText = ei.textf.getText();
 	    label.setText(sliderText);
-	    sim.setiFrameHeight();
+	    sim.setSlidersPanelHeight();
 	}
 	if (n == 2)
 	    flags = ei.changeFlag(flags, FLAG_SHOW_VALUES);
