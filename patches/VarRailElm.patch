@@ -1,0 +1,11 @@
+--- /dev/null
++++ src/main/java/com/lushprojects/circuitjs1/client/VarRailElm.java
+@@ -85,7 +85,7 @@
+ 	    if (n == 2) {
+ 		sliderText = ei.textf.getText();
+ 		label.setText(Locale.LS(sliderText));
+-		sim.setiFrameHeight();
++		sim.setSlidersPanelHeight();
+ 	    }
+ 	}
+ 	int getShortcut() { return 0; }

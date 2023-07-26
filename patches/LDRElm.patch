@@ -1,0 +1,11 @@
+--- /dev/null
++++ src/main/java/com/lushprojects/circuitjs1/client/LDRElm.java
+@@ -174,7 +174,7 @@
+ 	if (n == 0) {
+ 	    sliderText = ei.textf.getText();
+ 	    label.setText(sliderText);
+-	    sim.setiFrameHeight();
++	    sim.setSlidersPanelHeight();
+ 	}
+ 	lux = LuxFromSliderPos();
+ 	resistance = calcResistance(lux); 

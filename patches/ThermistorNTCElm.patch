@@ -1,0 +1,11 @@
+--- /dev/null
++++ src/main/java/com/lushprojects/circuitjs1/client/ThermistorNTCElm.java
+@@ -208,7 +208,7 @@
+ 	if (n == 4) {
+ 	    sliderText = ei.textf.getText();
+ 	    label.setText(sliderText);
+-	    sim.setiFrameHeight();
++	    sim.setSlidersPanelHeight();
+ 	}
+ 	rneg40 = calcResistance(minTempr);
+ 	b25100 = calcB25100(); //	
