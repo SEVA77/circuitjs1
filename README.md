@@ -40,6 +40,8 @@ After compiling the web application, you can then compile it into the local exec
 nwbuild --glob=false target/site
 ```
 
+## Development
+
 For development run devmode:
 
 ```
