@@ -168,14 +168,21 @@
 									<directory>war</directory>
 									<filtering>false</filtering>
 									<excludes>
+										<!-- Based: -->
 										<exclude>circuitjs1/</exclude>
 										<exclude>*.md</exclude>
 										<exclude>*frame.html</exclude>
 										<exclude>WEB-INF/</exclude>
-										<exclude>avr8js/</exclude>
 										<exclude>font/*.json</exclude>
 										<exclude>blink-test.html</exclude>
 										<exclude>jsinterface.html</exclude>
+										<!-- Unused fonts: -->
+										<exclude>font/*.eot</exclude>
+										<exclude>font/*.svg</exclude>
+										<exclude>font/*.ttf</exclude>
+										<exclude>font/*.woff</exclude>
+										<!-- Unused but for the future: -->
+										<exclude>avr8js/</exclude>
 										<exclude>help/DA.html</exclude>
 										<exclude>help/DE.html</exclude>
 										<exclude>help/PL.html</exclude>
