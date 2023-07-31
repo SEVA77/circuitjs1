@@ -574,6 +574,8 @@ MouseOutHandler, MouseWheelHandler {
 	sidePanelCheckbox.setId("trigger");
 	sidePanelCheckboxLabel.setAttribute("for", "trigger" );
 	sidePanelCheckbox.addClassName("trigger");
+	// addClickHandler does not work for Element but I can use onclick attribute
+	sidePanelCheckbox.setAttribute("onclick", "CircuitJS1.setupScopes();");
 	Element topPanelCheckbox = DOM.createInputCheck(); 
 	Element topPanelCheckboxLabel = DOM.createLabel();
 	topPanelCheckbox.setId("toptrigger");
@@ -1873,6 +1875,10 @@ MouseOutHandler, MouseWheelHandler {
 	return getNthScopeElm(scopeMenuSelected-scopeCount).elmScope == s; 
     }
     
+	native boolean isSidePanelCheckboxChecked() /*-{
+		return $doc.getElementById("trigger").checked;
+    }-*/;
+
     void setupScopes() {
     	int i;
 
@@ -1906,7 +1912,9 @@ MouseOutHandler, MouseWheelHandler {
     	int iw = infoWidth;
     	if (colct <= 2)
     		iw = iw*3/2;
-    	int w = (canvasWidth-iw) / colct;
+    	int w = (canvasWidth-iw) / colct; // Оно!
+    	if (isSidePanelCheckboxChecked())
+    		w = (canvasWidth-iw-VERTICALPANELWIDTH) / colct;
     	int marg = 10;
     	if (w < marg*2)
     		w = marg*2;
@@ -6581,7 +6589,8 @@ MouseOutHandler, MouseWheelHandler {
 	        getElements: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::getJSElements()(); } ),
 	        getCircuitAsSVG: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::doExportAsSVGFromAPI()(); } ),
 	        exportCircuit: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::dumpCircuit()(); } ),
-	        importCircuit: $entry(function(circuit, subcircuitsOnly) { return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly); })
+	        importCircuit: $entry(function(circuit, subcircuitsOnly) { return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly); }),
+			setupScopes: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::setupScopes()(); } )
 	    };
 	    var hook = $wnd.oncircuitjsloaded;
 	    if (hook)
