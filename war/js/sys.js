@@ -43,3 +43,44 @@ Scale: nw.Window.get().zoomLevel
 //nw.Window.get().setPosition('center'); // do not work! why?
 
 nw.Window.get().setMinimumSize(640, 480); // for new windows
+
+
+// For Run/Stop and Reset buttons:
+
+function SetBtnsStyle() {
+  let RunStopBtn = document.getElementsByClassName("run-stop-btn")[0];
+  let ResetBtn = document.getElementsByClassName("reset-btn")[0];
+
+  if (document.getElementById("trigger").checked == true){
+    RunStopBtn.style.display = "none";
+    ResetBtn.style.display = "none";
+  } else {
+    setTimeout(() => {
+      RunStopBtn.style.display = "block";
+      ResetBtn.style.display = "block";
+    }, 1100);
+  }
+
+  if (CircuitJS1.isRunning() == false) {
+    RunStopBtn.innerHTML = "&#9654;"
+    RunStopBtn.style.color = "green";
+    RunStopBtn.style.borderColor = "green";
+    RunStopBtn.style.paddingLeft = "3px";
+  } else {
+    RunStopBtn.innerHTML = "&#9724;"
+    RunStopBtn.style.color = "red";
+    RunStopBtn.style.borderColor = "red";
+    RunStopBtn.style.paddingLeft = "0px";
+  }
+}
+
+function setRunning() {
+  if (CircuitJS1.isRunning() == false) {
+    CircuitJS1.setSimRunning(true);
+    SetBtnsStyle();
+  } else {
+    CircuitJS1.setSimRunning(false);
+    SetBtnsStyle();
+  }
+}
+

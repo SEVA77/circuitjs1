@@ -154,6 +154,32 @@
         .sidePanelvp2{
             margin-left: 2px;
         }
+
+        /*Кнопки Run/Stop, Reset*/
+        .run-stop-btn, .reset-btn {
+            width: 60px;
+            height: 60px;
+            position: absolute;
+            top: 50px;
+            z-index: 1;
+            background: none;
+            border: medium solid;
+            border-radius: 10px;
+            font-size: 38px;
+        }
+
+        .run-stop-btn{
+            right: 50px;
+            color: red;
+            border-color: red;
+            padding: 0 0 5px;
+        }
+
+        .reset-btn {
+            right: 120px;
+            color: blue;
+            border-color: blue;
+        }
         </style>
 
         <script src="js/sys.js"></script>
@@ -186,5 +212,9 @@
         <!-- (the id must be exactly as shown)                           -->
         <iframe src="javascript:''" id="__gwt_historyFrame" tabindex="-1" style="width:0;height:0;border:0"></iframe>
 
+        <!-- Add Run/Stop and Reset buttons-->
+        <button class="run-stop-btn" title="Run/Stop" onclick="setRunning()">&#9724;</button>
+        <button class="reset-btn" title="Reset" onclick="CircuitJS1.resetAction()">&#8634;</button>
+        
     </body>
 </html>

@@ -575,7 +575,7 @@ MouseOutHandler, MouseWheelHandler {
 	sidePanelCheckboxLabel.setAttribute("for", "trigger" );
 	sidePanelCheckbox.addClassName("trigger");
 	// addClickHandler does not work for Element but I can use onclick attribute
-	sidePanelCheckbox.setAttribute("onclick", "CircuitJS1.setupScopes();");
+	sidePanelCheckbox.setAttribute("onclick", "CircuitJS1.setupScopes();SetBtnsStyle();");
 	Element topPanelCheckbox = DOM.createInputCheck(); 
 	Element topPanelCheckboxLabel = DOM.createLabel();
 	topPanelCheckbox.setId("toptrigger");
@@ -6590,7 +6590,8 @@ MouseOutHandler, MouseWheelHandler {
 	        getCircuitAsSVG: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::doExportAsSVGFromAPI()(); } ),
 	        exportCircuit: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::dumpCircuit()(); } ),
 	        importCircuit: $entry(function(circuit, subcircuitsOnly) { return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly); }),
-			setupScopes: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::setupScopes()(); } )
+			setupScopes: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::setupScopes()(); } ),
+			resetAction: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::resetAction()(); } )
 	    };
 	    var hook = $wnd.oncircuitjsloaded;
 	    if (hook)
