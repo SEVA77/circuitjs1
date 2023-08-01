@@ -1,7 +1,7 @@
 {
     "app_name": "CircuitSimulator",
     "chromium-args": "--ignore-gpu-blacklist --enable-gpu-rasterization --force-gpu-rasterization --enable-zero-copy",
-    "description": "Circuit Simulator version 1.2.3",
+    "description": "Circuit Simulator version 1.2.4",
     "main": "circuitjs.html",
     "name": "CircuitSimulator",
     "version": "1.2.3",
@@ -33,7 +33,7 @@
         "min_height": 480,
         "min_width": 640,
         "position": "center",
-        "title": "Circuit Simulator 1.2.3"
+        "title": "Circuit Simulator 1.2.4"
     },
     "devDependencies": {
         "nw-builder": "^4.3.2"
