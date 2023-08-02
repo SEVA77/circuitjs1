@@ -34,7 +34,7 @@ The tools you will need to build the project are:
 * Maven 3+
 * [Web2Executable](https://github.com/jyapayne/Web2Executable) or [nw-builder](https://github.com/nwutils/nw-builder) (more preferably)
 
-Simply run `mvn install` from the circuitjs1 directory to build the project. Project directory after compilation for further building or debugging: `target/site`
+Simply run `mvn clean install` from the circuitjs1 directory to build the project. Project directory after compilation for further building or debugging: `target/site`
 
 After compiling the web application, you can then compile it into the local executables for a variety of platforms with the help of NW.js. To build this program on NW.js you will need a [Web2Executable](https://github.com/jyapayne/Web2Executable) or [nw-builder](https://github.com/nwutils/nw-builder). Command to compile the program via nw-builder:
 
