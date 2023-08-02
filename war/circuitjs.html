@@ -180,6 +180,47 @@
             color: blue;
             border-color: blue;
         }
+        
+        /*
+        for .run-stop-btn and .reset-btn:
+            width: 60px;
+            height: 60px;
+        for .run-stop-btn:
+            right: 50px;
+        for .reset-btn
+            right: 120px;
+        
+        if display width < 1000 then
+            width: 6vw; (6 percent of 1000px and etc.)
+            height: 6vw;
+        and
+        for .run-stop-btn:
+            right: 5vw;
+        for .reset-btn:
+            right: 12vw;
+
+        + font-size=38px => font-size: 3,8vw
+        + border-radius: 10px => border-radius: 1vw
+        and etc
+
+        try it:
+        */
+
+        @media (max-width: 1000px) {
+            .run-stop-btn, .reset-btn {
+                width: 6vw;
+                height: 6vw;
+                font-size: 3.8vw;
+                border-radius: 1vw;
+            }
+            .run-stop-btn{
+                right: 5vw;
+                padding: 0 0 0.5vw;
+            }
+            .reset-btn{
+                right: 12vw;
+            }
+        }
         </style>
 
         <script src="js/sys.js"></script>

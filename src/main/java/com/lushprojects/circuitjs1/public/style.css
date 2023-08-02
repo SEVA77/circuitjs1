@@ -62,3 +62,30 @@
 .trigger+.triggerLabel+div+div {
 	width: 100% !important;
 }
+
+/*
+for triggerLabel:
+	width: 25px;
+	height: 60px;
+for display width < 1000px:
+	width = 2.5vw (2.5 percent of 1000px and etc.)
+	height = 6vw
+
++ font-size=22px => font-size: 2.5vw
++ border-radius=10px => border-radius=1vw
+
+try it:
+*/
+
+@media (max-width: 1000px) {
+	.triggerLabel {
+		width: 2.5vw;
+		height: 6vw;
+		border-radius: 1vw 0px 0px 1vw;
+	}
+	.triggerLabel:before{
+		font-size: 2.5vw;
+		padding-left: 0.3vw;
+		padding-top: 0.5vw;
+	}
+}
