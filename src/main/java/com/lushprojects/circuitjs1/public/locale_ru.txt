@@ -1047,7 +1047,7 @@
 "Add Subcircuit Instance"="Добавить вывод блока схемы"
 "Can't edit this model."="Невозможно изменить эту модель."
 "subcircuit ("="блок схемы ("
-"Device has no external inputs/outputs!"="Устройство не имеет внешних входов/выходов!"
+"Device has no external inputs/outputs!"="Устройство не имеет внешних входов/выходов! (входом/выходом служит 'Маркированый узел')"
 "Edit Subcircuit Model"="Редактировать блок схемы"
 "Drag the pins to the desired position"="Перетащите пины в нужную позицию"
 "Width"="Ширина"
