@@ -1,4 +1,6 @@
-# Circuit Simulator (CircuitJS1)
+# CircuitJS1 Desktop Mod
+
+**Circuit Simulator is renamed CircuitJS1 Desktop Mod**
 
 ![](https://my77thblog.pp.ua/images/PROJECTS/circuit-simulator/circuitjs1-1-2-3-en.png)
 

@@ -1,10 +1,10 @@
 {
     "app_name": "CircuitSimulator",
     "chromium-args": "--ignore-gpu-blacklist --enable-gpu-rasterization --force-gpu-rasterization --enable-zero-copy",
-    "description": "Circuit Simulator version 1.2.4",
+    "description": "CircuitJS1 Desktop Mod version 1.2.4",
     "main": "circuitjs.html",
     "name": "CircuitSimulator",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "webexe_settings": {
         "blacklist": "",
         "custom_script": "",
@@ -33,7 +33,7 @@
         "min_height": 480,
         "min_width": 640,
         "position": "center",
-        "title": "Circuit Simulator 1.2.4"
+        "title": "CircuitJS1 Desktop Mod 1.2.4"
     },
     "devDependencies": {
         "nw-builder": "^4.3.2"
