@@ -48,7 +48,7 @@
         "manifestUrl": "https://nwjs.io/versions",
         "cacheDir": "./nwjs_cache",
         "srcDir": "./target/site",
-        "outDir": "./CircuitSimulator",
+        "outDir": "./CircuitJS1 Desktop Mod",
         "cache": true,
         "ffmpeg": false
     }
