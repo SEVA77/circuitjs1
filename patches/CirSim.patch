@@ -145,7 +145,16 @@
  
  	verticalPanel.getElement().addClassName("verticalPanel");
  	verticalPanel.getElement().setId("painel");
-@@ -563,9 +616,29 @@
+@@ -521,6 +574,8 @@
+ 	sidePanelCheckbox.setId("trigger");
+ 	sidePanelCheckboxLabel.setAttribute("for", "trigger" );
+ 	sidePanelCheckbox.addClassName("trigger");
++	// addClickHandler does not work for Element but I can use onclick attribute
++	sidePanelCheckbox.setAttribute("onclick", "CircuitJS1.setupScopes();SetBtnsStyle();");
+ 	Element topPanelCheckbox = DOM.createInputCheck(); 
+ 	Element topPanelCheckboxLabel = DOM.createLabel();
+ 	topPanelCheckbox.setId("toptrigger");
+@@ -563,9 +618,29 @@
  	m.addItem(combineAllItem = iconMenuItem("object-group", "Combine All", new MyCommand("scopes", "combineAll")));
  	m.addItem(separateAllItem = iconMenuItem("object-ungroup", "Separate All", new MyCommand("scopes", "separateAll")));
  	menuBar.addItem(Locale.LS("Scopes"), m);
@@ -176,7 +185,7 @@
  	m.addItem(dotsCheckItem = new CheckboxMenuItem(Locale.LS("Show Current")));
  	dotsCheckItem.setState(true);
  	m.addItem(voltsCheckItem = new CheckboxMenuItem(Locale.LS("Show Voltage"),
-@@ -678,6 +751,7 @@
+@@ -678,6 +753,7 @@
  	Window.addResizeHandler(new ResizeHandler() {
  	    public void onResize(ResizeEvent event) {
  		repaint();
@@ -184,7 +193,7 @@
  	    }
  	});
  
-@@ -685,6 +759,7 @@
+@@ -685,6 +761,7 @@
  	setCanvasSize();
  	layoutPanel.add(cv);
  	verticalPanel.add(buttonPanel);
@@ -192,7 +201,7 @@
  	buttonPanel.add(resetButton = new Button(Locale.LS("Reset")));
  	resetButton.addClickHandler(new ClickHandler() {
  	    public void onClick(ClickEvent event) {
-@@ -706,40 +781,63 @@
+@@ -706,40 +783,63 @@
  	verticalPanel.add(dumpMatrixButton);// IES for debugging
  	 */
  
@@ -261,7 +270,7 @@
  
  	setGrid();
  	elmList = new Vector<CircuitElm>();
-@@ -809,8 +907,8 @@
+@@ -809,8 +909,8 @@
  	    if (stopMessage == null && startCircuitLink!=null) {
  		readCircuit("");
  		getSetupList(false);
@@ -272,7 +281,7 @@
  	    } else {
  		readCircuit("");
  		if (stopMessage == null && startCircuit != null) {
-@@ -827,7 +925,7 @@
+@@ -827,7 +927,7 @@
  
  	enableUndoRedo();
  	enablePaste();
@@ -281,7 +290,7 @@
  	cv.addMouseDownHandler(this);
  	cv.addMouseMoveHandler(this);
  	cv.addMouseOutHandler(this);
-@@ -1281,22 +1379,20 @@
+@@ -1281,22 +1381,20 @@
  	    sb.addItem(mi);
      }
      
@@ -308,7 +317,29 @@
      }
      
  
-@@ -3226,6 +3322,10 @@
+@@ -1777,6 +1875,10 @@
+ 	return getNthScopeElm(scopeMenuSelected-scopeCount).elmScope == s; 
+     }
+     
++	native boolean isSidePanelCheckboxChecked() /*-{
++		return $doc.getElementById("trigger").checked;
++    }-*/;
++
+     void setupScopes() {
+     	int i;
+ 
+@@ -1810,7 +1912,9 @@
+     	int iw = infoWidth;
+     	if (colct <= 2)
+     		iw = iw*3/2;
+-    	int w = (canvasWidth-iw) / colct;
++    	int w = (canvasWidth-iw) / colct; // Оно!
++    	if (isSidePanelCheckboxChecked())
++    		w = (canvasWidth-iw-VERTICALPANELWIDTH) / colct;
+     	int marg = 10;
+     	if (w < marg*2)
+     		w = marg*2;
+@@ -3226,6 +3330,10 @@
  	    Window.alert(Locale.LS("Editing disabled.  Re-enable from the Options menu."));
  	    return;
  	}
@@ -319,7 +350,7 @@
      	if (item=="about")
      		aboutBox = new AboutBox(circuitjs1.versionString);
      	if (item=="importfromlocalfile") {
-@@ -3245,9 +3345,9 @@
+@@ -3245,9 +3353,9 @@
      	if (item=="importfromtext") {
      		dialogShowing = new ImportFromTextDialog(this);
      	}
@@ -331,7 +362,7 @@
      	if (item=="exportasurl") {
      		doExportAsUrl();
      		unsavedChanges = false;
-@@ -3500,11 +3600,15 @@
+@@ -3500,11 +3608,15 @@
      		tempMouseMode = mouseMode;
      	}
      	if (item=="fullscreen") {
@@ -349,7 +380,7 @@
      	}
      
  	repaint();
-@@ -3775,6 +3879,37 @@
+@@ -3775,6 +3887,37 @@
      	currentMenuBar=new MenuBar(true);
      	currentMenuBar.setAutoOpen(true);
      	menuBar.addItem(Locale.LS("Circuits"), currentMenuBar);
@@ -387,7 +418,7 @@
      	stack[stackptr++] = currentMenuBar;
      	int p;
      	for (p = 0; p < len; ) {
-@@ -3808,6 +3943,7 @@
+@@ -3808,6 +3951,7 @@
      				if (file.equals(startCircuit) && startLabel == null) {
      				    startLabel = title;
      				    titleLabel.setText(title);
@@ -395,7 +426,7 @@
      				}
      				if (first && startCircuit == null) {
      					startCircuit = file;
-@@ -3825,16 +3961,19 @@
+@@ -3825,16 +3969,19 @@
  	readCircuit(text.getBytes(), flags);
  	if ((flags & RC_KEEP_TITLE) == 0)
  	    titleLabel.setText(null);
@@ -415,7 +446,7 @@
      }
      
  	void readSetupFile(String str, String title) {
-@@ -3844,6 +3983,7 @@
+@@ -3844,6 +3991,7 @@
  		loadFileFromURL(url);
  		if (title != null)
  		    titleLabel.setText(title);
@@ -423,7 +454,7 @@
  		unsavedChanges = false;
  	}
  	
-@@ -5320,6 +5460,10 @@
+@@ -5320,6 +5468,10 @@
      		return true;
      	if (aboutBox !=null && aboutBox.isShowing())
      		return true;
@@ -434,7 +465,7 @@
      	return false;
      }
      
-@@ -5607,16 +5751,13 @@
+@@ -5607,16 +5759,13 @@
      	if (iFrame!=null) {
      		int i=verticalPanel.getWidgetIndex(iFrame);
      		verticalPanel.insert(w, i);
@@ -453,3 +484,14 @@
      }
      
      public static CircuitElm createCe(int tint, int x1, int y1, int x2, int y2, int f, StringTokenizer st) {
+@@ -6440,7 +6589,9 @@
+ 	        getElements: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::getJSElements()(); } ),
+ 	        getCircuitAsSVG: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::doExportAsSVGFromAPI()(); } ),
+ 	        exportCircuit: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::dumpCircuit()(); } ),
+-	        importCircuit: $entry(function(circuit, subcircuitsOnly) { return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly); })
++	        importCircuit: $entry(function(circuit, subcircuitsOnly) { return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly); }),
++			setupScopes: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::setupScopes()(); } ),
++			resetAction: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::resetAction()(); } )
+ 	    };
+ 	    var hook = $wnd.oncircuitjsloaded;
+ 	    if (hook)
