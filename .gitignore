@@ -5,11 +5,14 @@ war/circuitjs1/circuits/
 #war/WEB-INF/
 
 # Maven target
-/target/
+target/
 
 # NW.js cache
 nwjs_cache/
 CircuitJS1 Desktop Mod/
+
+#Inno Setup Output
+Inno Setup/Output/
 
 # Windows image file caches
 Thumbs.db
