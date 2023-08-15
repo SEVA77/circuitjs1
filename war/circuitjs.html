@@ -11,6 +11,7 @@
 
         <!-- Add icons for menu -->
         <link rel="stylesheet" href="font/fontello.css">
+        <link rel="stylesheet" href="font/runstopbtn.css">
 
         <style>
         .disabled {
@@ -165,20 +166,22 @@
             background: none;
             border: medium solid;
             border-radius: 10px;
-            font-size: 38px;
         }
 
         .run-stop-btn{
+            font-family: 'runstopbtn', serif;
             right: 50px;
             color: red;
             border-color: red;
-            padding: 0 0 5px;
+            padding: 0;
+            font-size: 32px;
         }
 
         .reset-btn {
             right: 120px;
             color: blue;
             border-color: blue;
+            font-size: 38px;
         }
         
         /*
@@ -210,15 +213,15 @@
             .run-stop-btn, .reset-btn {
                 width: 6vw;
                 height: 6vw;
-                font-size: 3.8vw;
                 border-radius: 1vw;
             }
             .run-stop-btn{
                 right: 5vw;
-                padding: 0 0 0.5vw;
+                font-size: 3.4vw;
             }
             .reset-btn{
                 right: 12vw;
+                font-size: 3.8vw;
             }
         }
 
@@ -260,7 +263,7 @@
         <iframe src="javascript:''" id="__gwt_historyFrame" tabindex="-1" style="width:0;height:0;border:0"></iframe>
 
         <!-- Add Run/Stop and Reset buttons-->
-        <button class="run-stop-btn" title="Run/Stop" onclick="setRunning()">&#9724;</button>
+        <button class="run-stop-btn" title="Run/Stop" onclick="setRunning()"></button> <!-- (\e800) -->
         <button class="reset-btn" title="Reset" onclick="CircuitJS1.resetAction()">&#8634;</button>
         
     </body>

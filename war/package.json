@@ -4,7 +4,7 @@
     "description": "CircuitJS1 Desktop Mod version 1.2.4",
     "main": "circuitjs.html",
     "name": "CircuitSimulator",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "webexe_settings": {
         "blacklist": "",
         "custom_script": "",
@@ -33,7 +33,7 @@
         "min_height": 480,
         "min_width": 640,
         "position": "center",
-        "title": "CircuitJS1 Desktop Mod 1.2.4"
+        "title": "CircuitJS1 Desktop Mod 1.2.5"
     },
     "devDependencies": {
         "nw-builder": "^4.3.2"
