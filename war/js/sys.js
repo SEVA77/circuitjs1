@@ -62,11 +62,11 @@ function SetBtnsStyle() {
   }
 
   if (CircuitJS1.isRunning() == false) {
-    RunStopBtn.innerHTML = ''; // \e801
+    RunStopBtn.innerHTML = '&#xE801;'; // \e801
     RunStopBtn.style.color = "green";
     RunStopBtn.style.borderColor = "green";
   } else {
-    RunStopBtn.innerHTML = ''; // \e800
+    RunStopBtn.innerHTML = '&#xE800;'; // \e800
     RunStopBtn.style.color = "red";
     RunStopBtn.style.borderColor = "red";
   }
