@@ -95,6 +95,8 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import static com.google.gwt.event.dom.client.KeyCodes.*;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Widget;
+import com.lushprojects.circuitjs1.client.matrix.DMatrixSparseCSC;
+import com.lushprojects.circuitjs1.client.matrix.SparseLU;
 import com.lushprojects.circuitjs1.client.util.Locale;
 import com.lushprojects.circuitjs1.client.util.PerfMonitor;
 import com.google.gwt.user.client.Window.ClosingEvent;
@@ -5625,7 +5627,12 @@ MouseOutHandler, MouseWheelHandler {
     // indices, used in the lu_solve() routine.
     static boolean lu_factor(double a[][], int n, int ipvt[]) {
 	int i,j,k;
-	
+
+	if(n>100){
+		DMatrixSparseCSC dMatrixRMaj = DMatrixSparseCSC.convert(a,DMatrixSparseCSC.EPS);
+		return sparseLU.setA(dMatrixRMaj);
+	}
+
 	// check for a possible singular matrix by scanning for rows that
 	// are all zeroes
 	for (i = 0; i != n; i++) { 
@@ -5702,13 +5709,16 @@ MouseOutHandler, MouseWheelHandler {
 	}
 	return true;
     }
-
+	final static SparseLU sparseLU = new SparseLU();
     // Solves the set of n linear equations using a LU factorization
     // previously performed by lu_factor.  On input, b[0..n-1] is the right
     // hand side of the equations, and on output, contains the solution.
     static void lu_solve(double a[][], int n, int ipvt[], double b[]) {
 	int i;
-
+	if(n>100){
+		sparseLU.solve(b,b);
+		return;
+	}
 	// find first nonzero b element
 	for (i = 0; i != n; i++) {
 	    int row = ipvt[i];
