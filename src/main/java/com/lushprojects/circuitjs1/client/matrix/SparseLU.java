@@ -128,14 +128,14 @@ public class SparseLU {
     private final DGrowArray gx = new DGrowArray();
     private final DGrowArray gb = new DGrowArray();
 
-    public void solve(double[] B, double[] X) {
+    public void solve(double[] B) {
 
         if (B.length != this.AnumRows) {
             int var10002 = B.length;
             throw new IllegalArgumentException("Unexpected number of rows in B based on shape of A. Found=" + var10002 + " Expected=" + this.AnumRows);
         }
 
-        double[] x = adjust(this.gx, X.length);
+        double[] x = adjust(this.gx, B.length);
         double[] b = adjust(this.gb, B.length);
         DMatrixSparseCSC L = this.L;
         DMatrixSparseCSC U =  this.U;
@@ -144,12 +144,12 @@ public class SparseLU {
             b[i] = B[i];
         }
 
-        permuteInv(pinv, b, x, X.length);
+        permuteInv(pinv, b, x, B.length);
         solveL(L, x);
         solveU(U, x);
 
-        for(int i = 0; i < X.length; i++) {
-            X[i] = x[i];
+        for(int i = 0; i < B.length; i++) {
+            B[i] = x[i];
         }
     }
     public static int solveColB(DMatrixSparseCSC G, boolean lower, DMatrixSparseCSC B, int colB, double[] x,   int[] pinv,   IGrowArray g_xi, int[] w) {
