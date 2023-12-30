@@ -1,7 +1,7 @@
 # 更新内容 2023-12-30
 1、优化矩阵LU分解，更换为稀疏矩阵LU分解，加快大型电路仿真优化速度\
 2、修改读取电路模型，避免IDEA编译为无法正常加载电路
-
+3、增加双圈继电器
 # CircuitJS1 Desktop Mod
 
 **Circuit Simulator is renamed CircuitJS1 Desktop Mod**
