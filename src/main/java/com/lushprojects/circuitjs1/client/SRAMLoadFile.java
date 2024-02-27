@@ -20,8 +20,8 @@
 package com.lushprojects.circuitjs1.client;
 
 public class SRAMLoadFile extends EditDialogLoadFile {
-	
-	public final native void handle()
+
+    public final native void handle()
 	/*-{
 		var oFiles = $doc.getElementById("EditDialogLoadFileElement").files,
 		nFiles = oFiles.length;
@@ -43,10 +43,10 @@ public class SRAMLoadFile extends EditDialogLoadFile {
 			reader.readAsArrayBuffer(oFiles[0]);
 		}
 	}-*/;
-	
-	static public void doLoadCallback(String data) {
-		SRAMElm.contentsOverride = data;
-		CirSim.editDialog.resetDialog();
-		SRAMElm.contentsOverride = null;
-	}
+
+    static public void doLoadCallback(String data) {
+        SRAMElm.contentsOverride = data;
+        CirSim.editDialog.resetDialog();
+        SRAMElm.contentsOverride = null;
+    }
 }

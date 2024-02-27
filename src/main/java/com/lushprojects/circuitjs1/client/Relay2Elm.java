@@ -30,7 +30,7 @@ import com.lushprojects.circuitjs1.client.util.Locale;
 // 3n+1 = coil
 // 3n+2 = end of coil resistor
 
-class Relay2Elm extends CircuitElm {
+public class Relay2Elm extends CircuitElm {
     final int FLAG_SWAP_COIL = 1;
     final int FLAG_SHOW_BOX = 2;
     final int FLAG_BOTH_SIDES_COIL = 4;
@@ -87,7 +87,7 @@ class Relay2Elm extends CircuitElm {
     }
 
     public Relay2Elm(int xa, int ya, int xb, int yb, int f,
-                    StringTokenizer st) {
+                     StringTokenizer st) {
         super(xa, ya, xb, yb, f);
         poleCount = new Integer(st.nextToken()).intValue();
         inductance = new Double(st.nextToken()).doubleValue();
@@ -336,7 +336,7 @@ class Relay2Elm extends CircuitElm {
         int i;
         for (i = 0; i != poleCount; i++)
             switchCurrent[i] = switchCurCount[i] = 0;
-        f_position= d_position = i_position = 0;
+        f_position = d_position = i_position = 0;
 
         // preserve onState because if we don't, Relay Flip-Flop gets left in a weird state on reset.
         // onState = false;
@@ -398,7 +398,7 @@ class Relay2Elm extends CircuitElm {
             } else {
                 f_position -= sim.timeStep / switchingTime;
                 if (f_position <= 0)
-                    f_position= d_position = i_position = 0;
+                    f_position = d_position = i_position = 0;
             }
 
         }

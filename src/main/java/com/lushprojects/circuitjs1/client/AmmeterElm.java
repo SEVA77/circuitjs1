@@ -24,124 +24,132 @@ package com.lushprojects.circuitjs1.client;
 
 import com.lushprojects.circuitjs1.client.util.Locale;
 
-class AmmeterElm extends CircuitElm {
-        
-        int meter;
-	int scale;
-        final int AM_VOL = 0;
-        final int AM_RMS = 1;
-        int zerocount=0;
-        double rmsI=0, total, count;
-        double maxI=0, lastMaxI;
-        double minI=0, lastMinI;
-        double selectedValue=0;
-        
-        double currents[];
-        boolean increasingI=true, decreasingI=true;
+public class AmmeterElm extends CircuitElm {
 
-    public AmmeterElm(int xx, int yy) { 
-        super(xx, yy); 
+    int meter;
+    int scale;
+    final int AM_VOL = 0;
+    final int AM_RMS = 1;
+    int zerocount = 0;
+    double rmsI = 0, total, count;
+    double maxI = 0, lastMaxI;
+    double minI = 0, lastMinI;
+    double selectedValue = 0;
+
+    double currents[];
+    boolean increasingI = true, decreasingI = true;
+
+    public AmmeterElm(int xx, int yy) {
+        super(xx, yy);
         flags = FLAG_SHOWCURRENT;
         scale = SCALE_AUTO;
     }
+
     public AmmeterElm(int xa, int ya, int xb, int yb, int f,
-               StringTokenizer st) {
+                      StringTokenizer st) {
         super(xa, ya, xb, yb, f);
         scale = SCALE_AUTO;
         meter = Integer.parseInt(st.nextToken());
         try {
             scale = Integer.parseInt(st.nextToken());
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
     }
+
     String dump() {
-            return super.dump() + " " + meter + " " + scale;
+        return super.dump() + " " + meter + " " + scale;
     }
-    String getMeter(){
+
+    String getMeter() {
         switch (meter) {
-        case AM_VOL:
-            return "I";
-        case AM_RMS:
-            return "Irms";
+            case AM_VOL:
+                return "I";
+            case AM_RMS:
+                return "Irms";
         }
         return "";
     }
-    void setPoints(){
+
+    void setPoints() {
         super.setPoints();
-        mid = interpPoint(point1,point2,0.6);
+        mid = interpPoint(point1, point2, 0.6);
         arrowPoly = calcArrow(point1, mid, 14, 7);
     }
+
     Point mid;
     static final int FLAG_SHOWCURRENT = 1;
-    void stepFinished(){
+
+    void stepFinished() {
         count++;//how many counts are in a cycle    
-        total += current*current; //sum of squares
-        if (current>maxI && increasingI){
+        total += current * current; //sum of squares
+        if (current > maxI && increasingI) {
             maxI = current;
             increasingI = true;
             decreasingI = false;
         }
-        if (current<maxI && increasingI){//change of direction I now going down - at start of waveform
-            lastMaxI=maxI; //capture last maximum 
+        if (current < maxI && increasingI) {//change of direction I now going down - at start of waveform
+            lastMaxI = maxI; //capture last maximum
             //capture time between
-            minI=current; //track minimum value 
-            increasingI=false;
-            decreasingI=true;
-            
+            minI = current; //track minimum value
+            increasingI = false;
+            decreasingI = true;
+
             //rms data
-            total = total/count;
+            total = total / count;
             rmsI = Math.sqrt(total);
             if (Double.isNaN(rmsI))
-                rmsI=0;
-            count=0;
-            total=0;
-            
+                rmsI = 0;
+            count = 0;
+            total = 0;
+
         }
-        if (current<minI && decreasingI){ //I going down, track minimum value
-            minI=current;
-            increasingI=false;
-            decreasingI=true;
+        if (current < minI && decreasingI) { //I going down, track minimum value
+            minI = current;
+            increasingI = false;
+            decreasingI = true;
         }
 
-        if (current>minI && decreasingI){ //change of direction I now going up
-            lastMinI=minI; //capture last minimum
+        if (current > minI && decreasingI) { //change of direction I now going up
+            lastMinI = minI; //capture last minimum
 
             maxI = current;
             increasingI = true;
             decreasingI = false;
-            
+
             //rms data
-            total = total/count;
+            total = total / count;
             rmsI = Math.sqrt(total);
             if (Double.isNaN(rmsI))
-                rmsI=0;
-            count=0;
-            total=0;
+                rmsI = 0;
+            count = 0;
+            total = 0;
 
-            
+
         }
         //need to zero the rms value if it stays at 0 for a while
-        if (current==0){
+        if (current == 0) {
             zerocount++;
-            if (zerocount > 5){
-                total=0;
-                rmsI=0;
-                maxI=0;
-                minI=0;
+            if (zerocount > 5) {
+                total = 0;
+                rmsI = 0;
+                maxI = 0;
+                minI = 0;
             }
-        }else{
-            zerocount=0;
+        } else {
+            zerocount = 0;
         }
         switch (meter) {
-        case AM_VOL:
-            selectedValue = current;
-            break;
-        case AM_RMS:
-            selectedValue = rmsI;
-            break;
+            case AM_VOL:
+                selectedValue = current;
+                break;
+            case AM_RMS:
+                selectedValue = rmsI;
+                break;
         }
     }
-    
+
     Polygon arrowPoly;
+
     void draw(Graphics g) {
         super.draw(g);//BC required for highlighting
         setVoltageColor(g, volts[0]);
@@ -151,25 +159,34 @@ class AmmeterElm extends CircuitElm {
         setBbox(point1, point2, 3);
         String s = "A";
         switch (meter) {
-        case AM_VOL:
-            s = getUnitTextWithScale(getCurrent(), "A", scale);
-            break;
-        case AM_RMS:
-            s = getUnitTextWithScale(rmsI, "A(rms)", scale);
-            break;
+            case AM_VOL:
+                s = getUnitTextWithScale(getCurrent(), "A", scale);
+                break;
+            case AM_RMS:
+                s = getUnitTextWithScale(rmsI, "A(rms)", scale);
+                break;
         }
 
         drawValues(g, s, 4);
         drawPosts(g);
     }
-    int getDumpType() { return 370; }
+
+    int getDumpType() {
+        return 370;
+    }
+
     void stamp() {
         sim.stampVoltageSource(nodes[0], nodes[1], voltSource, 0);
     }
+
     boolean mustShowCurrent() {
         return (flags & FLAG_SHOWCURRENT) != 0;
     }
-    int getVoltageSourceCount() { return 1; }
+
+    int getVoltageSourceCount() {
+        return 1;
+    }
+
     void getInfo(String arr[]) {
         arr[0] = "Ammeter";
         switch (meter) {
@@ -179,18 +196,26 @@ class AmmeterElm extends CircuitElm {
             case AM_RMS:
                 arr[1] = "Irms = " + getUnitText(rmsI, "A");
                 break;
-        }    
+        }
     }
-    double getPower() { return 0; }
-    double getVoltageDiff() { return volts[0]; }
-    
+
+    double getPower() {
+        return 0;
+    }
+
+    double getVoltageDiff() {
+        return volts[0];
+    }
+
     // do not optimize out, even though isWireEquivalent() is true
     // (because we need current calculated every timestep)    
-    boolean isWireEquivalent() { return true; }
-    
+    boolean isWireEquivalent() {
+        return true;
+    }
+
     public EditInfo getEditInfo(int n) {
-        if (n==0){
-            EditInfo ei =  new EditInfo("Value", selectedValue, -1, -1);
+        if (n == 0) {
+            EditInfo ei = new EditInfo("Value", selectedValue, -1, -1);
             ei.choice = new Choice();
             ei.choice.add("Current");
             ei.choice.add("RMS Current");
@@ -198,7 +223,7 @@ class AmmeterElm extends CircuitElm {
             return ei;
         }
         if (n == 1) {
-            EditInfo ei =  new EditInfo("Scale", 0);
+            EditInfo ei = new EditInfo("Scale", 0);
             ei.choice = new Choice();
             ei.choice.add("Auto");
             ei.choice.add("A");
@@ -209,10 +234,11 @@ class AmmeterElm extends CircuitElm {
         }
         return null;
     }
+
     public void setEditValue(int n, EditInfo ei) {
-        if (n==0)
+        if (n == 0)
             meter = ei.choice.getSelectedIndex();
-        if (n==1)
+        if (n == 1)
             scale = ei.choice.getSelectedIndex();
     }
 

@@ -90,7 +90,7 @@ public class circuitjs1 implements EntryPoint {
             loadSimulator(localizationMap);
             return;
         }
-        
+
         url = GWT.getModuleBaseURL() + "locale_" + lang + ".txt";
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
@@ -132,9 +132,9 @@ public class circuitjs1 implements EntryPoint {
             }
             int q2 = line.indexOf('"', 1);
             if ((q2 < 0)
-                || (line.charAt(q2 + 1) != '=')
-                || (line.charAt(q2 + 2) != '"')
-                || (line.charAt(line.length() - 1) != '"')) {
+                    || (line.charAt(q2 + 1) != '=')
+                    || (line.charAt(q2 + 2) != '"')
+                    || (line.charAt(line.length() - 1) != '"')) {
                 CirSim.console("ignoring line in string catalog: " + line);
                 continue;
             }

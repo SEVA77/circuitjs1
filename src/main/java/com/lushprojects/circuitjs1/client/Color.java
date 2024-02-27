@@ -19,8 +19,7 @@
 
 package com.lushprojects.circuitjs1.client;
 
-public class Color
-{
+public class Color {
     public final static Color white = new Color(255, 255, 255);
     public final static Color lightGray = new Color(192, 192, 192);
     public final static Color gray = new Color(128, 128, 128);
@@ -37,13 +36,13 @@ public class Color
     public final static Color cyan = new Color(0, 255, 255);
     public final static Color blue = new Color(0, 0, 255);
     public static final Color NONE = new Color("");
-    
+
     private int r, g, b;
-    
+
     // only for special cases, like no color, or maybe named colors
     private String colorText = null;
 
-    public Color (String colorText) {
+    public Color(String colorText) {
         this.colorText = colorText;
         if (colorText.startsWith("#") && colorText.length() == 7) {
             String rs = colorText.substring(1, 3);
@@ -56,49 +55,43 @@ public class Color
     }
 
     // create mixture of c1 and c2
-    public Color (Color c1, Color c2, double mix) {
-	double m0 = 1-mix;
-	this.r = (int) (c1.r*m0 + c2.r*mix);
-	this.g = (int) (c1.g*m0 + c2.g*mix);
-	this.b = (int) (c1.b*m0 + c2.b*mix);
+    public Color(Color c1, Color c2, double mix) {
+        double m0 = 1 - mix;
+        this.r = (int) (c1.r * m0 + c2.r * mix);
+        this.g = (int) (c1.g * m0 + c2.g * mix);
+        this.b = (int) (c1.b * m0 + c2.b * mix);
     }
-    
-    public Color (int r, int g, int b)
-    {
+
+    public Color(int r, int g, int b) {
         this.r = r;
         this.g = g;
         this.b = b;
     }
 
-    public int getRed ()
-    {
+    public int getRed() {
         return r;
     }
 
-    public int getGreen ()
-    {
+    public int getGreen() {
         return g;
     }
 
-    public int getBlue ()
-    {
+    public int getBlue() {
         return b;
     }
 
-    public String getHexValue ()
-    {
+    public String getHexValue() {
         if (colorText != null) {
             return colorText;
         }
 
         return "#"
-            + pad(Integer.toHexString(r))
-            + pad(Integer.toHexString(g))
-            + pad(Integer.toHexString(b));
+                + pad(Integer.toHexString(r))
+                + pad(Integer.toHexString(g))
+                + pad(Integer.toHexString(b));
     }
 
-    private String pad (String in)
-    {
+    private String pad(String in) {
         if (in.length() == 0) {
             return "00";
         }
@@ -108,8 +101,7 @@ public class Color
         return in;
     }
 
-    public String toString ()
-    {
+    public String toString() {
         if (colorText != null) {
             return colorText;
         }
