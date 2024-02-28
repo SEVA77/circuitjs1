@@ -141,6 +141,7 @@
 "Add Potentiometer"="添加可变电阻"
 "Add Push Switch"="添加按钮开关"
 "Add Relay"="添加继电器"
+"Add Double Coil Relay"="添加双线圈继电器"
 "Add Resistor"="添加电阻器"
 "Add SCR"="添加可控硅"
 "Add SIPO shift register"="添加SIPO移位寄存器"

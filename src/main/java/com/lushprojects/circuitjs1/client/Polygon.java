@@ -18,25 +18,25 @@ package com.lushprojects.circuitjs1.client;
 
 // via http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/java/awt/Polygon.java
 
-class Polygon {
+public class Polygon {
 //	ArrayList<Point> poly;
-	
-	private static final int MIN_LENGTH = 4;
-	public int npoints;
-	public int xpoints[];
-	public int ypoints[];
-	
-	
-	public Polygon(){
+
+    private static final int MIN_LENGTH = 4;
+    public int npoints;
+    public int xpoints[];
+    public int ypoints[];
+
+
+    public Polygon() {
 //		poly = new ArrayList<Point>();
         xpoints = new int[MIN_LENGTH];
         ypoints = new int[MIN_LENGTH];
-	}
-	
+    }
+
 //	public void addPoint(int x, int y){
 //		poly.add(new Point(x,y));
 //	}
-	
+
     public void addPoint(int x, int y) {
         if (npoints >= xpoints.length || npoints >= ypoints.length) {
             int newLength = npoints * 2;
@@ -58,12 +58,12 @@ class Polygon {
 //            updateBounds(x, y);
 //        }
     }
-    
+
     private int[] expand(int[] in, int newlen) {
-    	int[] out=new int[newlen];
-    	for(int i=0; i<in.length; i++)
-    		out[i]=in[i];
-    	return out;
+        int[] out = new int[newlen];
+        for (int i = 0; i < in.length; i++)
+            out[i] = in[i];
+        return out;
     }
-	
+
 }
