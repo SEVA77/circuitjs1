@@ -7,6 +7,10 @@ war/circuitjs1/circuits/
 # Maven target
 target/
 
+# Node modules
+node_modules/
+package-lock.json
+
 # NW.js cache
 nwjs_cache/
 CircuitJS1 Desktop Mod/

@@ -1,0 +1,11 @@
+{
+"scripts": {
+    "test_build": "node scripts/test_mvn_build.js",
+    "test_dev": "node scripts/test_mvn_dev.js"
+    },
+
+"devDependencies": {
+    "maven":">=3.0.0",
+    "nw-builder": "^4.6.0"
+    }
+}
