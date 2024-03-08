@@ -1,217 +1,215 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.lushprojects.circuitjs1</groupId>
-	<artifactId>circuitjs</artifactId>
-	<version>2.5.7</version>
-	<packaging>war</packaging>
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+<groupId>com.lushprojects.circuitjs1</groupId>
+<artifactId>circuitjs</artifactId>
+<version>2.5.7</version>
+<packaging>war</packaging>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.google.gwt</groupId>
-				<artifactId>gwt</artifactId>
-				<version>2.8.2</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<!-- Setting maven.compiler.source to something different to 1.8
-			needs that you configure the sourceLevel in gwt-maven-plugin since
-			GWT compiler 2.8 requires 1.8 (see gwt-maven-plugin block below) -->
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-
-		<!-- Don't let your Mac use a crazy non-standard encoding -->
-		<!-- generating dependency report is slow; disable it -->
-		<dependency.locations.enabled>false</dependency.locations.enabled>
-	</properties>
+<dependencyManagement>
 	<dependencies>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-servlet</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-dev</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
+	<dependency>
+		<groupId>com.google.gwt</groupId>
+		<artifactId>gwt</artifactId>
+		<version>2.8.2</version>
+		<type>pom</type>
+		<scope>import</scope>
+	</dependency>
 	</dependencies>
+</dependencyManagement>
+<properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	<!-- Setting maven.compiler.source to something different to 1.8
+		needs that you configure the sourceLevel in gwt-maven-plugin since
+		GWT compiler 2.8 requires 1.8 (see gwt-maven-plugin block below) -->
+	<maven.compiler.source>1.8</maven.compiler.source>
+	<maven.compiler.target>1.8</maven.compiler.target>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
+	<!-- Don't let your Mac use a crazy non-standard encoding -->
+	<!-- generating dependency report is slow; disable it -->
+	<dependency.locations.enabled>false</dependency.locations.enabled>
+</properties>
+<dependencies>
+	<dependency>
+		<groupId>com.google.gwt</groupId>
+		<artifactId>gwt-servlet</artifactId>
+		<scope>runtime</scope>
+	</dependency>
+	<dependency>
+		<groupId>com.google.gwt</groupId>
+		<artifactId>gwt-user</artifactId>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>com.google.gwt</groupId>
+		<artifactId>gwt-dev</artifactId>
+		<scope>provided</scope>
+	</dependency>
+</dependencies>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId> <!-- artifact with sources is easier to handle during development -->
-				<version>3.0.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+<build>
+<plugins>
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-compiler-plugin</artifactId>
+	<version>3.7.0</version>
+	<configuration>
+		<source>1.8</source>
+		<target>1.8</target>
+	</configuration>
+</plugin>
 
-			<!-- declaring only in order to skip during site deployment -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.7</version>
-				<executions>
-					<execution>
-						<id>deploy</id>
-						<phase>deploy</phase>
-						<configuration>
-							<skip>true</skip>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<skip>true</skip>
-					<siteDirectory>site</siteDirectory>
-				</configuration>
-			</plugin>
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-source-plugin</artifactId> <!-- artifact with sources is easier to handle during development -->
+	<version>3.0.1</version>
+	<executions>
+		<execution>
+			<id>attach-sources</id>
+			<goals>
+				<goal>jar</goal>
+			</goals>
+		</execution>
+	</executions>
+</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.9</version>
-				<configuration><!-- we don't need those reports; disabling speeds up 
-						build -->
-					<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-				</configuration>
-			</plugin>
-
-      <!-- GWT Maven Plugin-->
-      <plugin>
-        <groupId>net.ltgt.gwt.maven</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.0-rc-9</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>test</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <moduleName>com.lushprojects.circuitjs1.circuitjs1</moduleName>
-          <moduleShortName>circuitjs1</moduleShortName>
-          <localWorkers>0.5C</localWorkers>
-          <warName>circuitjs</warName>
-          <failOnError>true</failOnError>
-          <!-- GWT compiler 2.8 requires 1.8, hence define sourceLevel here if you use
-               a different source language for java compilation -->
-          <sourceLevel>1.8</sourceLevel>
-          <!-- Compiler configuration -->
-          <compilerArgs>
-            <!-- Ask GWT to create the Story of Your Compile (SOYC) (gwt:compile) -->
-            <compilerArg>-style</compilerArg>
-			<compilerArg>OBFUSCATED</compilerArg>
-          </compilerArgs>
-          <!-- DevMode configuration -->
-          <warDir>war</warDir>
-          <classpathScope>compile+runtime</classpathScope>
-          <!-- URL(s) that should be opened by DevMode (gwt:devmode). -->
-          <startupUrls>
-            <startupUrl>circuitjs.html</startupUrl>
-          </startupUrls>
-          <codeServerPort>8888</codeServerPort>
-        </configuration>
-      </plugin>
-
-			<!-- copy a few things around before packaging the website -->
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.0.2</version>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>install</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/site</outputDirectory>
-							<resources>
-								<resource>
-									<directory>war</directory>
-									<filtering>false</filtering>
-									<excludes>
-										<!-- Based: -->
-										<exclude>circuitjs1/</exclude>
-										<exclude>*.md</exclude>
-										<exclude>*frame.html</exclude>
-										<exclude>WEB-INF/</exclude>
-										<exclude>font/*.json</exclude>
-										<exclude>blink-test.html</exclude>
-										<exclude>jsinterface.html</exclude>
-										<!-- Unused fonts: -->
-										<exclude>font/*.eot</exclude>
-										<exclude>font/*.svg</exclude>
-										<exclude>font/*.ttf</exclude>
-										<exclude>font/*.woff</exclude>
-										<!-- Unused but for the future: -->
-										<exclude>avr8js/</exclude>
-										<exclude>help/DA.html</exclude>
-										<exclude>help/DE.html</exclude>
-										<exclude>help/PL.html</exclude>
-										<exclude>help/*.zip</exclude>
-									</excludes>
-								</resource>
-								<resource>
-									<directory>${project.build.directory}/${project.name}-${project.version}/circuitjs1</directory>
-									<targetPath>circuitjs1</targetPath>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
-			</plugin>
-		<!-- Skip normal test execution, we use gwt:test instead -->
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.18</version>
-				<configuration>
+<!-- declaring only in order to skip during site deployment -->
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-site-plugin</artifactId>
+	<version>3.7</version>
+	<executions>
+		<execution>
+			<id>deploy</id>
+			<phase>deploy</phase>
+			<configuration>
 				<skip>true</skip>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+			</configuration>
+		</execution>
+	</executions>
+	<configuration>
+		<skip>true</skip>
+		<siteDirectory>site</siteDirectory>
+	</configuration>
+</plugin>
+
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-project-info-reports-plugin</artifactId>
+	<version>2.9</version>
+	<configuration><!-- we don't need those reports; disabling speeds up build -->
+		<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+		<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+	</configuration>
+</plugin>
+
+<!-- GWT Maven Plugin-->
+<plugin>
+<groupId>net.ltgt.gwt.maven</groupId>
+<artifactId>gwt-maven-plugin</artifactId>
+<version>1.0-rc-9</version>
+<executions>
+	<execution>
+	<goals>
+		<goal>compile</goal>
+		<goal>test</goal>
+	</goals>
+	</execution>
+</executions>
+<configuration>
+	<moduleName>com.lushprojects.circuitjs1.circuitjs1</moduleName>
+	<moduleShortName>circuitjs1</moduleShortName>
+	<localWorkers>0.5C</localWorkers>
+	<warName>circuitjs</warName>
+	<failOnError>true</failOnError>
+	<!-- GWT compiler 2.8 requires 1.8, hence define sourceLevel here if you use
+		a different source language for java compilation -->
+	<sourceLevel>1.8</sourceLevel>
+	<!-- Compiler configuration -->
+	<compilerArgs>
+	<!-- Ask GWT to create the Story of Your Compile (SOYC) (gwt:compile) -->
+	<compilerArg>-style</compilerArg>
+	<compilerArg>OBFUSCATED</compilerArg>
+	<compilerArg>-setProperty</compilerArg>
+	<compilerArg>user.agent=safari</compilerArg>
+	</compilerArgs>
+	<!-- DevMode configuration -->
+	<warDir>war</warDir>
+	<classpathScope>compile+runtime</classpathScope>
+	<!-- URL(s) that should be opened by DevMode (gwt:devmode). -->
+	<startupUrls>
+	<startupUrl>circuitjs.html</startupUrl>
+	</startupUrls>
+	<codeServerPort>8888</codeServerPort>
+</configuration>
+</plugin>
+
+<!-- copy a few things around before packaging the website -->
+<plugin>
+<artifactId>maven-resources-plugin</artifactId>
+<version>3.0.2</version>
+<executions>
+<execution>
+	<id>copy-resources</id>
+	<phase>install</phase>
+	<goals>
+		<goal>copy-resources</goal>
+	</goals>
+	<configuration>
+	<outputDirectory>${project.build.directory}/site</outputDirectory>
+	<resources>
+	<resource>
+		<directory>war</directory>
+		<filtering>false</filtering>
+		<excludes>
+			<!-- Based: -->
+			<exclude>circuitjs1/</exclude>
+			<exclude>*.md</exclude>
+			<exclude>*frame.html</exclude>
+			<exclude>WEB-INF/</exclude>
+			<exclude>font/*.json</exclude>
+			<exclude>blink-test.html</exclude>
+			<exclude>jsinterface.html</exclude>
+			<!-- Unused fonts: -->
+			<exclude>font/*.eot</exclude>
+			<exclude>font/*.svg</exclude>
+			<exclude>font/*.ttf</exclude>
+			<exclude>font/*.woff</exclude>
+			<!-- Unused but for the future: -->
+			<exclude>avr8js/</exclude>
+			<exclude>help/DA.html</exclude>
+			<exclude>help/DE.html</exclude>
+			<exclude>help/PL.html</exclude>
+			<exclude>help/*.zip</exclude>
+		</excludes>
+	</resource>
+	<resource>
+		<directory>${project.build.directory}/${project.name}-${project.version}/circuitjs1</directory>
+		<targetPath>circuitjs1</targetPath>
+	</resource>
+	</resources>
+	</configuration>
+</execution>
+</executions>
+</plugin>
+
+<plugin>
+	<artifactId>maven-war-plugin</artifactId>
+	<configuration>
+		<failOnMissingWebXml>false</failOnMissingWebXml>
+	</configuration>
+</plugin>
+
+<!-- Skip normal test execution, we use gwt:test instead -->
+<plugin>
+	<artifactId>maven-surefire-plugin</artifactId>
+	<version>2.18</version>
+	<configuration>
+	<skip>true</skip>
+	</configuration>
+</plugin>
+
+</plugins>
+</build>
 </project>
