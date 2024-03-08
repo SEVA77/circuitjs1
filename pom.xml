@@ -196,6 +196,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
 <plugin>
 	<artifactId>maven-war-plugin</artifactId>
+	<version>3.3.2</version> <!-- For jdk > 1.8 -->
 	<configuration>
 		<failOnMissingWebXml>false</failOnMissingWebXml>
 	</configuration>
