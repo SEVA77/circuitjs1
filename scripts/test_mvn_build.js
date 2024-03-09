@@ -7,3 +7,4 @@ mvn.execute(['clean', 'install'], { 'skipTests': true }).then(() => {
     // your stuff, once the execution of the command has been finished successfully.
     console.log("Complite!");
   });
+  
