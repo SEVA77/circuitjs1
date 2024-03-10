@@ -13,7 +13,9 @@ package-lock.json
 
 # NW.js cache
 nwjs_cache/
-CircuitJS1 Desktop Mod/
+
+# Output
+out/
 
 #Inno Setup Output
 Inno Setup/Output/
