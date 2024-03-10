@@ -15,14 +15,10 @@ let stateOfSteps = new Array(2); // State of steps
 let diffTimes_ms = new Array(2); // diff between mtime and current time
 
 function checkSteps() {
+
     let lastStep = -1;
     let lastStepTime = -1;
     let currentTime = new Date();
-
-    function getCompletedStateInfo(isDone){
-        if (isDone==true) return "[v] "
-        else return "[x] "
-    }
 
     function getTimeAgoInfo(time){
         time/=1000;     // milliseconds to seconds
@@ -64,10 +60,11 @@ function checkSteps() {
 
     console.log("Check steps:");
     for (let i = 0; i < stepNames.length; i++) {
-        let basicInfo = getCompletedStateInfo(stateOfSteps[i])+stepNames[i];
-        let isLast = (i==lastStep) ? " <- LAST" : "";
+        let getLastСhangeInfo = (i==lastStep) ? " ◀- LAST" : "";
+        let getStepCompliteInfo = (stateOfSteps[i]) ? "[✔] " : "[✘] ";
+        let basicInfo = getStepCompliteInfo+stepNames[i];
         if (stateOfSteps[i])
-            console.info(basicInfo+" - "+getTimeAgoInfo(diffTimes_ms[i])+isLast)
+            console.info(basicInfo+" - "+getTimeAgoInfo(diffTimes_ms[i])+getLastСhangeInfo)
         else
             console.warn(basicInfo)
     }
