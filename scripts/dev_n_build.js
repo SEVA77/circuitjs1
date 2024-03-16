@@ -1,12 +1,26 @@
 const { statSync } = require('node:fs');
 //const { version } = require('os');
+const readline = require('readline').createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    prompt: 'your answer: '
+})
 
 //const nw_version = '0.64.1-mod1';
 const nw_version = '0.20.0';
 
+const menu="\n1 - check steps      | 2 - run devmode        | 3 - test GWT app\n"
+            +"4 - build GWT app    | 5 - get all nw.js bin  | 6 - build from all bin\n"
+            +"7 [x32,x64] - (win)* | 8 [x32,x64] - (linux)* | 9 [x64,arm64] - (macOS)*\n"
+            //+"'7 [x32,x64]' - full build for windows only\n"
+            //+"'8 [x32,x64]' - full build for linux only\n"
+            //+"'9 [x64,arm64]' - full build for macOS only\n"
+            +"0 - exit             |       full - full build for all platforms \n"
+            +"(* - full build for windows (win), linux or macOS only)\n";
+
 const stepNames = [
     "Devmode (mvn gwt:devmode)",
-    "WebApp (mvn clean install)",
+    "Build GWT web app (mvn clean install)",
     "├── nwjs-v"+nw_version+"-linux-ia32.tar.gz",
     "├── nwjs-v"+nw_version+"-linux-x64.tar.gz",
     "├── nwjs-v"+nw_version+"-osx-arm64.zip",
@@ -92,6 +106,7 @@ function checkSteps() {
     const completedInfo = "[✔] ";
     const notCompletedInfo = "[✘] ";
 
+    console.log();
     console.log("Check steps:");
     for (let i = 0; i < stepNames.length; i++) {
         let getLastСhangeInfo = (i==lastStep) ? " ◀- LAST" : "";
@@ -112,6 +127,31 @@ function checkSteps() {
         }
     }
 
+    console.log();
+
 }
 
-checkSteps();
+function Menu() {
+
+    checkSteps();
+    console.log(menu);
+
+    readline.prompt();
+    readline.on('line', (line) => {
+
+        switch (line.trim()) {
+            default: console.log(menu); break;
+            //case 'clear': ​console.clear(); break;
+            case '0': readline.close();
+            case '1': checkSteps(); console.log(menu); break;
+        }
+        readline.prompt();
+
+    }).on('close', () => {
+        console.log('Have a great day!');
+        process.exit(0);
+    });
+
+}
+
+Menu()
