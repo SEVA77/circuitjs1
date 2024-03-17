@@ -1,10 +1,11 @@
 const { statSync } = require('node:fs');
-//const { version } = require('os');
 const readline = require('readline').createInterface({
     input: process.stdin,
     output: process.stdout,
     prompt: 'your answer: '
 })
+const mvn = require('maven').create({cwd: '.'});
+const child_process = require('child_process');
 
 //const nw_version = '0.64.1-mod1';
 const nw_version = '0.20.0';
@@ -131,27 +132,63 @@ function checkSteps() {
 
 }
 
-function Menu() {
+function runDevmode(){
 
-    checkSteps();
+    return Promise.all([
+
+        async function(){
+        const interval = setInterval(() => {
+            fetch("http://127.0.0.1:8888")
+            .then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    clearInterval(interval);
+                    child_process.spawn(
+                    require('nw').findpath(),
+                    ['./scripts/devmode'],
+                    {
+                        cwd: ".",
+                        detached: true,
+                        stdio: 'ignore'
+                    }
+                ).unref();
+                    return console.log(response.status);
+                }
+            })
+            .catch ((error) => {})}
+        , 2000);
+        }(),
+
+        mvn.execute("gwt:devmode", { 'skipTests': true }).then(() => {
+            console.log("Devmode completed successfully!");
+        })
+
+    ])
+
+}
+
+function Menu() {
+    //checkSteps();
     console.log(menu);
 
     readline.prompt();
     readline.on('line', (line) => {
-
+    (async function(){
         switch (line.trim()) {
             default: console.log(menu); break;
             //case 'clear': ​console.clear(); break;
             case '0': readline.close();
-            case '1': checkSteps(); console.log(menu); break;
-        }
-        readline.prompt();
-
+            case '1': checkSteps(); break;
+            case '2': await runDevmode(); break;
+        }})()
+    .then(()=>{
+        console.log(menu); readline.prompt();
+    })
     }).on('close', () => {
-        console.log('Have a great day!');
+        console.log('\nHave a great day!\n');
         process.exit(0);
     });
 
 }
 
+checkSteps();
 Menu()

@@ -1,0 +1,18 @@
+{
+    "main": "index.html",
+    "name": "circuitjs1",
+    "chromium-args": "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-drdc --canvas-oop-rasterization --enable-parallel-downloading --back-forward-cache --smooth-scrolling",
+    "description": "CircuitJS1 Desktop Mod - Devmode",
+    "window": {
+        "exe_icon": "icon.png",
+        "frame": true,
+        "icon": "icon.png",
+        "id": "circuitjs1dev",
+        "mac_icon": "icon.png",
+        "min_height": 480,
+        "min_width": 640,
+        "position": "center",
+        "title": "CircuitJS1 Desktop Mod - Devmode"
+    },
+    "node-remote": "<all_urls>"
+}
