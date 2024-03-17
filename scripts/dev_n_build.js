@@ -6,11 +6,12 @@ const readline = require('readline').createInterface({
 })
 const mvn = require('maven').create({cwd: '.'});
 const child_process = require('child_process');
+const { resolve } = require('node:path');
 
 //const nw_version = '0.64.1-mod1';
 const nw_version = '0.20.0';
 
-const menu="\n1 - check steps      | 2 - run devmode        | 3 - test GWT app\n"
+const menu="\n1 - check steps      | 2 - run devmode        | 3 - run GWT app\n"
             +"4 - build GWT app    | 5 - get all nw.js bin  | 6 - build from all bin\n"
             +"7 [x32,x64] - (win)* | 8 [x32,x64] - (linux)* | 9 [x64,arm64] - (macOS)*\n"
             //+"'7 [x32,x64]' - full build for windows only\n"
@@ -160,28 +161,56 @@ function runDevmode(){
 
         mvn.execute("gwt:devmode", { 'skipTests': true }).then(() => {
             console.log("Devmode completed successfully!");
+            checkSteps();
         })
 
     ])
 
 }
 
-function Menu() {
-    //checkSteps();
-    console.log(menu);
+function runGWT(){
+    if (!stateOfSteps[1])
+        return console.error("\nGWT app is not compiled!\n"
+        + "Please run \"4 - build GWT app\"");
+    child_process.spawn(
+        require('nw').findpath(),
+        ['./target/site'],
+        {
+            cwd: ".",
+            detached: true,
+            stdio: 'ignore'
+        }
+    ).unref();
+}
 
+function buildGWT(){
+    return Promise.all([
+        mvn.execute(['clean', 'install'], { 'skipTests': true }).then(() => {
+            console.log("GWT app completed successfully!");
+            checkSteps();
+        })
+    ])
+}
+
+function Menu() {
+
+    console.log(menu);
     readline.prompt();
+
     readline.on('line', (line) => {
     (async function(){
         switch (line.trim()) {
-            default: console.log(menu); break;
+            default: break;
             //case 'clear': ​console.clear(); break;
             case '0': readline.close();
             case '1': checkSteps(); break;
             case '2': await runDevmode(); break;
+            case '3': runGWT(); break;
+            case '4': await buildGWT(); break;
         }})()
     .then(()=>{
-        console.log(menu); readline.prompt();
+        console.log(menu);
+        readline.prompt();
     })
     }).on('close', () => {
         console.log('\nHave a great day!\n');

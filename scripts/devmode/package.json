@@ -1,7 +1,7 @@
 {
     "main": "index.html",
     "name": "circuitjs1",
-    "chromium-args": "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-drdc --canvas-oop-rasterization --enable-parallel-downloading --back-forward-cache --smooth-scrolling",
+    "chromium-args": "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-drdc --canvas-oop-rasterization --enable-parallel-downloading --back-forward-cache --enable-smooth-scrolling",
     "description": "CircuitJS1 Desktop Mod - Devmode",
     "window": {
         "exe_icon": "icon.png",
