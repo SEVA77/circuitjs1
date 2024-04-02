@@ -8,8 +8,8 @@ const mvn = require('maven').create({cwd: '.'});
 const child_process = require('child_process');
 const { resolve } = require('node:path');
 
-//const nw_version = '0.64.1-mod1';
-const nw_version = '0.20.0';
+const nw_version = '0.64.1-mod1';
+//const nw_version = '0.20.0';
 
 const menu="\n1 - check steps      | 2 - run devmode        | 3 - run GWT app\n"
             +"4 - build GWT app    | 5 - get all nw.js bin  | 6 - build from all bin\n"
@@ -23,35 +23,35 @@ const menu="\n1 - check steps      | 2 - run devmode        | 3 - run GWT app\n"
 const stepNames = [
     "Devmode (mvn gwt:devmode)",
     "Build GWT web app (mvn clean install)",
+    "├── nwjs-v"+nw_version+"-win-ia32.zip",
+    "├── nwjs-v"+nw_version+"-win-x64.zip",
     "├── nwjs-v"+nw_version+"-linux-ia32.tar.gz",
     "├── nwjs-v"+nw_version+"-linux-x64.tar.gz",
-    "├── nwjs-v"+nw_version+"-osx-arm64.zip",
-    "├── nwjs-v"+nw_version+"-osx-x64.zip",
-    "├── nwjs-v"+nw_version+"-win-ia32.zip",
-    "└── nwjs-v"+nw_version+"-win-x64.zip",
+    //"├── nwjs-v"+nw_version+"-osx-arm64.zip",
+    "└── nwjs-v"+nw_version+"-osx-x64.zip",
+    "├── win-ia32",
+    "├── win-x64",
     "├── linux-ia32",
     "├── linux-x64",
-    "├── osx-arm64",
-    "├── osx-x64",
-    "├── win-ia32",
-    "└── win-x64"
+    //"├── osx-arm64",
+    "└── osx-x64"
 ]
 
 const pathsToCheck = [
     './war/circuitjs1/setuplist.txt',
     './target/site/circuitjs1/setuplist.txt',
-    './nwjs_cache/nwjs-v'+nw_version+'-linux-ia32',
-    './nwjs_cache/nwjs-v'+nw_version+'-linux-x64',
-    './nwjs_cache/nwjs-v'+nw_version+'-osx-arm64',
-    './nwjs_cache/nwjs-v'+nw_version+'-osx-x64',
     './nwjs_cache/nwjs-v'+nw_version+'-win-ia32',
     './nwjs_cache/nwjs-v'+nw_version+'-win-x64',
+    './nwjs_cache/nwjs-v'+nw_version+'-linux-ia32',
+    './nwjs_cache/nwjs-v'+nw_version+'-linux-x64',
+    //'./nwjs_cache/nwjs-v'+nw_version+'-osx-arm64',
+    './nwjs_cache/nwjs-v'+nw_version+'-osx-x64',
+    './out/win-ia32',
+    './out/win-x64',
     './out/linux-ia32',
     './out/linux-x64',
-    './out/osx-arm64',
-    './out/osx-x64',
-    './out/win-ia32',
-    './out/win-x64'
+    //'./out/osx-arm64',
+    './out/osx-x64'
 ]
 
 let stateOfSteps = new Array(13);
@@ -102,8 +102,10 @@ function checkSteps() {
     }
 
     let x = stateOfSteps;
-    isDownloadComplite = x[2]&x[3]&x[4]&x[5]&x[6]&x[7];
-    isLastBinaryComplite = x[8]&x[9]&x[10]&x[11]&x[12]&x[13];
+    //isDownloadComplite = x[2]&x[3]&x[4]&x[5]&x[6]&x[7]; //with arm64
+    //isLastBinaryComplite = x[8]&x[9]&x[10]&x[11]&x[12]&x[13]; //with arm64
+    isDownloadComplite = x[2]&x[3]&x[4]&x[5]&x[6];
+    isLastBinaryComplite = x[7]&x[8]&x[9]&x[10]&x[11];
 
     const completedInfo = "[✔] ";
     const notCompletedInfo = "[✘] ";
@@ -118,7 +120,8 @@ function checkSteps() {
             console.info(basicInfo+" - "+getTimeAgoInfo(diffTimes_ms[i])+getLastСhangeInfo)
         else
             console.warn(basicInfo)
-        if (i==1 || i==7){
+        //if (i==1 || i==7){ //if arm64
+        if (i==1 || i==6){
             let isCompleted = (i==1) ? isDownloadComplite : isLastBinaryComplite;
             let getCompletedInfo = (isCompleted) ? completedInfo : notCompletedInfo;
             let basicInfo = (i==1) ?
@@ -192,6 +195,33 @@ function buildGWT(){
     ])
 }
 
+async function getBin(platform, arch){
+    let obj = await import("nw-builder");
+    let nwbuild = obj.default;
+    console.log("NW.js download for "+platform+" "+arch+" has started");
+    await nwbuild({
+        mode: "get",
+        version: nw_version,
+        platform: platform,
+        arch: arch,
+        flavor: "normal",
+        downloadUrl: "https://github.com/SEVA77/nw.js_mod/releases/download",
+        manifestUrl: "https://raw.githubusercontent.com/SEVA77/nw.js_mod/main/versions.json",
+        cacheDir: "./nwjs_cache",
+        srcDir: "target/site"
+    });
+}
+
+function getAllBins(){
+    return Promise.all([
+        getBin('win', 'ia32'),
+        getBin('win', 'x64'),
+        getBin('linux', 'ia32'),
+        getBin('linux', 'x64'),
+        getBin('osx', 'x64')
+    ]);
+}
+
 function Menu() {
 
     console.log(menu);
@@ -207,6 +237,7 @@ function Menu() {
             case '2': await runDevmode(); break;
             case '3': runGWT(); break;
             case '4': await buildGWT(); break;
+            case '5': await getAllBins(); break;
         }})()
     .then(()=>{
         console.log(menu);
