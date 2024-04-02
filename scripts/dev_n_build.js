@@ -212,6 +212,24 @@ async function getBin(platform, arch){
     });
 }
 
+async function buildRelease(platform, arch){
+    let obj = await import("nw-builder");
+    let nwbuild = obj.default;
+    console.log("Building release for "+platform+" "+arch+" has started");
+    await nwbuild({
+        mode: "build",
+        version: nw_version,
+        platform: platform,
+        arch: arch,
+        flavor: "normal",
+        cacheDir: "./nwjs_cache",
+        manifestUrl: "https://raw.githubusercontent.com/SEVA77/nw.js_mod/main/versions.json",
+        srcDir: "target/site",
+        outDir: "./out/"+platform+"-"+arch,
+        glob: false
+    });
+}
+
 function getAllBins(){
     return Promise.all([
         getBin('win', 'ia32'),
@@ -219,6 +237,16 @@ function getAllBins(){
         getBin('linux', 'ia32'),
         getBin('linux', 'x64'),
         getBin('osx', 'x64')
+    ]);
+}
+
+function buildAll(){
+    return Promise.all([
+        buildRelease('win', 'ia32'),
+        buildRelease('win', 'x64'),
+        buildRelease('linux', 'ia32'),
+        buildRelease('linux', 'x64'),
+        buildRelease('osx', 'x64')
     ]);
 }
 
@@ -238,6 +266,7 @@ function Menu() {
             case '3': runGWT(); break;
             case '4': await buildGWT(); break;
             case '5': await getAllBins(); break;
+            case '6': await buildAll(); break;
         }})()
     .then(()=>{
         console.log(menu);
