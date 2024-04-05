@@ -57,6 +57,16 @@ const pathsToCheck = [
 let stateOfSteps = new Array(13);
 let diffTimes_ms = new Array(13); // diff between mtime and current time
 
+function getFileNumber(platform, arch){
+    let i = 7;
+    let j = (arch == "x64") ? 1 : 0;
+    switch (platform) {
+        case "win": return i+j;
+        case "linux": return 2+i+j;
+        case "mac": return 4+i;
+    }
+}
+
 function checkSteps() {
 
     lastStep = -1;
@@ -196,9 +206,12 @@ function buildGWT(){
 }
 
 async function getBin(platform, arch){
-    let obj = await import("nw-builder");
-    let nwbuild = obj.default;
-    console.log("NW.js download for "+platform+" "+arch+" has started");
+    
+    // let archiveType = (platform = "linux") ? ".tar.gz" : ".zip";
+    // let archivePath = pathsToCheck[getFileNumber(platform, arch)-5]+archiveType;
+
+    console.log("NW.js download for "+platform+" "+arch+" has started. Please wait...");
+    let nwbuild = (await import("nw-builder")).default;
     await nwbuild({
         mode: "get",
         version: nw_version,
@@ -209,13 +222,14 @@ async function getBin(platform, arch){
         manifestUrl: "https://raw.githubusercontent.com/SEVA77/nw.js_mod/main/versions.json",
         cacheDir: "./nwjs_cache",
         srcDir: "target/site"
-    });
+    }).catch(()=>{/*console.error("ERROR: The archive "+archivePath.slice(13)+" is damaged. Remove it and try again.")*/})
+    .then(()=>{console.log("Download for "+platform+" "+arch+" has been completed!")})
 }
 
 async function buildRelease(platform, arch){
-    let obj = await import("nw-builder");
-    let nwbuild = obj.default;
+    let nwbuild = (await import("nw-builder")).default;
     console.log("Building release for "+platform+" "+arch+" has started");
+    //let archiveType = (platform == "linux") ? "tgz" : "zip";
     await nwbuild({
         mode: "build",
         version: nw_version,
@@ -225,12 +239,14 @@ async function buildRelease(platform, arch){
         cacheDir: "./nwjs_cache",
         manifestUrl: "https://raw.githubusercontent.com/SEVA77/nw.js_mod/main/versions.json",
         srcDir: "target/site",
-        outDir: "./out/"+platform+"-"+arch,
-        glob: false
+        outDir: "./out/"+platform+"-"+arch+"/CircuitJS1 Desktop Mod",
+        glob: false,
+        //zip: archiveType    // the archiver in my system is better
     });
 }
 
-function getAllBins(){
+async function getAllBins(){
+    // TODO: Make archive checker
     return Promise.all([
         getBin('win', 'ia32'),
         getBin('win', 'x64'),
@@ -241,6 +257,7 @@ function getAllBins(){
 }
 
 function buildAll(){
+    // TODO: Check files and suggest overwriting them
     return Promise.all([
         buildRelease('win', 'ia32'),
         buildRelease('win', 'x64'),
