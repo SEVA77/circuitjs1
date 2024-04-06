@@ -13,12 +13,12 @@ const nw_version = '0.64.1-mod1';
 
 const menu="\n1 - check steps      | 2 - run devmode        | 3 - run GWT app\n"
             +"4 - build GWT app    | 5 - get all nw.js bin  | 6 - build from all bin\n"
-            +"7 [x32,x64] - (win)* | 8 [x32,x64] - (linux)* | 9 [x64,arm64] - (macOS)*\n"
-            //+"'7 [x32,x64]' - full build for windows only\n"
-            //+"'8 [x32,x64]' - full build for linux only\n"
-            //+"'9 [x64,arm64]' - full build for macOS only\n"
+            +"7 [x32,x64] - (win)* | 8 [x32,x64] - (linux)* | 9 [x64] - (macOS)*\n"
+            //+"'7 [x32,x64]' - build from bin for windows only\n"
+            //+"'8 [x32,x64]' - build from bin for linux only\n"
+            //+"'9 [x64,arm64]' - build from bin for macOS only\n"
             +"0 - exit             |       full - full build for all platforms \n"
-            +"(* - full build for windows (win), linux or macOS only)\n";
+            +"(* - build from bin for windows (win), linux or macOS only)\n";
 
 const stepNames = [
     "Devmode (mvn gwt:devmode)",
@@ -59,11 +59,11 @@ let diffTimes_ms = new Array(13); // diff between mtime and current time
 
 function getFileNumber(platform, arch){
     let i = 7;
-    let j = (arch == "x64") ? 1 : 0;
+    let j = (arch == "x64" && platform!="osx") ? 1 : 0;
     switch (platform) {
         case "win": return i+j;
         case "linux": return 2+i+j;
-        case "mac": return 4+i;
+        case "osx": return 4+i;
     }
 }
 
@@ -245,7 +245,7 @@ async function buildRelease(platform, arch){
     });
 }
 
-async function getAllBins(){
+function getAllBins(){
     // TODO: Make archive checker
     return Promise.all([
         getBin('win', 'ia32'),
@@ -267,6 +267,26 @@ function buildAll(){
     ]);
 }
 
+async function platformBuild(platform,arch1,arch2){
+    checkSteps();
+    let k = getFileNumber(platform,arch1);
+    if (!stateOfSteps[1]) await buildGWT();
+    if (!stateOfSteps[k-5])
+        await getBin(platform,arch1);
+    await buildRelease(platform,arch1);
+    if (arch2!==undefined) {
+        if (!stateOfSteps[k-5])
+            await getBin(platform,arch2);
+        await buildRelease(platform,arch2);
+    }
+}
+
+async function fullBuild(){
+    await buildGWT();
+    await getAllBins();
+    await buildAll();
+}
+
 function Menu() {
 
     console.log(menu);
@@ -284,6 +304,47 @@ function Menu() {
             case '4': await buildGWT(); break;
             case '5': await getAllBins(); break;
             case '6': await buildAll(); break;
+            case '7':
+            case '7 x32 x64':
+            case '7 x32,x64':
+            case '7 [x32,x64]':
+                console.log("RUN BUILD FOR WINDOWS X32 AND X64");
+                await platformBuild('win','ia32','x64');
+                break;
+            case '7 x32':
+            case '7 [x32]':
+                console.log("RUN BUILD FOR WINDOWS X32");
+                await platformBuild('win','ia32');
+                break;
+            case '7 x64':
+            case '7 [x64]':
+                console.log("RUN BUILD FOR WINDOWS X64");
+                await platformBuild('win','x64');
+                break;
+            case '8':
+            case '8 x32 x64':
+            case '8 x32,x64':
+            case '8 [x32,x64]':
+                console.log("RUN BUILD FOR LINUX X32 AND X64");
+                await platformBuild('linux','ia32','x64');
+                break;
+            case '8 x32':
+            case '8 [x32]':
+                console.log("RUN BUILD FOR LINUX X32");
+                await platformBuild('linux','ia32');
+                break;
+            case '8 x64':
+            case '8 [x64]':
+                console.log("RUN BUILD FOR LINUX X64");
+                await platformBuild('linux','x64');
+                break;
+            case '9':
+            case '9 x64':
+            case '9 [x64]':
+                console.log("RUN BUILD FOR MAC OS X64");
+                await platformBuild('osx','x64');
+                break;
+            case 'full': await fullBuild();
         }})()
     .then(()=>{
         console.log(menu);
