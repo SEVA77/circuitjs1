@@ -239,6 +239,12 @@ async function buildRelease(platform, arch){
     let nwbuild = (await import("nw-builder")).default;
     console.log("Building release for "+platform+" "+arch+" has started");
     //let archiveType = (platform == "linux") ? "tgz" : "zip";
+    let iconPath;
+    switch (platform){
+        case "linux": iconPath = "system-run"; break;
+        case "win": iconPath = "./scripts/icons/icon.ico"; break;
+        case "osx": iconPath = "./scripts/icons/app.icns"; break;
+    }
     await nwbuild({
         mode: "build",
         version: nw_version,
@@ -250,7 +256,11 @@ async function buildRelease(platform, arch){
         srcDir: "target/site",
         outDir: "./out/"+platform+"-"+arch+"/CircuitJS1 Desktop Mod",
         glob: false,
-        //zip: archiveType    // the archiver in my system is better
+        //zip: archiveType,    // the archiver in my system is better
+        app: {
+            icon: iconPath,
+            exec: 'bash -c \'\"$(dirname \"$1\")\"/CircuitSimulator\' x %k'  // For linux. Should be ignored for other platforms.
+        }
     });
 }
 
@@ -278,7 +288,6 @@ async function buildAll(){
 }
 
 async function platformBuild(platform,arch1,arch2){
-    checkSteps();
     let k = getFileNumber(platform,arch1);
     if (!stateOfSteps[1]) await buildGWT();
     if (!stateOfSteps[k-5])
@@ -296,7 +305,6 @@ async function fullBuild(){
     await buildGWT();
     await getAllBins();
     await buildAll();
-    checkSteps(false);
 }
 
 function Menu() {
