@@ -1,8 +1,7 @@
 {
 
 "scripts": {
-    "test_build": "node scripts/test_mvn_build.js",
-    "test_dev": "node scripts/test_mvn_dev.js"
+    "dev": "node scripts/dev_n_build.js"
     },
 
 "devDependencies": {
