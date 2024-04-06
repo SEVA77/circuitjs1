@@ -207,8 +207,8 @@ function buildGWT(){
 
 async function getBin(platform, arch){
     
-    // let archiveType = (platform = "linux") ? ".tar.gz" : ".zip";
-    // let archivePath = pathsToCheck[getFileNumber(platform, arch)-5]+archiveType;
+    let archiveType = (platform=="linux") ? ".tar.gz" : ".zip";
+    let archivePath = pathsToCheck[getFileNumber(platform, arch)-5]+archiveType;
 
     console.log("NW.js download for "+platform+" "+arch+" has started. Please wait...");
     let nwbuild = (await import("nw-builder")).default;
@@ -222,7 +222,7 @@ async function getBin(platform, arch){
         manifestUrl: "https://raw.githubusercontent.com/SEVA77/nw.js_mod/main/versions.json",
         cacheDir: "./nwjs_cache",
         srcDir: "target/site"
-    }).catch(()=>{/*console.error("ERROR: The archive "+archivePath.slice(13)+" is damaged. Remove it and try again.")*/})
+    }).catch(()=>{console.error("ERROR: The archive "+archivePath.slice(13)+" is damaged. Remove it and try again.")})
     .then(()=>{console.log("Download for "+platform+" "+arch+" has been completed!")})
 }
 
