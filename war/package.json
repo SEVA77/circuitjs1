@@ -34,22 +34,5 @@
         "min_width": 640,
         "position": "center",
         "title": "CircuitJS1 Desktop Mod 1.2.5"
-    },
-    "devDependencies": {
-        "nw-builder": "^4.3.2"
-    },
-    "nwbuild": {
-        "mode": "build",
-        "version": "0.20.0",
-        "flavor": "normal",
-        "platform": "linux",
-        "arch": "x64",
-        "downloadUrl": "https://dl.nwjs.io",
-        "manifestUrl": "https://nwjs.io/versions",
-        "cacheDir": "./nwjs_cache",
-        "srcDir": "./target/site",
-        "outDir": "./CircuitJS1 Desktop Mod",
-        "cache": true,
-        "ffmpeg": false
     }
 }
