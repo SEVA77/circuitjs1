@@ -17,7 +17,7 @@ const menu="\n1 - check steps      | 2 - run devmode        | 3 - run GWT app\n"
             //+"'7 [x32,x64]' - build from bin for windows only\n"
             //+"'8 [x32,x64]' - build from bin for linux only\n"
             //+"'9 [x64,arm64]' - build from bin for macOS only\n"
-            +"0 - exit             |       full - full build for all platforms \n"
+            +"   full - full (re)build for all platforms    | 0 - exit \n"
             +"(* - build from bin for windows (win), linux or macOS only)\n";
 
 const stepNames = [
@@ -67,7 +67,7 @@ function getFileNumber(platform, arch){
     }
 }
 
-function checkSteps() {
+function checkSteps(logSteps=true) {
 
     lastStep = -1;
     let lastStepTime = -1;
@@ -120,16 +120,23 @@ function checkSteps() {
     const completedInfo = "[✔] ";
     const notCompletedInfo = "[✘] ";
 
-    console.log();
-    console.log("Check steps:");
+    if (logSteps){
+        console.log();
+        console.log("Check steps:");
+    } else {
+        console.log("Steps rechecked.")
+    }
+
     for (let i = 0; i < stepNames.length; i++) {
         let getLastСhangeInfo = (i==lastStep) ? " ◀- LAST" : "";
         let getCompletedStateInfo = (stateOfSteps[i]) ? completedInfo : notCompletedInfo;
         let basicInfo = getCompletedStateInfo+stepNames[i];
-        if (stateOfSteps[i])
-            console.info(basicInfo+" - "+getTimeAgoInfo(diffTimes_ms[i])+getLastСhangeInfo)
-        else
-            console.warn(basicInfo)
+        if (logSteps){
+            if (stateOfSteps[i])
+                console.info(basicInfo+" - "+getTimeAgoInfo(diffTimes_ms[i])+getLastСhangeInfo)
+            else
+                console.warn(basicInfo)
+        }
         //if (i==1 || i==7){ //if arm64
         if (i==1 || i==6){
             let isCompleted = (i==1) ? isDownloadComplite : isLastBinaryComplite;
@@ -137,12 +144,15 @@ function checkSteps() {
             let basicInfo = (i==1) ?
             getCompletedInfo+"GET NW.JS BINARIES" :
             getCompletedInfo+"BUILD CIRCUITJS1 DESKTOP MOD";
-            if (isCompleted) console.info(basicInfo)
-            else console.warn(basicInfo);
+            if (logSteps){
+                if (isCompleted) console.info(basicInfo)
+                else console.warn(basicInfo);
+            }
+
         }
     }
 
-    console.log();
+    if (logSteps) console.log();
 
 }
 
@@ -174,17 +184,15 @@ function runDevmode(){
 
         mvn.execute("gwt:devmode", { 'skipTests': true }).then(() => {
             console.log("Devmode completed successfully!");
-            checkSteps();
+            checkSteps(false);
         })
 
     ])
 
 }
 
-function runGWT(){
-    if (!stateOfSteps[1])
-        return console.error("\nGWT app is not compiled!\n"
-        + "Please run \"4 - build GWT app\"");
+async function runGWT(){
+    if (!stateOfSteps[1]) await buildGWT();
     child_process.spawn(
         require('nw').findpath(),
         ['./target/site'],
@@ -200,7 +208,7 @@ function buildGWT(){
     return Promise.all([
         mvn.execute(['clean', 'install'], { 'skipTests': true }).then(() => {
             console.log("GWT app completed successfully!");
-            checkSteps();
+            checkSteps(false);
         })
     ])
 }
@@ -222,8 +230,9 @@ async function getBin(platform, arch){
         manifestUrl: "https://raw.githubusercontent.com/SEVA77/nw.js_mod/main/versions.json",
         cacheDir: "./nwjs_cache",
         srcDir: "target/site"
-    }).catch(()=>{console.error("ERROR: The archive "+archivePath.slice(13)+" is damaged. Remove it and try again.")})
+    }).catch((err)=>{console.error("ERROR: The archive "+archivePath.slice(13)+" is damaged. Remove it and try again.")})
     .then(()=>{console.log("Download for "+platform+" "+arch+" has been completed!")})
+
 }
 
 async function buildRelease(platform, arch){
@@ -253,18 +262,19 @@ function getAllBins(){
         getBin('linux', 'ia32'),
         getBin('linux', 'x64'),
         getBin('osx', 'x64')
-    ]);
+    ]).then(()=>{checkSteps(false);});
 }
 
-function buildAll(){
-    // TODO: Check files and suggest overwriting them
-    return Promise.all([
+async function buildAll(){
+    if (!stateOfSteps[1]) await buildGWT();
+    if (!isDownloadComplite) await getAllBins();
+    return await Promise.all([
         buildRelease('win', 'ia32'),
         buildRelease('win', 'x64'),
         buildRelease('linux', 'ia32'),
         buildRelease('linux', 'x64'),
         buildRelease('osx', 'x64')
-    ]);
+    ]).then(()=>{checkSteps(false);});
 }
 
 async function platformBuild(platform,arch1,arch2){
@@ -279,12 +289,14 @@ async function platformBuild(platform,arch1,arch2){
             await getBin(platform,arch2);
         await buildRelease(platform,arch2);
     }
+    checkSteps(false);
 }
 
 async function fullBuild(){
     await buildGWT();
     await getAllBins();
     await buildAll();
+    checkSteps(false);
 }
 
 function Menu() {
@@ -300,7 +312,7 @@ function Menu() {
             case '0': readline.close();
             case '1': checkSteps(); break;
             case '2': await runDevmode(); break;
-            case '3': runGWT(); break;
+            case '3': await runGWT(); break;
             case '4': await buildGWT(); break;
             case '5': await getAllBins(); break;
             case '6': await buildAll(); break;
