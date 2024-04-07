@@ -32,23 +32,57 @@ The tools you will need to build the project are:
 
 * JDK 8+
 * Maven 3+
-* [Web2Executable](https://github.com/jyapayne/Web2Executable) or [nw-builder](https://github.com/nwutils/nw-builder) (more preferably)
+* Node.js with npm
 
-Simply run `mvn clean install` from the circuitjs1 directory to build the project. Project directory after compilation for further building or debugging: `target/site`
-
-After compiling the web application, you can then compile it into the local executables for a variety of platforms with the help of NW.js. To build this program on NW.js you will need a [Web2Executable](https://github.com/jyapayne/Web2Executable) or [nw-builder](https://github.com/nwutils/nw-builder). Command to compile the program via nw-builder:
-
+Install the dependencies in the local `node_modules` folder:
 ```
-nwbuild --glob=false target/site
+npm install
 ```
+
+For full build for all platforms without rebuilding GWT app run:
+```
+npm run build
+```
+
+For full build with rebuilding GWT app run:
+```
+npm run full
+```
+
+*Output folder:* `./out/`
+
+Also you can build only the GWT application:
+```
+npm run buildgwt
+```
+
+and run it in NW.js SDK version:
+```
+npm start
+```
+
+*Output folder:* `./target/site/`
 
 ## Development
 
-For development run devmode:
+Various build options, checker and devmod are available in the development menu:
 
 ```
-mvn gwt:devmode
+npm run dev
 ```
+
+***Separate commands:***
+
+Check the build steps:
+```
+npm run check
+```
+
+Run devmode:
+```
+npm run devmode
+```
+or `mvn gwt:devmode`
 
 Devmode works directly in the `war` directory separate from the `target/site` directory.
 
