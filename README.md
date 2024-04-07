@@ -4,7 +4,7 @@
 
 ![](https://my77thblog.pp.ua/images/PROJECTS/circuit-simulator/circuitjs1-1-2-3-en.png)
 
-The source code for offline version of the **Circuit Simulator** based on [NW.js](https://github.com/nwjs/nw.js). It was originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT. The program was compiled to offline version for Windows (x32, x64), Linux (x32, x64) and MacOS (x64) by Usevalad Khatkevich.
+The source code for offline version of the **Circuit Simulator** with minor modifications based on [modified NW.js](https://github.com/SEVA77/nw.js_mod). It was originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT. The program was modified and compiled to offline version for Windows (x32, x64), Linux (x32, x64) and MacOS (x64) by Usevalad Khatkevich.
 
 This program is distributed by me as a program for education. It is not recommended to use the program for modeling real circuits, since many components in the program are idealized.
 
@@ -102,7 +102,7 @@ You should have received a copy of the GNU General Public License along with thi
     NW.js - Distributed under the MIT License
     Circuit Simulator - Distributed under the GNU General Public License version 2
     
-    © Usevalad Khatkevich 2023
+    © Usevalad Khatkevich 2024
 
 ## Credits
 	 Paul Falstad - Creator
