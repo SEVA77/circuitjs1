@@ -29,12 +29,12 @@ const stepNames = [
     "├── nwjs-v"+nw_version+"-linux-x64.tar.gz",
     //"├── nwjs-v"+nw_version+"-osx-arm64.zip",
     "└── nwjs-v"+nw_version+"-osx-x64.zip",
-    "├── win-ia32",
-    "├── win-x64",
-    "├── linux-ia32",
-    "├── linux-x64",
-    //"├── osx-arm64",
-    "└── osx-x64"
+    "├── for Windows 32-bit",
+    "├── for Windows 64-bit",
+    "├── for Linux 32-bit",
+    "├── for Linux 64-bit",
+    //"├── for Mac OS X ARM64",
+    "└── for Mac OS X 64-bit"
 ]
 
 const pathsToCheck = [
@@ -67,7 +67,7 @@ function getFileNumber(platform, arch){
     }
 }
 
-function checkSteps(logSteps=true) {
+function checkSteps(logSteps=true){
 
     lastStep = -1;
     let lastStepTime = -1;
@@ -123,9 +123,9 @@ function checkSteps(logSteps=true) {
     if (logSteps){
         console.log();
         console.log("Check steps:");
-    } else {
+    } /*else {
         console.log("Steps rechecked.")
-    }
+    }*/
 
     for (let i = 0; i < stepNames.length; i++) {
         let getLastСhangeInfo = (i==lastStep) ? " ◀- LAST" : "";
@@ -307,7 +307,7 @@ async function fullBuild(){
     await buildAll();
 }
 
-function Menu() {
+function runMenu(){
 
     console.log(menu);
     readline.prompt();
@@ -377,5 +377,16 @@ function Menu() {
 
 }
 
-checkSteps();
-Menu()
+(async function(){
+    checkSteps(false);
+    switch (process.argv[2]){
+        default:
+        case undefined: checkSteps(); runMenu(); break;
+        case "--checksteps": checkSteps(); process.exit(0);
+        case "--devmode": await runDevmode(); process.exit(0);
+        case "--buildgwt": await buildGWT(); process.exit(0);
+        case "--rungwt": await runGWT(); process.exit(0);
+        case "--buildall": await buildAll(); process.exit(0);
+        case "--fullrebuild": await fullBuild(); process.exit(0);
+    }
+})()

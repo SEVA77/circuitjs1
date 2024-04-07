@@ -1,7 +1,13 @@
 {
 
 "scripts": {
-    "dev": "node scripts/dev_n_build.js"
+    "dev": "node scripts/dev_n_build.js",
+    "check": "node scripts/dev_n_build.js --checksteps",
+    "devmode": "node scripts/dev_n_build.js --devmode",
+    "gwt": "node scripts/dev_n_build.js --rungwt",
+    "buildgwt": "node scripts/dev_n_build.js --buildgwt",
+    "build": "node scripts/dev_n_build.js --buildall",
+    "full": "node scripts/dev_n_build.js --fullrebuild"
     },
 
 "devDependencies": {
