@@ -166,7 +166,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			<!-- Based: -->
 			<exclude>circuitjs1/</exclude>
 			<exclude>*.md</exclude>
-			<exclude>*frame.html</exclude>
 			<exclude>WEB-INF/</exclude>
 			<exclude>font/*.json</exclude>
 			<exclude>blink-test.html</exclude>
