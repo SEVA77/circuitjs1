@@ -26,7 +26,7 @@ function convertValue(s) {
                 }
                 if (mult != 1)
                         s = s.substring(0, len-1).trim();
-    return s * mult;
+		return s * mult;
 }
 
 function calc() {
@@ -41,7 +41,7 @@ function calc() {
     rev = convertValue(rev);
     var ecoef = (fwd/Math.log(cur/rev+1)) / vt;
     document.getElementById("values").innerHTML = "Emission coefficient: " + ecoef;
-   document.getElementById("link").innerHTML = "<a href=\"circuitjs.html?cct=$+1+0.000005+10.20027730826997+50+5+50%0A34+" + modelname + "+0+" + rev + "+0+" + ecoef + "+0%0Ad+352+112+352+224+2+" + modelname + "%0AR+352+112+352+64+0+0+40+" + fwd + "+0+0+0.5%0Ag+352+224+352+272+0%0A\">link to example circuit</a>";
+    document.getElementById("link").innerHTML = "<a href=\"circuitjs.html?cct=$+1+0.000005+10.20027730826997+50+5+50%0A34+" + modelname + "+0+" + rev + "+0+" + ecoef + "+0%0Ad+352+112+352+224+2+" + modelname + "%0AR+352+112+352+64+0+0+40+" + fwd + "+0+0+0.5%0Ag+352+224+352+272+0%0A\">link to example circuit</a>";
 }
 
 </script>

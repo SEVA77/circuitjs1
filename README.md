@@ -94,17 +94,10 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-     Components of this program:
-    JQuery - Distributed under the MIT License
-    jQuery.NiceScroll - Distributed under the MIT License
-    jQuery.scrollSpeed - is taken from the github.com/nathco/jQuery.scrollSpeed
-    
-    NW.js - Distributed under the MIT License
-    Circuit Simulator - Distributed under the GNU General Public License version 2
-    
-    © Usevalad Khatkevich 2024
+© Usevalad Khatkevich 2024
 
 ## Credits
-	 Paul Falstad - Creator
-	 Iain Sharp - JavaScript conversion, so there are more opportunities for the development of this application.
-	 Brian Gordon - Mavenized version of circuitjs1
+
+* [Paul Falstad](https://github.com/pfalstad) - Creator
+* [Iain Sharp](https://github.com/sharpie7) - JavaScript conversion, so there are more opportunities for the development of this application.
+* [Brian Gordon](https://github.com/briangordon) - Mavenized version of circuitjs1
