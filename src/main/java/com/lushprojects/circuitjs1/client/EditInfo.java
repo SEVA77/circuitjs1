@@ -58,6 +58,11 @@ class EditInfo {
 		return flags | bit;
 	    return flags & ~bit;
 	}
+	int changeFlagInverted(int flags, int bit) {
+	    if (!checkbox.getState())
+		return flags | bit;
+	    return flags & ~bit;
+	}
 	
 	String name, text;
 	double value;

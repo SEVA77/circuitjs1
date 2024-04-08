@@ -21,6 +21,7 @@ package com.lushprojects.circuitjs1.client;
 
 class LatchElm extends ChipElm {
     final int FLAG_STATE = 2;
+    final int FLAG_NO_EDGE = 4;
     public LatchElm(int xx, int yy) {
 	super(xx, yy);
 	flags |= FLAG_STATE;
@@ -38,6 +39,7 @@ class LatchElm extends ChipElm {
     }
     String getChipName() { return "Latch"; }
     boolean needsBits() { return true; }
+    boolean isEdgeTriggered() { return (flags & FLAG_NO_EDGE) == 0; }
     int loadPin;
     void setupPins() {
 	sizeX = 2;
@@ -57,7 +59,7 @@ class LatchElm extends ChipElm {
     boolean lastLoad = false;
     void execute() {
 	int i;
-	if (pins[loadPin].value && !lastLoad)
+	if (pins[loadPin].value && (!isEdgeTriggered() || !lastLoad))
 	    for (i = 0; i != bits; i++)
 		pins[i+bits].value = pins[i].value;
 	lastLoad = pins[loadPin].value;
@@ -68,14 +70,18 @@ class LatchElm extends ChipElm {
     public EditInfo getChipEditInfo(int n) {
 	if (n == 0)
 	    return new EditInfo("# of Bits", bits, 1, 1).setDimensionless();
+	if (n == 1)
+	    return EditInfo.createCheckbox("Edge Triggered", isEdgeTriggered());
 	return null;
     }
     public void setChipEditValue(int n, EditInfo ei) {
-	if (n == 0 && ei.value >= 2) {
+	if (n == 0 && ei.value >= 2 && bits != (int)ei.value) {
 	    bits = (int)ei.value;
 	    setupPins();
 	    setPoints();
 	}
+	if (n == 1)
+	    flags = ei.changeFlagInverted(flags, FLAG_NO_EDGE);
     }
     
 }

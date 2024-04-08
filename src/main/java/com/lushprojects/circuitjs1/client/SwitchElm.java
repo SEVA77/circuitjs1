@@ -24,17 +24,23 @@ class SwitchElm extends CircuitElm {
     boolean momentary;
     // position 0 == closed, position 1 == open
     int position, posCount;
+    final int FLAG_IEC = 2;
+    final int FLAG_LABEL = 4;
+    String label;
+    
     public SwitchElm(int xx, int yy) {
 	super(xx, yy);
 	momentary = false;
 	position = 0;
 	posCount = 2;
+	label = null;
     }
     SwitchElm(int xx, int yy, boolean mm) {
 	super(xx, yy);
 	position = (mm) ? 1 : 0;
 	momentary = mm;
 	posCount = 2;
+	label = null;
     }
     public SwitchElm(int xa, int ya, int xb, int yb, int f,
 		     StringTokenizer st) {
@@ -48,18 +54,37 @@ class SwitchElm extends CircuitElm {
 	    position = new Integer(str).intValue();
 	momentary = new Boolean(st.nextToken()).booleanValue();
 	posCount = 2;
+	label = null;
+	if ((flags & FLAG_LABEL) != 0)
+	    label = CustomLogicModel.unescape(st.nextToken());
     }
     int getDumpType() { return 's'; }
     String dump() {
-	return super.dump() + " " + position + " " + momentary;
+	String s = super.dump() + " " + position + " " + momentary;
+	if ((flags & FLAG_LABEL) != 0)
+	    s += " " + CustomLogicModel.escape(label);
+	return s;
     }
 
     Point ps, ps2;
+    Point extraPoints[];
+    
     void setPoints() {
 	super.setPoints();
 	calcLeads(32);
 	ps  = new Point();
 	ps2 = new Point();
+	
+	if (useIECSymbol()) {
+	    extraPoints = newPointArray(7);
+	    interpPoint(lead1, lead2, extraPoints[0], .5, openhs/2);
+	    interpPoint(lead1, lead2, extraPoints[1], .5, 24);
+	    interpPoint(lead1, lead2, extraPoints[2], .5-.1, 24);
+	    interpPoint(lead1, lead2, extraPoints[3], .5+.1, 24);
+	    interpPoint(lead1, lead2, extraPoints[4], .5, 19);
+	    interpPoint(lead1, lead2, extraPoints[5], .5-.1, 16);
+	    interpPoint(lead1, lead2, extraPoints[6], .5, 13);
+	}
     }
     
     final int openhs = 16;
@@ -80,6 +105,36 @@ class SwitchElm extends CircuitElm {
 	interpPoint(lead1, lead2, ps2, 1, hs2);
 	    
 	drawThickLine(g, ps, ps2);
+	
+	if (label != null) {
+	    g.setColor(needsHighlight() ? selectColor : whiteColor);
+	    if (Math.abs(dy) > Math.abs(dx))
+		g.drawString(label, x+10, (y < y2 ? lead1 : lead2).y-5);
+	    else {
+		g.save();
+		g.context.setTextAlign("center");
+		g.drawString(label, (x+x2)/2, (x2 > x) ? y+15 : y-15);
+		g.restore();
+	    }
+	}
+
+	if (useIECSymbol()) {
+	    g.drawLine(extraPoints[2], extraPoints[3]);
+	    g.setLineDash(3, 3);
+	    interpPoint(lead1, lead2, extraPoints[0], .5, position == 1 ? openhs/2 : 2);
+	    if (momentary)
+		g.drawLine(extraPoints[1], extraPoints[0]);
+	    else {
+		g.drawLine(extraPoints[6], extraPoints[0]);
+		g.drawLine(extraPoints[1], extraPoints[4]);
+	    }
+	    g.setLineDash(0, 0);
+	    if (!momentary) {
+		g.drawLine(extraPoints[4], extraPoints[5]);
+		g.drawLine(extraPoints[6], extraPoints[5]);
+	    }
+	}
+	
 	drawPosts(g);
     }
     
@@ -97,10 +152,26 @@ class SwitchElm extends CircuitElm {
 	if (momentary)
 	    toggle();
     }
-    void toggle() {
+    
+    void simpleToggle() {
 	position++;
 	if (position >= posCount)
 	    position = 0;
+    }
+    
+    void toggle() {
+	simpleToggle();
+        if (label != null) {
+            int i;
+            for (i = 0; i != sim.elmList.size(); i++) {
+                Object o = sim.elmList.elementAt(i);
+                if (o instanceof SwitchElm && o != this) {
+                    SwitchElm s2 = (SwitchElm) o;
+                    if (label.equals(s2.label))
+                	s2.simpleToggle();
+                }
+            }
+        }
     }
     void getInfo(String arr[]) {
 	arr[0] = (momentary) ? "push switch (SPST)" : "switch (SPST)";
@@ -116,17 +187,38 @@ class SwitchElm extends CircuitElm {
     boolean getConnection(int n1, int n2) { return position == 0; }
     boolean isWireEquivalent() { return position == 0; }
     boolean isRemovableWire() { return position == 0; }
+    boolean useIECSymbol() { return (flags & FLAG_IEC) != 0; }
+    
     public EditInfo getEditInfo(int n) {
 	if (n == 0) {
 	    EditInfo ei = new EditInfo("", 0, -1, -1);
 	    ei.checkbox = new Checkbox("Momentary Switch", momentary);
 	    return ei;
 	}
+	if (n == 1)
+	    return EditInfo.createCheckbox("IEC Symbol", useIECSymbol());
+        if (n == 2) {
+            EditInfo ei = new EditInfo("Label (for linking)", 0);
+            ei.text = label == null ? "" : label;
+            return ei;
+        }
 	return null;
     }
     public void setEditValue(int n, EditInfo ei) {
 	if (n == 0)
 	    momentary = ei.checkbox.getState();
+	if (n == 1) {
+	    flags = ei.changeFlag(flags, FLAG_IEC);
+	    setPoints();
+	}
+        if (n == 2) {
+            label = ei.textf.getText();
+            if (label.length() == 0) {
+        	label = null;
+        	flags &= ~FLAG_LABEL;
+            } else
+        	flags |= FLAG_LABEL;
+        }
     }
     int getShortcut() { return 's'; }
 }

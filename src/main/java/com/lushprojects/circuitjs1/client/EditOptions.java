@@ -51,6 +51,7 @@ class EditOptions implements Editable {
 	            ei.choice.add("\u0420\u0443\u0441\u0441\u043a\u0438\u0439"); // Russian 
 	            ei.choice.add("\u4e2d\u6587 (\u4e2d\u56fd\u5927\u9646)"); // Chinese 
 	            ei.choice.add("\u4e2d\u6587 (\u53f0\u6e7e)"); // Chinese (tw) 
+	            ei.choice.add("日本語"); // Japanese
 	            return ei;
 		}
 		
@@ -73,12 +74,14 @@ class EditOptions implements Editable {
 		    ei.checkbox = new Checkbox("Developer Mode", sim.developerMode);
 		    return ei;
 		}
-		if (n == 11) {
+		if (n == 11)
+		    return new EditInfo("Minimum Target Frame Rate", sim.minFrameRate);
+		if (n == 12) {
 		    EditInfo ei = new EditInfo("", 0, -1, -1);
 		    ei.checkbox = new Checkbox("Auto-Adjust Timestep", sim.adjustTimeStep);
 		    return ei;
 		}
-		if (n == 12 && sim.adjustTimeStep)
+		if (n == 13 && sim.adjustTimeStep)
 		    return new EditInfo("Minimum time step size (s)", sim.minTimeStep, 0, 0);
 
 		return null;
@@ -113,6 +116,7 @@ class EditOptions implements Editable {
 		    	case 11: langString = "ru"; break;
 		    	case 12: langString = "zh"; break;
 		    	case 13: langString = "zh-tw"; break;
+		    	case 14: langString = "ja"; break;
 		    	}
 		    	if (langString == null)
 		    	    return;
@@ -147,11 +151,13 @@ class EditOptions implements Editable {
 		    CircuitElm.setDecimalDigits((int)ei.value, false, true);
 		if (n == 10)
 	            sim.developerMode = ei.checkbox.getState();
-		if (n == 11) {
+		if (n == 11 && ei.value > 0)
+		    sim.minFrameRate = ei.value;
+		if (n == 12) {
 		    sim.adjustTimeStep = ei.checkbox.getState();
 		    ei.newDialog = true;
 		}
-		if (n == 12 && ei.value > 0)
+		if (n == 13 && ei.value > 0)
 		    sim.minTimeStep = ei.value;
 	}
 	
