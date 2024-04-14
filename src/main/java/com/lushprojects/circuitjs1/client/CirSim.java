@@ -123,7 +123,7 @@ MouseOutHandler, MouseWheelHandler {
     MenuItem importFromLocalFileItem, importFromTextItem, exportAsUrlItem, exportAsLocalFileItem, exportAsTextItem,
             printItem, recoverItem, saveFileItem;
     //MenuItem importFromDropboxItem;
-    MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem;
+    MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem, modItem;
     MenuBar optionsMenuBar;
     CheckboxMenuItem dotsCheckItem;
     CheckboxMenuItem voltsCheckItem;
@@ -260,6 +260,7 @@ MouseOutHandler, MouseWheelHandler {
     static EditDialog editDialog, customLogicEditDialog, diodeModelEditDialog;
     static HelpDialog helpDialog;
     static LicenseDialog licenseDialog;
+	static ModDialog modDialog;
     static ScrollValuePopup scrollValuePopup;
     static Dialog dialogShowing;
     static AboutBox aboutBox;
@@ -721,6 +722,7 @@ MouseOutHandler, MouseWheelHandler {
 
 	m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Shortcuts..."), new MyCommand("options", "shortcuts")));
 	m.addItem(optionsItem = new CheckboxAlignedMenuItem(Locale.LS("Other Options..."), new MyCommand("options","other")));
+	m.addItem(modItem = new CheckboxAlignedMenuItem("Modification Setup", new MyCommand("options","modsetup")));
 	if (isElectron())
 	    m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Toggle Dev Tools"), new MyCommand("options","devtools")));
 
@@ -3345,9 +3347,11 @@ MouseOutHandler, MouseWheelHandler {
     	if (item=="help")
     	helpDialog = new HelpDialog();
     	if (item=="license")
-        licenseDialog = new LicenseDialog();
+    	    licenseDialog = new LicenseDialog();
     	if (item=="about")
     		aboutBox = new AboutBox(circuitjs1.versionString);
+    	if (item=="modsetup")
+    	    modDialog = new ModDialog();
     	if (item=="importfromlocalfile") {
     		pushUndo();
     		if (isElectron())
@@ -5501,6 +5505,8 @@ MouseOutHandler, MouseWheelHandler {
     	if (helpDialog !=null && helpDialog.isShowing())
     		return true;
     	if (licenseDialog !=null && licenseDialog.isShowing())
+    		return true;
+    	if (modDialog !=null && modDialog.isShowing())
     		return true;
     	return false;
     }
