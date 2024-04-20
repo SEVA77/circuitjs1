@@ -13,7 +13,7 @@ const nw_version = '0.64.1-mod1';
 
 const menu="\n1 - check steps      | 2 - run devmode        | 3 - run GWT app\n"
             +"4 - build GWT app    | 5 - get all nw.js bin  | 6 - build from all bin\n"
-            +"7 [x32,x64] - (win)* | 8 [x32,x64] - (linux)* | 9 [x64] - (macOS)*\n"
+            +"7 [x32,x64] - (win)* | 8 [x32,x64] - (linux)* | 9 [x64,arm64] - (macOS)*\n"
             //+"'7 [x32,x64]' - build from bin for windows only\n"
             //+"'8 [x32,x64]' - build from bin for linux only\n"
             //+"'9 [x64,arm64]' - build from bin for macOS only\n"
@@ -27,13 +27,13 @@ const stepNames = [
     "├── nwjs-v"+nw_version+"-win-x64.zip",
     "├── nwjs-v"+nw_version+"-linux-ia32.tar.gz",
     "├── nwjs-v"+nw_version+"-linux-x64.tar.gz",
-    //"├── nwjs-v"+nw_version+"-osx-arm64.zip",
+    "├── nwjs-v"+nw_version+"-osx-arm64.zip",
     "└── nwjs-v"+nw_version+"-osx-x64.zip",
     "├── for Windows 32-bit",
     "├── for Windows 64-bit",
     "├── for Linux 32-bit",
     "├── for Linux 64-bit",
-    //"├── for Mac OS X ARM64",
+    "├── for Mac OS X ARM64",
     "└── for Mac OS X 64-bit"
 ]
 
@@ -44,13 +44,13 @@ const pathsToCheck = [
     './nwjs_cache/nwjs-v'+nw_version+'-win-x64',
     './nwjs_cache/nwjs-v'+nw_version+'-linux-ia32',
     './nwjs_cache/nwjs-v'+nw_version+'-linux-x64',
-    //'./nwjs_cache/nwjs-v'+nw_version+'-osx-arm64',
+    './nwjs_cache/nwjs-v'+nw_version+'-osx-arm64',
     './nwjs_cache/nwjs-v'+nw_version+'-osx-x64',
     './out/win-ia32',
     './out/win-x64',
     './out/linux-ia32',
     './out/linux-x64',
-    //'./out/osx-arm64',
+    './out/osx-arm64',
     './out/osx-x64'
 ]
 
@@ -112,10 +112,10 @@ function checkSteps(logSteps=true){
     }
 
     let x = stateOfSteps;
-    //isDownloadComplite = x[2]&x[3]&x[4]&x[5]&x[6]&x[7]; //with arm64
-    //isLastBinaryComplite = x[8]&x[9]&x[10]&x[11]&x[12]&x[13]; //with arm64
-    isDownloadComplite = x[2]&x[3]&x[4]&x[5]&x[6];
-    isLastBinaryComplite = x[7]&x[8]&x[9]&x[10]&x[11];
+    isDownloadComplite = x[2]&x[3]&x[4]&x[5]&x[6]&x[7]; //with arm64
+    isLastBinaryComplite = x[8]&x[9]&x[10]&x[11]&x[12]&x[13]; //with arm64
+    //isDownloadComplite = x[2]&x[3]&x[4]&x[5]&x[6];
+    //isLastBinaryComplite = x[7]&x[8]&x[9]&x[10]&x[11];
 
     const completedInfo = "[✔] ";
     const notCompletedInfo = "[✘] ";
@@ -137,8 +137,8 @@ function checkSteps(logSteps=true){
             else
                 console.warn(basicInfo)
         }
-        //if (i==1 || i==7){ //if arm64
-        if (i==1 || i==6){
+        if (i==1 || i==7){ //if arm64
+        //if (i==1 || i==6){
             let isCompleted = (i==1) ? isDownloadComplite : isLastBinaryComplite;
             let getCompletedInfo = (isCompleted) ? completedInfo : notCompletedInfo;
             let basicInfo = (i==1) ?
@@ -271,7 +271,8 @@ function getAllBins(){
         getBin('win', 'x64'),
         getBin('linux', 'ia32'),
         getBin('linux', 'x64'),
-        getBin('osx', 'x64')
+        getBin('osx', 'x64'),
+        getBin('osx', 'arm64')
     ]).then(()=>{checkSteps(false);});
 }
 
@@ -283,7 +284,8 @@ async function buildAll(){
         buildRelease('win', 'x64'),
         buildRelease('linux', 'ia32'),
         buildRelease('linux', 'x64'),
-        buildRelease('osx', 'x64')
+        buildRelease('osx', 'x64'),
+        buildRelease('osx', 'arm64')
     ]).then(()=>{checkSteps(false);});
 }
 
@@ -359,10 +361,21 @@ function runMenu(){
                 await platformBuild('linux','x64');
                 break;
             case '9':
+            case '9 x64 arm64':
+            case '9 x64,arm64':
+            case '9 [x64,arm64]':
+                console.log("RUN BUILD FOR MAC OS X64 AND ARM64");
+                await platformBuild('osx','x64','arm64');
+                break;
             case '9 x64':
             case '9 [x64]':
                 console.log("RUN BUILD FOR MAC OS X64");
                 await platformBuild('osx','x64');
+                break;
+            case '9 arm64':
+            case '9 [arm64]':
+                console.log("RUN BUILD FOR MAC OS ARM64");
+                await platformBuild('osx','arm64');
                 break;
             case 'full': await fullBuild();
         }})()
