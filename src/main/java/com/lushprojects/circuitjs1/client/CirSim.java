@@ -295,7 +295,7 @@ MouseOutHandler, MouseWheelHandler {
     // canvas width/height in px (before device pixel ratio scaling)
     int canvasWidth, canvasHeight;
 
-    static final int MENUBARHEIGHT = 30;
+    static int MENUBARHEIGHT = 30;
     static int VERTICALPANELWIDTH = 166; // default
     static final int POSTGRABSQ = 25;
     static final int MINPOSTGRABSIZE = 256;
@@ -316,6 +316,13 @@ MouseOutHandler, MouseWheelHandler {
     static native float devicePixelRatio() /*-{
         return window.devicePixelRatio;
     }-*/;
+
+	void redrawCanvasSize() {
+		layoutPanel.setWidgetSize(menuBar, MENUBARHEIGHT);
+		if (MENUBARHEIGHT<30) menuBar.setStyleName("gwt-MenuBar gwt-MenuBar-horizontal modSmallMenuBar");
+		else menuBar.setStyleName("gwt-MenuBar gwt-MenuBar-horizontal");
+		setCanvasSize();
+	}
 
     void checkCanvasSize() {
         if (cv.getCoordinateSpaceWidth() != (int) (canvasWidth * devicePixelRatio()))
@@ -6645,7 +6652,8 @@ MouseOutHandler, MouseWheelHandler {
 	        exportCircuit: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::dumpCircuit()(); } ),
 	        importCircuit: $entry(function(circuit, subcircuitsOnly) { return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly); }),
 			setupScopes: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::setupScopes()(); } ),
-			resetAction: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::resetAction()(); } )
+			resetAction: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::resetAction()(); } ),
+			redrawCanvasSize: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::redrawCanvasSize()(); } )
 	    };
 	    var hook = $wnd.oncircuitjsloaded;
 	    if (hook)

@@ -14,11 +14,13 @@ import com.lushprojects.circuitjs1.client.util.Locale;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.core.client.ScriptInjector;
+import com.google.gwt.user.client.ui.CheckBox;
 
 public class ModDialog extends DialogBox {
 	
 	VerticalPanel vp;
 	
+	//for "UI scale:"
 	HorizontalPanel scaleButtons;
 	Button setScale100Button;
 	Button setDefaultScaleButton;
@@ -37,8 +39,12 @@ public class ModDialog extends DialogBox {
 			"style=\"vertical-align:super\">"+scale+"%</span></b>";
 	}
 
-	Button okButton;
-	CirSim sim;
+	//for "Top menu bar:"
+	HorizontalPanel topMenuBarVars;
+	CheckBox setStandartTopMenu;
+	CheckBox setSmallTopMenu;
+
+	Button closeButton;
 
 	ModDialog() {
 
@@ -59,9 +65,7 @@ public class ModDialog extends DialogBox {
 					vp.remove(scaleScrollbarElm);
 					vp.insert(scaleScrollbarElm = new HTML(getScaleScrollbar(0,100)),1);
 					vp.setCellHorizontalAlignment(scaleScrollbarElm, HasHorizontalAlignment.ALIGN_CENTER);
-					ScriptInjector.fromString("setScaleUI()")
-						.setWindow(ScriptInjector.TOP_WINDOW)
-						.inject();
+					executeJS("setScaleUI()");
 					//TODO: Save data to localStorage
 				}
 			}));
@@ -72,18 +76,14 @@ public class ModDialog extends DialogBox {
 					vp.insert(scaleScrollbarElm = new HTML(getScaleScrollbar(getDefaultScale(),
 						(int)(getDefaultScale()*100+100))),1);
 					vp.setCellHorizontalAlignment(scaleScrollbarElm, HasHorizontalAlignment.ALIGN_CENTER);
-					ScriptInjector.fromString("setScaleUI()")
-						.setWindow(ScriptInjector.TOP_WINDOW)
-						.inject();
+					executeJS("setScaleUI()");
 					//TODO: Save data to localStorage
 				}
 			}));
 		scaleButtons.add(setScaleButton = new Button("Set",
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					ScriptInjector.fromString("setScaleUI()")
-						.setWindow(ScriptInjector.TOP_WINDOW)
-						.inject();
+					executeJS("setScaleUI()");
 					//TODO: Save data to localStorage
 				}
 			}));
@@ -101,22 +101,74 @@ public class ModDialog extends DialogBox {
 		scaleButtons.setCellHorizontalAlignment(setScale100Button, HasHorizontalAlignment.ALIGN_CENTER);
 		scaleButtons.setCellHorizontalAlignment(setDefaultScaleButton, HasHorizontalAlignment.ALIGN_CENTER);
 		scaleButtons.setCellHorizontalAlignment(setScaleButton, HasHorizontalAlignment.ALIGN_CENTER);
+
+		vp.add(new HTML("<hr><big><b>Top menu bar:</b></big>"));
+		vp.add(topMenuBarVars = new HorizontalPanel());
+		topMenuBarVars.setWidth("100%");
+		topMenuBarVars.add(setStandartTopMenu = new CheckBox("Standart"));
+		topMenuBarVars.add(setSmallTopMenu = new CheckBox("Small"));
+		if (CirSim.MENUBARHEIGHT<30) setSmallTopMenu.setValue(true);
+		else setStandartTopMenu.setValue(true);
+
+		setStandartTopMenu.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				if (setSmallTopMenu.getValue()) {
+					CirSim.MENUBARHEIGHT = 30;
+					//CirSim.layoutPanel.setWidgetSize(menuBar, 30);
+					setSmallTopMenu.setValue(false);
+					setStandartTopMenu.setValue(true);
+					executeJS("CircuitJS1.redrawCanvasSize()");
+					//TODO: Save data to localStorage
+				} else {
+					setStandartTopMenu.setValue(true);
+				}
+			}
+		});
+
+		setSmallTopMenu.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				if (setStandartTopMenu.getValue()) {
+					CirSim.MENUBARHEIGHT = 19;
+					//CirSim.layoutPanel.setWidgetSize(menuBar, 19);
+					setStandartTopMenu.setValue(false);
+					setSmallTopMenu.setValue(true);
+					executeJS("CircuitJS1.redrawCanvasSize()");
+					//TODO: Save data to localStorage
+				} else {
+					setSmallTopMenu.setValue(true);
+				}
+			}
+		});
+
+		// Styling checkboxes:
+		topMenuBarVars.setCellHorizontalAlignment(setStandartTopMenu, HasHorizontalAlignment.ALIGN_CENTER);
+		topMenuBarVars.setCellHorizontalAlignment(setSmallTopMenu, HasHorizontalAlignment.ALIGN_CENTER);
+		
 		/*
 		vp.add(new HTML("<hr><big><b>Start/Stop and Reset buttons:</b></big>"));
 		vp.add(new HTML("<big><big>(in developing)</big></big>"));
 		*/
-		vp.add(okButton = new Button("OK"));
-		okButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				closeDialog();
-			}
-		});
+		vp.add(closeButton = new Button("<b>Close</b>",
+			new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					closeDialog();
+				}
+			}));
+		vp.setCellHorizontalAlignment(closeButton,
+			HasHorizontalAlignment.ALIGN_CENTER);
+
 		center();
 		show();
 	}
 
 	protected void closeDialog() {
 		hide();
+	}
+
+	protected void executeJS(String js){
+		ScriptInjector.fromString(js)
+			.setWindow(ScriptInjector.TOP_WINDOW)
+			.inject();
 	}
 
 }
