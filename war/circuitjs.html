@@ -7,7 +7,7 @@
 
 
         <!-- Titles are optional, but useful -->
-        <title>CircuitJS1 Desktop Mod 1.2.4</title>
+        <title>CircuitJS1 Desktop Mod 1.3.0</title>
 
         <!-- Add icons for menu -->
         <link rel="stylesheet" href="font/fontello.css">
@@ -176,28 +176,42 @@
         .run-stop-btn, .reset-btn {
             width: 60px;
             height: 60px;
-            position: absolute;
-            top: 50px;
             z-index: 1;
-            background: none;
-            border: medium solid;
             border-radius: 10px;
+            margin: 5px; /*for preview*/
         }
 
+        .btn-pos{
+            position: absolute;
+            top: 50px;
+        }
+        .run-stop-btn-pos{
+            right: 50px;
+            
+        }
+        .reset-btn-pos{
+            right: 120px;
+        }
         .run-stop-btn{
             font-family: 'runstopbtn', serif;
-            right: 50px;
-            color: red;
-            border-color: red;
             padding: 0;
             font-size: 30px;
         }
+        .reset-btn{
+            font-size: 38px;
+        }
+        .modDefaultRunStopBtn{
+            color: red;
+            border-color: red;
+            background: none;
+            border: medium solid;
+        }
 
-        .reset-btn {
-            right: 120px;
+        .modDefaultResetBtn {
             color: blue;
             border-color: blue;
-            font-size: 38px;
+            background: none;
+            border: medium solid;
         }
         
 
@@ -246,8 +260,8 @@
         <iframe src="javascript:''" id="__gwt_historyFrame" tabindex="-1" style="width:0;height:0;border:0"></iframe>
 
         <!-- Add Run/Stop and Reset buttons-->
-        <button class="run-stop-btn" title="Run/Stop" onclick="setRunning()">&#xE800;</button> <!-- (\e800) -->
-        <button class="reset-btn" title="Reset" onclick="CircuitJS1.resetAction()">&#8634;</button>
+        <button class="btn-pos run-stop-btn run-stop-btn-pos modDefaultRunStopBtn" title="Run/Stop" onclick="setRunning()">&#xE800;</button> <!-- (\e800) -->
+        <button class="btn-pos reset-btn reset-btn-pos modDefaultResetBtn" title="Reset" onclick="CircuitJS1.resetAction()">&#8634;</button>
         
     </body>
 </html>

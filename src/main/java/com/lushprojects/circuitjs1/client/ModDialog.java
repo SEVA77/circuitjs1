@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.lushprojects.circuitjs1.client.util.Locale;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.user.client.ui.CheckBox;
 
@@ -35,7 +36,7 @@ public class ModDialog extends DialogBox {
 	String getScaleScrollbar(float value,int scale){
 		return "<input type=\"range\" id=\"scaleUI\" oninput=\"getScaleInfo()\"" +
 			"min=\"-0.5\" max=\"2\" step=\"0.1\" value=\""+value+"\"" +
-			"style=\"width:455px\"><b><span class=\"scaleInfo\"" +
+			"style=\"width:355px\"><b><span class=\"scaleInfo\"" +
 			"style=\"vertical-align:super\">"+scale+"%</span></b>";
 	}
 
@@ -43,6 +44,25 @@ public class ModDialog extends DialogBox {
 	HorizontalPanel topMenuBarVars;
 	CheckBox setStandartTopMenu;
 	CheckBox setSmallTopMenu;
+
+	//for "Start/Stop and Reset buttons:"
+	HorizontalPanel btnsPreview;
+	HTML previewText;
+	Button resetPrevBtn;
+	Button stopPrevBtn;
+	HorizontalPanel SRCheckBoxes;
+	VerticalPanel vp1;
+	CheckBox setDefaultSRBtns;
+	CheckBox setClassicSRBtns;
+	VerticalPanel vp2;
+	CheckBox setStopIcon;
+	CheckBox setPauseIcon;
+	VerticalPanel vp3;
+	CheckBox hideSRBtns;
+
+	//for "Other:"
+	CheckBox setShowSidebaronStartup;
+
 
 	Button closeButton;
 
@@ -52,7 +72,7 @@ public class ModDialog extends DialogBox {
 		vp = new VerticalPanel();
 		setWidget(vp);
 		setText("Modification Setup");
-		vp.setWidth("500px");
+		vp.setWidth("400px");
 
 		vp.add(new HTML("<big><b>UI scale:</b></big>"));
 		vp.add(scaleScrollbarElm = new HTML(getScaleScrollbar(getRealScale(),(int)(getRealScale()*100+100))));
@@ -144,10 +164,44 @@ public class ModDialog extends DialogBox {
 		topMenuBarVars.setCellHorizontalAlignment(setStandartTopMenu, HasHorizontalAlignment.ALIGN_CENTER);
 		topMenuBarVars.setCellHorizontalAlignment(setSmallTopMenu, HasHorizontalAlignment.ALIGN_CENTER);
 		
-		/*
 		vp.add(new HTML("<hr><big><b>Start/Stop and Reset buttons:</b></big>"));
-		vp.add(new HTML("<big><big>(in developing)</big></big>"));
-		*/
+		vp.add(btnsPreview = new HorizontalPanel());
+		btnsPreview.setWidth("100%");
+		btnsPreview.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		btnsPreview.add(previewText = new HTML("<big>Preview:</big>"));
+		btnsPreview.add(resetPrevBtn = new Button("&#8634;"));
+		btnsPreview.add(stopPrevBtn = new Button("&#xE800;"));
+		btnsPreview.setCellHorizontalAlignment(previewText, HasHorizontalAlignment.ALIGN_RIGHT);
+		btnsPreview.setCellHorizontalAlignment(resetPrevBtn, HasHorizontalAlignment.ALIGN_RIGHT);
+		btnsPreview.setCellHorizontalAlignment(stopPrevBtn, HasHorizontalAlignment.ALIGN_LEFT);
+		// Временно(!):
+		stopPrevBtn.setStyleName("run-stop-btn modDefaultRunStopBtn");
+		resetPrevBtn.setStyleName("reset-btn modDefaultResetBtn");
+
+		vp.add(SRCheckBoxes = new HorizontalPanel());
+		SRCheckBoxes.setWidth("100%");
+		SRCheckBoxes.add(vp1 = new VerticalPanel());
+		SRCheckBoxes.add(vp2 = new VerticalPanel());
+		SRCheckBoxes.add(vp3 = new VerticalPanel());
+		vp3.setHeight("100%");
+		SRCheckBoxes.setCellVerticalAlignment(vp3, HasVerticalAlignment.ALIGN_MIDDLE);
+		//SRCheckBoxes.setCellHorizontalAlignment(vp3, HasHorizontalAlignment.ALIGN_CENTER);
+
+		vp1.add(new HTML("<b>Theme:</b>"));
+		vp1.add(setDefaultSRBtns = new CheckBox("Default"));
+		vp1.add(setClassicSRBtns = new CheckBox("Classic"));
+
+		vp2.add(new HTML("<b>Icon:</b>"));
+		vp2.add(setStopIcon = new CheckBox("Stop"));
+		vp2.add(setPauseIcon = new CheckBox("Pause"));
+
+		vp3.add(hideSRBtns = new CheckBox("HIDE BUTTONS!"));
+
+		vp.add(new HTML("<hr><big><b>Other:</b></big>"));
+		vp.add(setShowSidebaronStartup = new CheckBox("Show sidebar on startup"));
+		vp.setCellHorizontalAlignment(setShowSidebaronStartup, HasHorizontalAlignment.ALIGN_CENTER);
+		vp.add(new HTML("<br>"));
+
 		vp.add(closeButton = new Button("<b>Close</b>",
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
