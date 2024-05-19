@@ -1,18 +1,5 @@
 //System commands for calling:
 
-function close_app() {
-  if(confirm("Are you sure you want to close this window?")){
-     nw.Window.get().close(true);
-     }
-}
-
-nw.Window.get().on('close', function () {
-  close_app();
-});
-
-
-// Manipulations with nw.js:
-
 /*Optimizing application size:*/
 
 nw.Screen.Init();
@@ -85,16 +72,6 @@ function SetBtnsStyle() {
     RunStopBtn.innerHTML = '&#xE800;'; // \e800
     RunStopBtn.style.color = "red";
     RunStopBtn.style.borderColor = "red";
-  }
-}
-
-function setRunning() {
-  if (CircuitJS1.isRunning() == false) {
-    CircuitJS1.setSimRunning(true);
-    SetBtnsStyle();
-  } else {
-    CircuitJS1.setSimRunning(false);
-    SetBtnsStyle();
   }
 }
 

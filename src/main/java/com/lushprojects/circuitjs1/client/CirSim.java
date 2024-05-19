@@ -557,35 +557,12 @@ MouseOutHandler, MouseWheelHandler {
 	printItem = menuItemWithShortcut("print", "Print...", Locale.LS(ctrlMetaKey + "P"), new MyCommand("file","print"));
 	fileMenuBar.addItem(printItem);
 	fileMenuBar.addSeparator();
-	/*
-	MenuBar fsub = new MenuBar(true);
-	fsub.setAutoOpen(true);
-	fsub.addItem(new MenuItem(LS("pfalstad"),
-			new Command() { public void execute(){
-			ScriptInjector.fromString("open_webapp('http://www.falstad.com/circuit/circuitjs.html');")
-				.setWindow(ScriptInjector.TOP_WINDOW)
-				.inject();
-				}
-		}));
-	fsub.addItem(new MenuItem(LS("isharp"),
-		new Command() { public void execute(){
-				ScriptInjector.fromString("open_webapp('http://lushprojects.com/circuitjs/circuitjs.html');")
-					.setWindow(ScriptInjector.TOP_WINDOW)
-					.inject();
-			}
-		}));
-	
-	fileMenuBar.addItem(LS("Open circuitjs1 from web"), fsub);
-	*/
 	fileMenuBar.addItem(iconMenuItem("resize-full-alt", "Toggle Full Screen", new MyCommand("view", "fullscreen")));
 	fileMenuBar.addSeparator();
 	fileMenuBar.addItem(iconMenuItem("exit", "Exit",
 		new Command() { public void execute(){
-				ScriptInjector.fromString("close_app()")
-					.setWindow(ScriptInjector.TOP_WINDOW)
-					.inject();
-			}
-		}));
+			executeJS("nw.Window.get().close(true)");
+		}}));
 	/* 
 	aboutItem = iconMenuItem("info-circled", "About...", (Command)null);
 	fileMenuBar.addItem(aboutItem);
@@ -656,26 +633,6 @@ MouseOutHandler, MouseWheelHandler {
 	m.addItem(combineAllItem = iconMenuItem("object-group", "Combine All", new MyCommand("scopes", "combineAll")));
 	m.addItem(separateAllItem = iconMenuItem("object-ungroup", "Separate All", new MyCommand("scopes", "separateAll")));
 	menuBar.addItem(Locale.LS("Scopes"), m);
-	/*m.addItem(fullscreenCheckItem = new CheckboxMenuItem(LS("Fullscreen Mode"),
-	 		new Command() { public void execute(){
-	 		    	if (fullscreenCheckItem.getState()) {
-	 		    	ScriptInjector.fromString("nw.Window.get().enterFullscreen();")
-	 		    	  .setRemoveTag(false)
-	 		    	  .setWindow(ScriptInjector.TOP_WINDOW)
-	 		    	  .inject();
-	 		    	}
-	 		    	else {
-		 		ScriptInjector.fromString("nw.Window.get().leaveFullscreen();")
-		 		  .setRemoveTag(false)
-		 		  .setWindow(ScriptInjector.TOP_WINDOW)
-		 		  .inject();
-	 		    	}*/
-	 		    /*  (new CheckboxAlignedMenuItem)
-	 		    String fullscreenScript = "nw.Window.get().toggleFullscreen();";
-	 		    ScriptInjector.fromString(fullscreenScript).inject();
-	 		    */
-	 		  /*  }
-	 		}));*/
 	optionsMenuBar = m = new MenuBar(true );
 	menuBar.addItem(Locale.LS("Options"), optionsMenuBar);
 
