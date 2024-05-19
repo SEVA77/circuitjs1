@@ -14,7 +14,6 @@ import com.lushprojects.circuitjs1.client.util.Locale;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.user.client.ui.CheckBox;
 
 public class ModDialog extends DialogBox {
@@ -85,7 +84,7 @@ public class ModDialog extends DialogBox {
 					vp.remove(scaleScrollbarElm);
 					vp.insert(scaleScrollbarElm = new HTML(getScaleScrollbar(0,100)),1);
 					vp.setCellHorizontalAlignment(scaleScrollbarElm, HasHorizontalAlignment.ALIGN_CENTER);
-					executeJS("setScaleUI()");
+					CirSim.executeJS("setScaleUI()");
 					//TODO: Save data to localStorage
 				}
 			}));
@@ -96,14 +95,14 @@ public class ModDialog extends DialogBox {
 					vp.insert(scaleScrollbarElm = new HTML(getScaleScrollbar(getDefaultScale(),
 						(int)(getDefaultScale()*100+100))),1);
 					vp.setCellHorizontalAlignment(scaleScrollbarElm, HasHorizontalAlignment.ALIGN_CENTER);
-					executeJS("setScaleUI()");
+					CirSim.executeJS("setScaleUI()");
 					//TODO: Save data to localStorage
 				}
 			}));
 		scaleButtons.add(setScaleButton = new Button("Set",
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					executeJS("setScaleUI()");
+					CirSim.executeJS("setScaleUI()");
 					//TODO: Save data to localStorage
 				}
 			}));
@@ -137,7 +136,7 @@ public class ModDialog extends DialogBox {
 					//CirSim.layoutPanel.setWidgetSize(menuBar, 30);
 					setSmallTopMenu.setValue(false);
 					setStandartTopMenu.setValue(true);
-					executeJS("CircuitJS1.redrawCanvasSize()");
+					CirSim.executeJS("CircuitJS1.redrawCanvasSize()");
 					//TODO: Save data to localStorage
 				} else {
 					setStandartTopMenu.setValue(true);
@@ -152,7 +151,7 @@ public class ModDialog extends DialogBox {
 					//CirSim.layoutPanel.setWidgetSize(menuBar, 19);
 					setStandartTopMenu.setValue(false);
 					setSmallTopMenu.setValue(true);
-					executeJS("CircuitJS1.redrawCanvasSize()");
+					CirSim.executeJS("CircuitJS1.redrawCanvasSize()");
 					//TODO: Save data to localStorage
 				} else {
 					setSmallTopMenu.setValue(true);
@@ -175,8 +174,8 @@ public class ModDialog extends DialogBox {
 		btnsPreview.setCellHorizontalAlignment(resetPrevBtn, HasHorizontalAlignment.ALIGN_RIGHT);
 		btnsPreview.setCellHorizontalAlignment(stopPrevBtn, HasHorizontalAlignment.ALIGN_LEFT);
 		// Временно(!):
-		stopPrevBtn.setStyleName("run-stop-btn modDefaultRunStopBtn");
-		resetPrevBtn.setStyleName("reset-btn modDefaultResetBtn");
+		stopPrevBtn.setStyleName("run-stop-btn modDefaultRunStopBtn modPrevBtn");
+		resetPrevBtn.setStyleName("reset-btn modDefaultResetBtn modPrevBtn");
 
 		vp.add(SRCheckBoxes = new HorizontalPanel());
 		SRCheckBoxes.setWidth("100%");
@@ -217,12 +216,6 @@ public class ModDialog extends DialogBox {
 
 	protected void closeDialog() {
 		hide();
-	}
-
-	protected void executeJS(String js){
-		ScriptInjector.fromString(js)
-			.setWindow(ScriptInjector.TOP_WINDOW)
-			.inject();
 	}
 
 }

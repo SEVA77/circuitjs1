@@ -178,19 +178,20 @@
             height: 60px;
             z-index: 1;
             border-radius: 10px;
-            margin: 5px; /*for preview*/
+            /*margin: 5px;*/ /*for preview*/
         }
 
         .btn-pos{
             position: absolute;
-            top: 50px;
+            /*top: 50px;*/
         }
         .run-stop-btn-pos{
-            right: 50px;
-            
+            /*right: 50px;*/
+            inset: 50px 50px auto auto !important;
         }
         .reset-btn-pos{
-            right: 120px;
+            /*right: 120px;*/
+            inset: 50px 120px auto auto !important;
         }
         .run-stop-btn{
             font-family: 'runstopbtn', serif;
@@ -213,6 +214,8 @@
             background: none;
             border: medium solid;
         }
+
+        .modPrevBtn{margin: 5px}
         
 
         @media (max-width: 1000px) {
@@ -222,11 +225,13 @@
                 border-radius: 1vw;
             }
             .run-stop-btn{
-                right: 5vw;
+                /*right: 5vw;*/
+                inset: 50px 5vw auto auto !important;
                 font-size: 3vw;
             }
             .reset-btn{
-                right: 12vw;
+                /*right: 12vw;*/
+                inset: 50px 12vw auto auto !important;
                 font-size: 3.8vw;
             }
         }
@@ -259,9 +264,5 @@
         <!-- (the id must be exactly as shown)                           -->
         <iframe src="javascript:''" id="__gwt_historyFrame" tabindex="-1" style="width:0;height:0;border:0"></iframe>
 
-        <!-- Add Run/Stop and Reset buttons-->
-        <button class="btn-pos run-stop-btn run-stop-btn-pos modDefaultRunStopBtn" title="Run/Stop" onclick="setRunning()">&#xE800;</button> <!-- (\e800) -->
-        <button class="btn-pos reset-btn reset-btn-pos modDefaultResetBtn" title="Reset" onclick="CircuitJS1.resetAction()">&#8634;</button>
-        
     </body>
 </html>

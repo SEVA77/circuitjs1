@@ -319,9 +319,10 @@ MouseOutHandler, MouseWheelHandler {
 
 	void redrawCanvasSize() {
 		layoutPanel.setWidgetSize(menuBar, MENUBARHEIGHT);
-		if (MENUBARHEIGHT<30) menuBar.setStyleName("gwt-MenuBar gwt-MenuBar-horizontal modSmallMenuBar");
-		else menuBar.setStyleName("gwt-MenuBar gwt-MenuBar-horizontal");
+		if (MENUBARHEIGHT<30) menuBar.addStyleName("modSmallMenuBar");
+		else menuBar.removeStyleName("modSmallMenuBar");
 		setCanvasSize();
+		repaint();
 	}
 
     void checkCanvasSize() {
@@ -380,6 +381,12 @@ MouseOutHandler, MouseWheelHandler {
     native String decompress(String dump) /*-{
         return $wnd.LZString.decompressFromEncodedURIComponent(dump);
     }-*/;
+
+	public static void executeJS(String js){
+		ScriptInjector.fromString(js)
+			.setWindow(ScriptInjector.TOP_WINDOW)
+			.inject();
+	}
 
 //    Circuit applet;
 
@@ -478,6 +485,29 @@ MouseOutHandler, MouseWheelHandler {
 
 	shortcuts = new String[127];
 
+	Button absResetBtn;
+	Button absRunStopBtn;
+
+	RootLayoutPanel.get().add(absResetBtn = new Button("&#8634;",
+		new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				resetAction();
+			}
+		}));
+
+	RootLayoutPanel.get().add(absRunStopBtn = new Button("&#xE800;",
+		new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				setSimRunning(!simIsRunning());
+				executeJS("SetBtnsStyle()");
+			}
+		}));
+
+	absResetBtn.setStyleName("btn-pos reset-btn reset-btn-pos modDefaultResetBtn");
+	absRunStopBtn.setStyleName("btn-pos run-stop-btn run-stop-btn-pos modDefaultRunStopBtn");
+	absResetBtn.getElement().setTitle("Reset");
+	absRunStopBtn.getElement().setTitle("Run/Stop");
+
 	layoutPanel = new DockLayoutPanel(Unit.PX);
 
 	fileMenuBar = new MenuBar(true);
@@ -487,13 +517,11 @@ MouseOutHandler, MouseWheelHandler {
 	
 	fileMenuBar = new MenuBar(true);
 	fileMenuBar.addItem(iconMenuItem("popup", "New Window...",
-		new Command() { public void execute(){
-				ScriptInjector.fromString("nw.Window.open('index.html', {}, function(new_win) {});")
-					.setRemoveTag(false)
-					.setWindow(ScriptInjector.TOP_WINDOW)
-					.inject();
+		new Command(){
+			public void execute(){
+				executeJS("nw.Window.open('index.html', {}, function(new_win) {});");
 			}
-			}));
+		}));
 
 	fileMenuBar.addItem(iconMenuItem("doc-new", "New Blank Circuit", new MyCommand("file", "newblankcircuit")));
 	importFromLocalFileItem = menuItemWithShortcut("folder", "Open File...", Locale.LS(ctrlMetaKey + "O"),
@@ -3941,19 +3969,15 @@ MouseOutHandler, MouseWheelHandler {
 		aboutItem.setScheduledCommand(new MyCommand("file","about"));
 		h.addSeparator();
 		h.addItem(aboutCircuitsItem = iconMenuItem("link", "About Circuits",
-		new Command() { public void execute(){
-				ScriptInjector.fromString("nw.Shell.openExternal('https://www.falstad.com/circuit/e-index.html');")
-				.setRemoveTag(false)
-				.setWindow(ScriptInjector.TOP_WINDOW)
-				.inject();
+		new Command() {
+			public void execute(){
+				executeJS("nw.Shell.openExternal('https://www.falstad.com/circuit/e-index.html')");
 			}
 		}));
 		h.addItem(aboutCircuitsPLItem = iconMenuItem("link", "About Circuits (Polish ver.)",
-		new Command() { public void execute(){
-				ScriptInjector.fromString("nw.Shell.openExternal('https://www.falstad.com/circuit/polish/e-index.html');")
-				.setRemoveTag(false)
-				.setWindow(ScriptInjector.TOP_WINDOW)
-				.inject();
+		new Command() {
+			public void execute(){
+				executeJS("nw.Shell.openExternal('https://www.falstad.com/circuit/polish/e-index.html');");
 			}
 		}));
 
@@ -6652,7 +6676,6 @@ MouseOutHandler, MouseWheelHandler {
 	        exportCircuit: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::dumpCircuit()(); } ),
 	        importCircuit: $entry(function(circuit, subcircuitsOnly) { return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly); }),
 			setupScopes: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::setupScopes()(); } ),
-			resetAction: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::resetAction()(); } ),
 			redrawCanvasSize: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::redrawCanvasSize()(); } )
 	    };
 	    var hook = $wnd.oncircuitjsloaded;
