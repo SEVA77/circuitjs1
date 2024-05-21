@@ -289,6 +289,9 @@ MouseOutHandler, MouseWheelHandler {
     LoadFile loadFileInput;
     Frame iFrame=null;
 
+	static Button absResetBtn;
+	static Button absRunStopBtn;
+
     Canvas cv;
     Context2d cvcontext;
 
@@ -388,6 +391,65 @@ MouseOutHandler, MouseWheelHandler {
 			.inject();
 	}
 
+	static native float getDefaultScale() /*-{
+		$wnd.nw.Screen.Init();
+		var dwidth = $wnd.nw.Screen.screens[0].bounds.width;
+		var defaultScale;
+		if (dwidth >= 1960)
+			defaultScale = 1.6; // 2-0.4 and etc.
+		else if (dwidth >= 1752 && dwidth < 1960)
+			defaultScale = 1.1; // -0.4
+		else if (dwidth >= 1600 && dwidth < 1752)
+			defaultScale = 0.7; // -0.3
+		else if (dwidth >= 1460 && dwidth < 1600)
+			defaultScale = 0.3; // -0.2
+		else if (dwidth >= 1200 && dwidth < 1460)
+			defaultScale = -0.1; // -0.1
+		else if (dwidth < 1200)
+			defaultScale = -0.3;
+		return defaultScale;
+	}-*/;
+
+	void modSetDefault(){
+		
+		Storage lstor = Storage.getLocalStorageIfSupported();
+		if (lstor == null) return;
+		/* KEYS:
+		MOD_UIScale, MOD_TopMenuBar, MOD_absBtnTheme, MOD_absBtnIcon,
+		MOD_hideAbsBtns, MOD_showSidebaronStartup
+		*/
+		String MOD_UIScale=lstor.getItem("MOD_UIScale");
+		String MOD_TopMenuBar=lstor.getItem("MOD_TopMenuBar");
+		String MOD_absBtnTheme=lstor.getItem("MOD_absBtnTheme");
+		String MOD_absBtnIcon=lstor.getItem("MOD_absBtnIcon");
+		String MOD_hideAbsBtns=lstor.getItem("MOD_hideAbsBtns");
+		String MOD_showSidebaronStartup=lstor.getItem("MOD_showSidebaronStartup");
+
+		if (MOD_UIScale==null){
+			lstor.setItem("MOD_UIScale", Float.toString(getDefaultScale()));
+			executeJS("nw.Window.get().zoomLevel = "+getDefaultScale());
+		}
+		else executeJS("nw.Window.get().zoomLevel = "+MOD_UIScale);
+		if (MOD_TopMenuBar==null) lstor.setItem("MOD_TopMenuBar","standart");
+		else if (MOD_TopMenuBar=="small"){
+			MENUBARHEIGHT = 19;
+			redrawCanvasSize();
+		}
+		if (MOD_absBtnTheme==null) lstor.setItem("MOD_absBtnTheme","default");
+		else if (MOD_absBtnTheme=="classic"){
+
+		}
+		if (MOD_absBtnIcon==null) lstor.setItem("MOD_absBtnIcon","stop");
+		else if (MOD_absBtnIcon=="pause"){
+
+		}
+		if (MOD_hideAbsBtns==null) lstor.setItem("MOD_hideAbsBtns","false");
+		else if (MOD_hideAbsBtns=="true"){}
+		if (MOD_showSidebaronStartup==null) lstor.setItem("MOD_showSidebaronStartup","false");
+		else if (MOD_showSidebaronStartup=="true"){}
+
+	}
+
 //    Circuit applet;
 
     CirSim() {
@@ -484,9 +546,6 @@ MouseOutHandler, MouseWheelHandler {
 	ctrlMetaKey = (isMac) ? Locale.LS("Cmd-") : Locale.LS("Ctrl-");
 
 	shortcuts = new String[127];
-
-	Button absResetBtn;
-	Button absRunStopBtn;
 
 	RootLayoutPanel.get().add(absResetBtn = new Button("&#8634;",
 		new ClickHandler() {
@@ -745,6 +804,8 @@ MouseOutHandler, MouseWheelHandler {
 	    RootPanel.get().add(new Label("Not working. You need a browser that supports the CANVAS element."));
 	    return;
 	}
+
+	modSetDefault();
 
 	Window.addResizeHandler(new ResizeHandler() {
 	    public void onResize(ResizeEvent event) {

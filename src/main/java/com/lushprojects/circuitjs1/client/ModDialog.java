@@ -15,10 +15,12 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.storage.client.Storage;
 
 public class ModDialog extends DialogBox {
 	
 	VerticalPanel vp;
+	Storage lstor = Storage.getLocalStorageIfSupported();
 	
 	//for "UI scale:"
 	HorizontalPanel scaleButtons;
@@ -28,9 +30,6 @@ public class ModDialog extends DialogBox {
 	HTML scaleScrollbarElm;
 	native float getRealScale() /*-{
 		return $wnd.nw.Window.get().zoomLevel;
-	}-*/;
-	native float getDefaultScale() /*-{
-		return $wnd.defaultScale;
 	}-*/;
 	String getScaleScrollbar(float value,int scale){
 		return "<input type=\"range\" id=\"scaleUI\" oninput=\"getScaleInfo()\"" +
@@ -73,7 +72,7 @@ public class ModDialog extends DialogBox {
 		setText("Modification Setup");
 		vp.setWidth("400px");
 
-		vp.add(new HTML("<big><b>UI scale:</b></big>"));
+		vp.add(new HTML("<big><b>UI Scale:</b></big>"));
 		vp.add(scaleScrollbarElm = new HTML(getScaleScrollbar(getRealScale(),(int)(getRealScale()*100+100))));
 		vp.setCellHorizontalAlignment(scaleScrollbarElm, HasHorizontalAlignment.ALIGN_CENTER);
 		vp.add(scaleButtons = new HorizontalPanel());
@@ -85,29 +84,29 @@ public class ModDialog extends DialogBox {
 					vp.insert(scaleScrollbarElm = new HTML(getScaleScrollbar(0,100)),1);
 					vp.setCellHorizontalAlignment(scaleScrollbarElm, HasHorizontalAlignment.ALIGN_CENTER);
 					CirSim.executeJS("setScaleUI()");
-					//TODO: Save data to localStorage
+					lstor.setItem("MOD_UIScale", "0");
 				}
 			}));
 		scaleButtons.add(setDefaultScaleButton = new Button("Default scale<b>*</b>",
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					vp.remove(scaleScrollbarElm);
-					vp.insert(scaleScrollbarElm = new HTML(getScaleScrollbar(getDefaultScale(),
-						(int)(getDefaultScale()*100+100))),1);
+					vp.insert(scaleScrollbarElm = new HTML(getScaleScrollbar(CirSim.getDefaultScale(),
+						(int)(CirSim.getDefaultScale()*100+100))),1);
 					vp.setCellHorizontalAlignment(scaleScrollbarElm, HasHorizontalAlignment.ALIGN_CENTER);
 					CirSim.executeJS("setScaleUI()");
-					//TODO: Save data to localStorage
+					lstor.setItem("MOD_UIScale", Float.toString(CirSim.getDefaultScale()));
 				}
 			}));
 		scaleButtons.add(setScaleButton = new Button("Set",
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					CirSim.executeJS("setScaleUI()");
-					//TODO: Save data to localStorage
+					lstor.setItem("MOD_UIScale", Float.toString(getRealScale()));
 				}
 			}));
 		vp.add(new HTML("<p>* - the default UI scale for your monitor is set to "+
-			(int)(getDefaultScale()*100+100)+"%</p>"));
+			(int)(CirSim.getDefaultScale()*100+100)+"%</p>"));
 		// Styling buttons:
 		setScaleButton.addStyleName("modButtons"); //.setHeight("20px");
 		setScaleButton.addStyleName("modSetButtons");
@@ -121,7 +120,7 @@ public class ModDialog extends DialogBox {
 		scaleButtons.setCellHorizontalAlignment(setDefaultScaleButton, HasHorizontalAlignment.ALIGN_CENTER);
 		scaleButtons.setCellHorizontalAlignment(setScaleButton, HasHorizontalAlignment.ALIGN_CENTER);
 
-		vp.add(new HTML("<hr><big><b>Top menu bar:</b></big>"));
+		vp.add(new HTML("<hr><big><b>Top Menu Bar:</b></big>"));
 		vp.add(topMenuBarVars = new HorizontalPanel());
 		topMenuBarVars.setWidth("100%");
 		topMenuBarVars.add(setStandartTopMenu = new CheckBox("Standart"));
@@ -137,7 +136,7 @@ public class ModDialog extends DialogBox {
 					setSmallTopMenu.setValue(false);
 					setStandartTopMenu.setValue(true);
 					CirSim.executeJS("CircuitJS1.redrawCanvasSize()");
-					//TODO: Save data to localStorage
+					lstor.setItem("MOD_TopMenuBar", "standart");
 				} else {
 					setStandartTopMenu.setValue(true);
 				}
@@ -152,7 +151,7 @@ public class ModDialog extends DialogBox {
 					setStandartTopMenu.setValue(false);
 					setSmallTopMenu.setValue(true);
 					CirSim.executeJS("CircuitJS1.redrawCanvasSize()");
-					//TODO: Save data to localStorage
+					lstor.setItem("MOD_TopMenuBar", "small");
 				} else {
 					setSmallTopMenu.setValue(true);
 				}
@@ -163,7 +162,7 @@ public class ModDialog extends DialogBox {
 		topMenuBarVars.setCellHorizontalAlignment(setStandartTopMenu, HasHorizontalAlignment.ALIGN_CENTER);
 		topMenuBarVars.setCellHorizontalAlignment(setSmallTopMenu, HasHorizontalAlignment.ALIGN_CENTER);
 		
-		vp.add(new HTML("<hr><big><b>Start/Stop and Reset buttons:</b></big>"));
+		vp.add(new HTML("<hr><big><b>Start/Stop and Reset Buttons:</b></big>"));
 		vp.add(btnsPreview = new HorizontalPanel());
 		btnsPreview.setWidth("100%");
 		btnsPreview.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
@@ -196,9 +195,68 @@ public class ModDialog extends DialogBox {
 
 		vp3.add(hideSRBtns = new CheckBox("HIDE BUTTONS!"));
 
+		if (CirSim.absResetBtn.getElement().hasClassName("modDefaultResetBtn"))
+			setDefaultSRBtns.setValue(true);
+		else setClassicSRBtns.setValue(true);
+
+		/*if (CirSim.absRunStopBtn.getElement().getInnerText() == "&#xE800;")
+			setStopIcon.setValue(true);
+		else setPauseIcon.setValue(true);*/ //try to get info from localstorage
+
+		setDefaultSRBtns.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					if (setClassicSRBtns.getValue()) {
+						setClassicSRBtns.setValue(false);
+						setDefaultSRBtns.setValue(true);
+					} else {
+						setDefaultSRBtns.setValue(true);
+					}
+				}
+			});
+		setClassicSRBtns.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					if (setDefaultSRBtns.getValue()) {
+						setDefaultSRBtns.setValue(false);
+						setClassicSRBtns.setValue(true);
+					} else {
+						setClassicSRBtns.setValue(true);
+					}
+				}
+			});
+		setStopIcon.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					if (setPauseIcon.getValue()) {
+						setPauseIcon.setValue(false);
+						setStopIcon.setValue(true);
+					} else {
+						setStopIcon.setValue(true);
+					}
+				}
+			});
+		setPauseIcon.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					if (setStopIcon.getValue()) {
+						setStopIcon.setValue(false);
+						setPauseIcon.setValue(true);
+					} else {
+						setPauseIcon.setValue(true);
+					}
+				}
+			});
+		hideSRBtns.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					
+				}
+			});
+
 		vp.add(new HTML("<hr><big><b>Other:</b></big>"));
 		vp.add(setShowSidebaronStartup = new CheckBox("Show sidebar on startup"));
 		vp.setCellHorizontalAlignment(setShowSidebaronStartup, HasHorizontalAlignment.ALIGN_CENTER);
+		setShowSidebaronStartup.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					
+				}
+			});
 		vp.add(new HTML("<br>"));
 
 		vp.add(closeButton = new Button("<b>Close</b>",
