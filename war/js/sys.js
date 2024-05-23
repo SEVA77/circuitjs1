@@ -1,5 +1,8 @@
 //System commands for calling:
 
+nw.Window.get().setMinimumSize(640, 480); // for new windows
+
+
 function setScaleUI(){
   let scale = document.getElementById("scaleUI").value;
   nw.Window.get().zoomLevel = parseFloat(scale);
@@ -11,7 +14,10 @@ function getScaleInfo(){
   scaleString.textContent = parseInt(scale*100+100)+"%";
 }
 
-nw.Window.get().setMinimumSize(640, 480); // for new windows
+function setTrLabelPos (top) {
+  let triggerLabel = document.querySelector(".triggerLabel");
+  triggerLabel.style.top = top;
+}
 
 
 // For Run/Stop and Reset buttons:

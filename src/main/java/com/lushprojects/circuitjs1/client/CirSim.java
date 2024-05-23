@@ -434,6 +434,11 @@ MouseOutHandler, MouseWheelHandler {
 		else if (MOD_TopMenuBar=="small"){
 			MENUBARHEIGHT = 19;
 			redrawCanvasSize();
+			absRunStopBtn.removeStyleName("btn-top-pos");
+			absResetBtn.removeStyleName("btn-top-pos");
+			absRunStopBtn.addStyleName("btn-min-top-pos");
+			absResetBtn.addStyleName("btn-min-top-pos");
+			executeJS("setTrLabelPos(\"39px\")");
 		}
 		if (MOD_absBtnTheme==null) lstor.setItem("MOD_absBtnTheme","default");
 		else if (MOD_absBtnTheme=="classic"){
