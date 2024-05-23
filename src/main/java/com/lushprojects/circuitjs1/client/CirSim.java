@@ -437,7 +437,12 @@ MouseOutHandler, MouseWheelHandler {
 		}
 		if (MOD_absBtnTheme==null) lstor.setItem("MOD_absBtnTheme","default");
 		else if (MOD_absBtnTheme=="classic"){
-
+			absRunStopBtn.removeStyleName("modDefaultRunStopBtn");
+			absRunStopBtn.addStyleName("gwt-Button");
+			absRunStopBtn.addStyleName("modClassicButton");
+			absResetBtn.removeStyleName("modDefaultResetBtn");
+			absResetBtn.addStyleName("gwt-Button");
+			absResetBtn.addStyleName("modClassicButton");
 		}
 		if (MOD_absBtnIcon==null) lstor.setItem("MOD_absBtnIcon","stop");
 		else if (MOD_absBtnIcon=="pause"){
@@ -562,8 +567,8 @@ MouseOutHandler, MouseWheelHandler {
 			}
 		}));
 
-	absResetBtn.setStyleName("btn-pos reset-btn reset-btn-pos modDefaultResetBtn");
-	absRunStopBtn.setStyleName("btn-pos run-stop-btn run-stop-btn-pos modDefaultRunStopBtn");
+	absResetBtn.setStyleName("btn-top-pos reset-btn reset-btn-pos modDefaultResetBtn");
+	absRunStopBtn.setStyleName("btn-top-pos run-stop-btn run-stop-btn-pos modDefaultRunStopBtn");
 	absResetBtn.getElement().setTitle("Reset");
 	absRunStopBtn.getElement().setTitle("Run/Stop");
 

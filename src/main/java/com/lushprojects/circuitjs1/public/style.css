@@ -15,6 +15,7 @@
 	right: 0;
 	z-index: 1;
 	transition: right 1s;
+	cursor: pointer;
 }
 .triggerLabel:before {
 	content: "\25C0";

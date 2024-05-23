@@ -172,9 +172,16 @@ public class ModDialog extends DialogBox {
 		btnsPreview.setCellHorizontalAlignment(previewText, HasHorizontalAlignment.ALIGN_RIGHT);
 		btnsPreview.setCellHorizontalAlignment(resetPrevBtn, HasHorizontalAlignment.ALIGN_RIGHT);
 		btnsPreview.setCellHorizontalAlignment(stopPrevBtn, HasHorizontalAlignment.ALIGN_LEFT);
-		// Временно(!):
-		stopPrevBtn.setStyleName("run-stop-btn modDefaultRunStopBtn modPrevBtn");
-		resetPrevBtn.setStyleName("reset-btn modDefaultResetBtn modPrevBtn");
+		
+		stopPrevBtn.setStyleName("run-stop-btn modPrevBtn");
+		resetPrevBtn.setStyleName("reset-btn modPrevBtn");
+		if (lstor.getItem("MOD_absBtnTheme")=="default"){
+			stopPrevBtn.addStyleName("modDefaultRunStopBtn");
+			resetPrevBtn.addStyleName("modDefaultResetBtn");
+		} else {
+			stopPrevBtn.addStyleName("gwt-Button");
+			resetPrevBtn.addStyleName("gwt-Button");
+		}
 
 		vp.add(SRCheckBoxes = new HorizontalPanel());
 		SRCheckBoxes.setWidth("100%");
@@ -203,11 +210,28 @@ public class ModDialog extends DialogBox {
 			setStopIcon.setValue(true);
 		else setPauseIcon.setValue(true);*/ //try to get info from localstorage
 
+		if (lstor.getItem("MOD_absBtnIcon")=="stop") setStopIcon.setValue(true);
+		else setPauseIcon.setValue(true);
+
 		setDefaultSRBtns.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					if (setClassicSRBtns.getValue()) {
 						setClassicSRBtns.setValue(false);
 						setDefaultSRBtns.setValue(true);
+						//Buttons for preview:
+						stopPrevBtn.removeStyleName("gwt-Button");
+						stopPrevBtn.addStyleName("modDefaultRunStopBtn");
+						resetPrevBtn.removeStyleName("gwt-Button");
+						resetPrevBtn.addStyleName("modDefaultResetBtn");
+						//Absolute buttons:
+						CirSim.absRunStopBtn.removeStyleName("gwt-Button");
+						CirSim.absRunStopBtn.removeStyleName("modClassicButton");
+						CirSim.absRunStopBtn.addStyleName("modDefaultRunStopBtn");
+						CirSim.absResetBtn.removeStyleName("gwt-Button");
+						CirSim.absResetBtn.removeStyleName("modClassicButton");
+						CirSim.absResetBtn.addStyleName("modDefaultResetBtn");
+						//save:
+						lstor.setItem("MOD_absBtnTheme", "default");
 					} else {
 						setDefaultSRBtns.setValue(true);
 					}
@@ -218,6 +242,20 @@ public class ModDialog extends DialogBox {
 					if (setDefaultSRBtns.getValue()) {
 						setDefaultSRBtns.setValue(false);
 						setClassicSRBtns.setValue(true);
+						//Buttons for preview:
+						stopPrevBtn.removeStyleName("modDefaultRunStopBtn");
+						stopPrevBtn.addStyleName("gwt-Button");
+						resetPrevBtn.removeStyleName("modDefaultResetBtn");
+						resetPrevBtn.addStyleName("gwt-Button");
+						//Absolute buttons:
+						CirSim.absRunStopBtn.removeStyleName("modDefaultRunStopBtn");
+						CirSim.absRunStopBtn.addStyleName("gwt-Button");
+						CirSim.absRunStopBtn.addStyleName("modClassicButton");
+						CirSim.absResetBtn.removeStyleName("modDefaultResetBtn");
+						CirSim.absResetBtn.addStyleName("gwt-Button");
+						CirSim.absResetBtn.addStyleName("modClassicButton");
+						//save:
+						lstor.setItem("MOD_absBtnTheme", "classic");
 					} else {
 						setClassicSRBtns.setValue(true);
 					}

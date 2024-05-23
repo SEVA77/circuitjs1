@@ -174,32 +174,37 @@
 
         /*Кнопки Run/Stop, Reset*/
         .run-stop-btn, .reset-btn {
-            width: 60px;
-            height: 60px;
+            width: 60px !important;
+            height: 60px !important;
             z-index: 1;
-            border-radius: 10px;
+            border-radius: 10px !important;
             /*margin: 5px;*/ /*for preview*/
+            cursor: pointer;
         }
 
-        .btn-pos{
-            position: absolute;
-            /*top: 50px;*/
+        .btn-top-pos{
+            top: 50px !important;
+        }
+        .btn-min-top-pos{
+            top: 39px !important;
         }
         .run-stop-btn-pos{
-            /*right: 50px;*/
-            inset: 50px 50px auto auto !important;
+            right: 50px !important;
+            left: auto !important;
+            /*inset: 50px 50px auto auto !important;*/
         }
         .reset-btn-pos{
-            /*right: 120px;*/
-            inset: 50px 120px auto auto !important;
+            right: 120px !important;
+            left: auto !important;
+            /*inset: 50px 120px auto auto !important;*/
         }
         .run-stop-btn{
             font-family: 'runstopbtn', serif;
             padding: 0;
-            font-size: 30px;
+            font-size: 30px !important;
         }
         .reset-btn{
-            font-size: 38px;
+            font-size: 38px !important;
         }
         .modDefaultRunStopBtn{
             color: red;
@@ -215,7 +220,12 @@
             border: medium solid;
         }
 
-        .modPrevBtn{margin: 5px}
+        .modClassicButton { /*+.gwt-Button*/
+            color: black !important;
+            border-color: #bbb !important;
+        }
+
+        .modPrevBtn{margin: 5px !important}
         
 
         @media (max-width: 1000px) {
