@@ -451,7 +451,7 @@ MouseOutHandler, MouseWheelHandler {
 		}
 		if (MOD_absBtnIcon==null) lstor.setItem("MOD_absBtnIcon","stop");
 		else if (MOD_absBtnIcon=="pause"){
-
+			absRunStopBtn.getElement().setInnerHTML("&#xE802;");
 		}
 		if (MOD_hideAbsBtns==null) lstor.setItem("MOD_hideAbsBtns","false");
 		else if (MOD_hideAbsBtns=="true"){}

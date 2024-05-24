@@ -23,6 +23,9 @@ function setTrLabelPos (top) {
 // For Run/Stop and Reset buttons:
 
 function SetBtnsStyle() {
+
+  let absBtnIcon = localStorage.getItem('MOD_absBtnIcon');
+
   let RunStopBtn = document.getElementsByClassName("run-stop-btn")[0];
   let ResetBtn = document.getElementsByClassName("reset-btn")[0];
 
@@ -43,7 +46,8 @@ function SetBtnsStyle() {
       RunStopBtn.style.borderColor = "green";
     }
   } else {
-    RunStopBtn.innerHTML = '&#xE800;'; // \e800
+    if (absBtnIcon=="pause") RunStopBtn.innerHTML = '&#xE802;';
+    else RunStopBtn.innerHTML = '&#xE800;';
     if(RunStopBtn.classList.contains('modDefaultRunStopBtn')){
       RunStopBtn.style.color = "red";
       RunStopBtn.style.borderColor = "red";

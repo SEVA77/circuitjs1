@@ -57,6 +57,9 @@ public class ModDialog extends DialogBox {
 	CheckBox setPauseIcon;
 	VerticalPanel vp3;
 	CheckBox hideSRBtns;
+	native boolean CirSimIsRunning()/*-{
+		return $wnd.CircuitJS1.isRunning();
+	}-*/;
 
 	//for "Other:"
 	CheckBox setShowSidebaronStartup;
@@ -179,6 +182,8 @@ public class ModDialog extends DialogBox {
 		btnsPreview.add(previewText = new HTML("<big>Preview:</big>"));
 		btnsPreview.add(resetPrevBtn = new Button("&#8634;"));
 		btnsPreview.add(stopPrevBtn = new Button("&#xE800;"));
+		if (lstor.getItem("MOD_absBtnIcon")=="pause")
+			stopPrevBtn.getElement().setInnerHTML("&#xE802;");
 		btnsPreview.setCellHorizontalAlignment(previewText, HasHorizontalAlignment.ALIGN_RIGHT);
 		btnsPreview.setCellHorizontalAlignment(resetPrevBtn, HasHorizontalAlignment.ALIGN_RIGHT);
 		btnsPreview.setCellHorizontalAlignment(stopPrevBtn, HasHorizontalAlignment.ALIGN_LEFT);
@@ -276,6 +281,11 @@ public class ModDialog extends DialogBox {
 					if (setPauseIcon.getValue()) {
 						setPauseIcon.setValue(false);
 						setStopIcon.setValue(true);
+						stopPrevBtn.getElement().setInnerHTML("&#xE800;");
+						if (CirSimIsRunning())
+							CirSim.absRunStopBtn.getElement().setInnerHTML("&#xE800;");
+						//save:
+						lstor.setItem("MOD_absBtnIcon", "stop");
 					} else {
 						setStopIcon.setValue(true);
 					}
@@ -286,6 +296,11 @@ public class ModDialog extends DialogBox {
 					if (setStopIcon.getValue()) {
 						setStopIcon.setValue(false);
 						setPauseIcon.setValue(true);
+						stopPrevBtn.getElement().setInnerHTML("&#xE802;");
+						if (CirSimIsRunning())
+							CirSim.absRunStopBtn.getElement().setInnerHTML("&#xE802;");
+						//save:
+						lstor.setItem("MOD_absBtnIcon", "pause");
 					} else {
 						setPauseIcon.setValue(true);
 					}
