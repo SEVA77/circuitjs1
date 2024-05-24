@@ -591,7 +591,7 @@ MouseOutHandler, MouseWheelHandler {
 	fileMenuBar.addItem(iconMenuItem("popup", "New Window...",
 		new Command(){
 			public void execute(){
-				executeJS("nw.Window.open('index.html', {}, function(new_win) {});");
+				executeJS("nw.Window.open('circuitjs.html', {}, function(new_win) {});");
 			}
 		}));
 
