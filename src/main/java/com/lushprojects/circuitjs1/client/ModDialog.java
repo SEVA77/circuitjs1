@@ -228,6 +228,8 @@ public class ModDialog extends DialogBox {
 		if (lstor.getItem("MOD_absBtnIcon")=="stop") setStopIcon.setValue(true);
 		else setPauseIcon.setValue(true);
 
+		if (!CirSim.absRunStopBtn.isVisible()) hideSRBtns.setValue(true);
+
 		setDefaultSRBtns.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					if (setClassicSRBtns.getValue()) {
@@ -308,7 +310,17 @@ public class ModDialog extends DialogBox {
 			});
 		hideSRBtns.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					
+					if (hideSRBtns.getValue()){
+						CirSim.absRunStopBtn.setVisible(false);
+						CirSim.absResetBtn.setVisible(false);
+						//save:
+						lstor.setItem("MOD_hideAbsBtns", "true");
+					}else{
+						CirSim.absRunStopBtn.setVisible(true);
+						CirSim.absResetBtn.setVisible(true);
+						//save:
+						lstor.setItem("MOD_hideAbsBtns", "false");
+					}
 				}
 			});
 

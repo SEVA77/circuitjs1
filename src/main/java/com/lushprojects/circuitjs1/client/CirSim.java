@@ -454,7 +454,10 @@ MouseOutHandler, MouseWheelHandler {
 			absRunStopBtn.getElement().setInnerHTML("&#xE802;");
 		}
 		if (MOD_hideAbsBtns==null) lstor.setItem("MOD_hideAbsBtns","false");
-		else if (MOD_hideAbsBtns=="true"){}
+		else if (MOD_hideAbsBtns=="true"){
+			absRunStopBtn.setVisible(false);
+			absResetBtn.setVisible(false);
+		}
 		if (MOD_showSidebaronStartup==null) lstor.setItem("MOD_showSidebaronStartup","false");
 		else if (MOD_showSidebaronStartup=="true"){}
 
