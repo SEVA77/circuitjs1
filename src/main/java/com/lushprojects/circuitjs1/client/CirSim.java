@@ -459,7 +459,7 @@ MouseOutHandler, MouseWheelHandler {
 			absResetBtn.setVisible(false);
 		}
 		if (MOD_showSidebaronStartup==null) lstor.setItem("MOD_showSidebaronStartup","false");
-		else if (MOD_showSidebaronStartup=="true"){}
+		else if (MOD_showSidebaronStartup=="true") executeJS("document.getElementById(\"trigger\").checked = true");
 
 	}
 

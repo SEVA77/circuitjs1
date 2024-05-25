@@ -327,9 +327,12 @@ public class ModDialog extends DialogBox {
 		vp.add(new HTML("<hr><big><b>Other:</b></big>"));
 		vp.add(setShowSidebaronStartup = new CheckBox("Show sidebar on startup"));
 		vp.setCellHorizontalAlignment(setShowSidebaronStartup, HasHorizontalAlignment.ALIGN_CENTER);
+		if (lstor.getItem("MOD_showSidebaronStartup")=="true") setShowSidebaronStartup.setValue(true);
 		setShowSidebaronStartup.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					
+					if (setShowSidebaronStartup.getValue()){
+						lstor.setItem("MOD_showSidebaronStartup", "true");
+					} else {lstor.setItem("MOD_showSidebaronStartup", "false");}
 				}
 			});
 		vp.add(new HTML("<br>"));
