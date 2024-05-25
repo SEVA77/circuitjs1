@@ -25,6 +25,7 @@ function setTrLabelPos (top) {
 function SetBtnsStyle() {
 
   let absBtnIcon = localStorage.getItem('MOD_absBtnIcon');
+  let hideAbsBtns = localStorage.getItem('MOD_hideAbsBtns');
 
   let RunStopBtn = document.getElementsByClassName("run-stop-btn")[0];
   let ResetBtn = document.getElementsByClassName("reset-btn")[0];
@@ -33,10 +34,12 @@ function SetBtnsStyle() {
     RunStopBtn.style.display = "none";
     ResetBtn.style.display = "none";
   } else {
-    setTimeout(() => {
-      RunStopBtn.style.display = "block";
-      ResetBtn.style.display = "block";
-    }, 1100);
+    if (hideAbsBtns=="false"){
+      setTimeout(() => {
+        RunStopBtn.style.display = "block";
+        ResetBtn.style.display = "block";
+      }, 1100);
+    }
   }
 
   if (CircuitJS1.isRunning() == false) {
