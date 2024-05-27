@@ -583,18 +583,8 @@ MouseOutHandler, MouseWheelHandler {
 	layoutPanel = new DockLayoutPanel(Unit.PX);
 
 	fileMenuBar = new MenuBar(true);
-	if (isElectron())
-	    fileMenuBar.addItem(menuItemWithShortcut("window", "New Window...", Locale.LS(ctrlMetaKey + "N"),
-		    new MyCommand("file", "newwindow")));
-	
-	fileMenuBar = new MenuBar(true);
-	fileMenuBar.addItem(iconMenuItem("popup", "New Window...",
-		new Command(){
-			public void execute(){
-				executeJS("nw.Window.open('circuitjs.html', {}, function(new_win) {});");
-			}
-		}));
-
+	fileMenuBar.addItem(menuItemWithShortcut("window", "New Window...", Locale.LS(ctrlMetaKey + "N"),
+		new MyCommand("file", "newwindow")));
 	fileMenuBar.addItem(iconMenuItem("doc-new", "New Blank Circuit", new MyCommand("file", "newblankcircuit")));
 	importFromLocalFileItem = menuItemWithShortcut("folder", "Open File...", Locale.LS(ctrlMetaKey + "O"),
 		new MyCommand("file","importfromlocalfile"));
@@ -5681,7 +5671,7 @@ MouseOutHandler, MouseWheelHandler {
 				menuPerformed("key", "print");
 				e.cancel();
 			}
-    			if (code==KEY_N && isElectron()) {
+    			if (code==KEY_N) {
 				menuPerformed("key", "newwindow");
 				e.cancel();
 			}
