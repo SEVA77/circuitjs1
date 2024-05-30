@@ -31,7 +31,6 @@ public class LicenseDialog extends DialogBox {
 	
 	VerticalPanel vp;
 	Button okButton;
-	CirSim sim;
 	
 	LicenseDialog() {
 		super();

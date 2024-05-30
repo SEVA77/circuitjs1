@@ -40,7 +40,6 @@ public class HelpDialog extends DialogBox {
 	VerticalPanel vpPL;
 	VerticalPanel vpDE;
 	VerticalPanel vpDA;
-	CirSim sim;
 	
 	HelpDialog() {
 		super();
@@ -52,11 +51,11 @@ public class HelpDialog extends DialogBox {
 		vp.add(tp);
 		String tab1Title = "EN";
 		String tab2Title = "RU";
-		String tab3Title = "PL";
-		String tab4Title = "DE";
-		String tab5Title = "DA";
+		//String tab3Title = "PL";
+		//String tab4Title = "DE";
+		//String tab5Title = "DA";
 
-		      //create tabs 
+		//create tabs 
 		tp.add(vpEN = new VerticalPanel(), tab1Title);
 		vpEN.setWidth("500px");
 		vpEN.add(new HTML("<iframe style=\"border:0;\" src=\"help/EN.html\" width=\"500\" height=\"400\" scrolling=\"auto\" frameborder=\"1\"></iframe>"));
