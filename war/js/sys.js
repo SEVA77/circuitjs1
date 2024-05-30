@@ -1,5 +1,6 @@
 //System commands for calling:
 
+document.title = nw.App.manifest.window.title;
 nw.Window.get().setMinimumSize(640, 480); // for new windows
 
 
