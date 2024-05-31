@@ -6339,12 +6339,13 @@ MouseOutHandler, MouseWheelHandler {
     
 	native void printCanvas(CanvasElement cv) /*-{
 	    var img    = cv.toDataURL("image/png");
-	    var win = window.open("", "print", "height=500,width=500,status=yes,location=no");
-	    win.document.title = "Print Circuit";
-	    win.document.open();
-	    win.document.write('<img src="'+img+'"/>');
-	    win.document.close();
-	    setTimeout(function(){win.print();},1000);
+		var iframe = $doc.createElement("iframe");
+		iframe.src = img;
+		iframe.style = "display:none";
+		$doc.body.appendChild(iframe);
+		var contentWindow = iframe.contentWindow;
+		contentWindow.print();
+		contentWindow.addEventListener('afterprint', function(){iframe.remove()});
 	}-*/;
 
 	void doDCAnalysis() {
