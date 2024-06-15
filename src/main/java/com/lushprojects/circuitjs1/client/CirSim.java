@@ -6338,7 +6338,7 @@ MouseOutHandler, MouseWheelHandler {
     }
     
 	native void printCanvas(CanvasElement cv) /*-{
-	    var img    = cv.toDataURL("image/png");
+		var img    = cv.toDataURL("image/png");
 		var iframe = $doc.createElement("iframe");
 		iframe.src = img;
 		iframe.style = "display:none";
