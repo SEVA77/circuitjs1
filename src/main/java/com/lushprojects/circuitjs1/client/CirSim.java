@@ -432,7 +432,7 @@ MouseOutHandler, MouseWheelHandler {
 		else executeJS("nw.Window.get().zoomLevel = "+MOD_UIScale);
 		if (MOD_TopMenuBar==null) lstor.setItem("MOD_TopMenuBar","standart");
 		else if (MOD_TopMenuBar=="small"){
-			MENUBARHEIGHT = 19;
+			MENUBARHEIGHT = 20;
 			redrawCanvasSize();
 			absRunStopBtn.removeStyleName("btn-top-pos");
 			absResetBtn.removeStyleName("btn-top-pos");
@@ -776,7 +776,8 @@ MouseOutHandler, MouseWheelHandler {
 
 	m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Shortcuts..."), new MyCommand("options", "shortcuts")));
 	m.addItem(optionsItem = new CheckboxAlignedMenuItem(Locale.LS("Other Options..."), new MyCommand("options","other")));
-	m.addItem(modItem = new CheckboxAlignedMenuItem("Modification Setup", new MyCommand("options","modsetup")));
+	m.addItem(modItem = new CheckboxAlignedMenuItem("Modification Setup...", new MyCommand("options","modsetup")));
+	modItem.addStyleName("modItem");
 	if (isElectron())
 	    m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Toggle Dev Tools"), new MyCommand("options","devtools")));
 

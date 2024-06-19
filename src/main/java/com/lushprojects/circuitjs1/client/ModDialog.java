@@ -169,7 +169,7 @@ public class ModDialog extends DialogBox {
 		setSmallTopMenu.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				if (setStandartTopMenu.getValue()) {
-					CirSim.MENUBARHEIGHT = 19;
+					CirSim.MENUBARHEIGHT = 20;
 					//CirSim.layoutPanel.setWidgetSize(menuBar, 19);
 					setStandartTopMenu.setValue(false);
 					setSmallTopMenu.setValue(true);

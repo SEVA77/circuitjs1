@@ -18,6 +18,7 @@
 	cursor: pointer;
 }
 .triggerLabel:before {
+	font-family: Arial, sans-serif; /*for windows*/
 	content: "\25C0";
 	font-size: 22px;
 	padding-left: 3px;
