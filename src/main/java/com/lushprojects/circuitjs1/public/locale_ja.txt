@@ -1375,3 +1375,10 @@
 "wattmeter"="電力計"
 
 "Max="="最大値="
+"Sliders and buttons"="スライダーとボタン"
+"Help"="ヘルプ"
+"User Guide"="ユーザーガイド"
+"License"="ライセンス"
+"About Circuits"="回路について（英語）"
+"About Circuits (Polish ver.)"="回路について（ポーランド語）"
+"Exit"="出口"
