@@ -16,7 +16,7 @@
  
  public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandler,
  ClickHandler, DoubleClickHandler, ContextMenuHandler, NativePreviewHandler,
-@@ -111,9 +113,16 @@
+@@ -111,10 +113,17 @@
      Button runStopButton;
      Button dumpMatrixButton;
      MenuItem aboutItem;
@@ -30,20 +30,23 @@
      MenuItem importFromLocalFileItem, importFromTextItem, exportAsUrlItem, exportAsLocalFileItem, exportAsTextItem,
              printItem, recoverItem, saveFileItem;
 -    MenuItem importFromDropboxItem;
+-    MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem;
 +    //MenuItem importFromDropboxItem;
-     MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem;
++    MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem, modItem;
      MenuBar optionsMenuBar;
      CheckboxMenuItem dotsCheckItem;
-@@ -248,6 +257,8 @@
+     CheckboxMenuItem voltsCheckItem;
+@@ -249,6 +258,9 @@
      boolean hideInfoBox;
      int scopeColCount[];
      static EditDialog editDialog, customLogicEditDialog, diodeModelEditDialog;
 +    static HelpDialog helpDialog;
 +    static LicenseDialog licenseDialog;
++	static ModDialog modDialog;
      static ScrollValuePopup scrollValuePopup;
      static Dialog dialogShowing;
      static AboutBox aboutBox;
-@@ -264,6 +275,8 @@
+@@ -265,6 +277,8 @@
      MenuBar menuBar;
      MenuBar fileMenuBar;
      VerticalPanel verticalPanel;
@@ -52,33 +55,164 @@
      CellPanel buttonPanel;
      private boolean mouseDragging;
      double scopeHeightFraction = 0.2;
-@@ -272,7 +285,7 @@
+@@ -273,7 +287,10 @@
      Vector<String> mainMenuItemNames = new Vector<String>();
  
      LoadFile loadFileInput;
 -    Frame iFrame;
 +    Frame iFrame=null;
++
++	static Button absResetBtn;
++	static Button absRunStopBtn;
  
      Canvas cv;
      Context2d cvcontext;
-@@ -463,6 +476,16 @@
- 	    fileMenuBar.addItem(menuItemWithShortcut("window", "New Window...", Locale.LS(ctrlMetaKey + "N"),
- 		    new MyCommand("file", "newwindow")));
- 	
-+	fileMenuBar = new MenuBar(true);
-+	fileMenuBar.addItem(iconMenuItem("popup", "New Window...",
-+		new Command() { public void execute(){
-+				ScriptInjector.fromString("nw.Window.open('index.html', {}, function(new_win) {});")
-+					.setRemoveTag(false)
-+					.setWindow(ScriptInjector.TOP_WINDOW)
-+					.inject();
-+			}
-+			}));
+@@ -281,7 +298,7 @@
+     // canvas width/height in px (before device pixel ratio scaling)
+     int canvasWidth, canvasHeight;
+ 
+-    static final int MENUBARHEIGHT = 30;
++    static int MENUBARHEIGHT = 30;
+     static int VERTICALPANELWIDTH = 166; // default
+     static final int POSTGRABSQ = 25;
+     static final int MINPOSTGRABSIZE = 256;
+@@ -303,6 +320,14 @@
+         return window.devicePixelRatio;
+     }-*/;
+ 
++	void redrawCanvasSize() {
++		layoutPanel.setWidgetSize(menuBar, MENUBARHEIGHT);
++		if (MENUBARHEIGHT<30) menuBar.addStyleName("modSmallMenuBar");
++		else menuBar.removeStyleName("modSmallMenuBar");
++		setCanvasSize();
++		repaint();
++	}
 +
+     void checkCanvasSize() {
+         if (cv.getCoordinateSpaceWidth() != (int) (canvasWidth * devicePixelRatio()))
+             setCanvasSize();
+@@ -360,6 +385,84 @@
+         return $wnd.LZString.decompressFromEncodedURIComponent(dump);
+     }-*/;
+ 
++	public static void executeJS(String js){
++		ScriptInjector.fromString(js)
++			.setWindow(ScriptInjector.TOP_WINDOW)
++			.inject();
++	}
++
++	static native float getDefaultScale() /*-{
++		$wnd.nw.Screen.Init();
++		var dwidth = $wnd.nw.Screen.screens[0].bounds.width;
++		var defaultScale;
++		if (dwidth >= 1960)
++			defaultScale = 1.6; // 2-0.4 and etc.
++		else if (dwidth >= 1752 && dwidth < 1960)
++			defaultScale = 1.1; // -0.4
++		else if (dwidth >= 1600 && dwidth < 1752)
++			defaultScale = 0.7; // -0.3
++		else if (dwidth >= 1460 && dwidth < 1600)
++			defaultScale = 0.3; // -0.2
++		else if (dwidth >= 1200 && dwidth < 1460)
++			defaultScale = -0.1; // -0.1
++		else if (dwidth < 1200)
++			defaultScale = -0.3;
++		return defaultScale;
++	}-*/;
++
++	void modSetDefault(){
++		
++		Storage lstor = Storage.getLocalStorageIfSupported();
++		if (lstor == null) return;
++		/* KEYS:
++		MOD_UIScale, MOD_TopMenuBar, MOD_absBtnTheme, MOD_absBtnIcon,
++		MOD_hideAbsBtns, MOD_showSidebaronStartup
++		*/
++		String MOD_UIScale=lstor.getItem("MOD_UIScale");
++		String MOD_TopMenuBar=lstor.getItem("MOD_TopMenuBar");
++		String MOD_absBtnTheme=lstor.getItem("MOD_absBtnTheme");
++		String MOD_absBtnIcon=lstor.getItem("MOD_absBtnIcon");
++		String MOD_hideAbsBtns=lstor.getItem("MOD_hideAbsBtns");
++		String MOD_showSidebaronStartup=lstor.getItem("MOD_showSidebaronStartup");
++
++		if (MOD_UIScale==null){
++			lstor.setItem("MOD_UIScale", Float.toString(getDefaultScale()));
++			executeJS("nw.Window.get().zoomLevel = "+getDefaultScale());
++		}
++		else executeJS("nw.Window.get().zoomLevel = "+MOD_UIScale);
++		if (MOD_TopMenuBar==null) lstor.setItem("MOD_TopMenuBar","standart");
++		else if (MOD_TopMenuBar=="small"){
++			MENUBARHEIGHT = 20;
++			redrawCanvasSize();
++			absRunStopBtn.removeStyleName("btn-top-pos");
++			absResetBtn.removeStyleName("btn-top-pos");
++			absRunStopBtn.addStyleName("btn-min-top-pos");
++			absResetBtn.addStyleName("btn-min-top-pos");
++			executeJS("setTrLabelPos(\"39px\")");
++		}
++		if (MOD_absBtnTheme==null) lstor.setItem("MOD_absBtnTheme","default");
++		else if (MOD_absBtnTheme=="classic"){
++			absRunStopBtn.removeStyleName("modDefaultRunStopBtn");
++			absRunStopBtn.addStyleName("gwt-Button");
++			absRunStopBtn.addStyleName("modClassicButton");
++			absResetBtn.removeStyleName("modDefaultResetBtn");
++			absResetBtn.addStyleName("gwt-Button");
++			absResetBtn.addStyleName("modClassicButton");
++		}
++		if (MOD_absBtnIcon==null) lstor.setItem("MOD_absBtnIcon","stop");
++		else if (MOD_absBtnIcon=="pause"){
++			absRunStopBtn.getElement().setInnerHTML("&#xE802;");
++		}
++		if (MOD_hideAbsBtns==null) lstor.setItem("MOD_hideAbsBtns","false");
++		else if (MOD_hideAbsBtns=="true"){
++			absRunStopBtn.setVisible(false);
++			absResetBtn.setVisible(false);
++		}
++		if (MOD_showSidebaronStartup==null) lstor.setItem("MOD_showSidebaronStartup","false");
++		else if (MOD_showSidebaronStartup=="true") executeJS("document.getElementById(\"trigger\").checked = true");
++
++	}
++
+ //    Circuit applet;
+ 
+     CirSim() {
+@@ -457,13 +560,31 @@
+ 
+ 	shortcuts = new String[127];
+ 
++	RootLayoutPanel.get().add(absResetBtn = new Button("&#8634;",
++		new ClickHandler() {
++			public void onClick(ClickEvent event) {
++				resetAction();
++			}
++		}));
++
++	RootLayoutPanel.get().add(absRunStopBtn = new Button("&#xE800;",
++		new ClickHandler() {
++			public void onClick(ClickEvent event) {
++				setSimRunning(!simIsRunning());
++				executeJS("SetBtnsStyle()");
++			}
++		}));
++
++	absResetBtn.setStyleName("btn-top-pos reset-btn reset-btn-pos modDefaultResetBtn");
++	absRunStopBtn.setStyleName("btn-top-pos run-stop-btn run-stop-btn-pos modDefaultRunStopBtn");
++	absResetBtn.getElement().setTitle("Reset");
++	absRunStopBtn.getElement().setTitle("Run/Stop");
++
+ 	layoutPanel = new DockLayoutPanel(Unit.PX);
+ 
+ 	fileMenuBar = new MenuBar(true);
+-	if (isElectron())
+-	    fileMenuBar.addItem(menuItemWithShortcut("window", "New Window...", Locale.LS(ctrlMetaKey + "N"),
+-		    new MyCommand("file", "newwindow")));
+-	
++	fileMenuBar.addItem(menuItemWithShortcut("window", "New Window...", Locale.LS(ctrlMetaKey + "N"),
++		new MyCommand("file", "newwindow")));
  	fileMenuBar.addItem(iconMenuItem("doc-new", "New Blank Circuit", new MyCommand("file", "newblankcircuit")));
  	importFromLocalFileItem = menuItemWithShortcut("folder", "Open File...", Locale.LS(ctrlMetaKey + "O"),
  		new MyCommand("file","importfromlocalfile"));
-@@ -470,8 +493,8 @@
+@@ -471,8 +592,8 @@
  	fileMenuBar.addItem(importFromLocalFileItem);
  	importFromTextItem = iconMenuItem("doc-text", "Import From Text...", new MyCommand("file","importfromtext"));
  	fileMenuBar.addItem(importFromTextItem);
@@ -89,39 +223,14 @@
  	if (isElectron()) {
  	    saveFileItem = fileMenuBar.addItem(menuItemWithShortcut("floppy", "Save", Locale.LS(ctrlMetaKey + "S"),
  		    new MyCommand("file", "save")));
-@@ -496,22 +519,52 @@
- 	printItem = menuItemWithShortcut("print", "Print...", Locale.LS(ctrlMetaKey + "P"), new MyCommand("file","print"));
- 	fileMenuBar.addItem(printItem);
+@@ -500,20 +621,27 @@
  	fileMenuBar.addSeparator();
-+	/*
-+	MenuBar fsub = new MenuBar(true);
-+	fsub.setAutoOpen(true);
-+	fsub.addItem(new MenuItem(LS("pfalstad"),
-+			new Command() { public void execute(){
-+			ScriptInjector.fromString("open_webapp('http://www.falstad.com/circuit/circuitjs.html');")
-+				.setWindow(ScriptInjector.TOP_WINDOW)
-+				.inject();
-+				}
-+		}));
-+	fsub.addItem(new MenuItem(LS("isharp"),
-+		new Command() { public void execute(){
-+				ScriptInjector.fromString("open_webapp('http://lushprojects.com/circuitjs/circuitjs.html');")
-+					.setWindow(ScriptInjector.TOP_WINDOW)
-+					.inject();
-+			}
-+		}));
-+	
-+	fileMenuBar.addItem(LS("Open circuitjs1 from web"), fsub);
-+	*/
  	fileMenuBar.addItem(iconMenuItem("resize-full-alt", "Toggle Full Screen", new MyCommand("view", "fullscreen")));
  	fileMenuBar.addSeparator();
 +	fileMenuBar.addItem(iconMenuItem("exit", "Exit",
 +		new Command() { public void execute(){
-+				ScriptInjector.fromString("close_app()")
-+					.setWindow(ScriptInjector.TOP_WINDOW)
-+					.inject();
-+			}
-+		}));
++			executeJS("nw.Window.get().close(true)");
++		}}));
 +	/* 
  	aboutItem = iconMenuItem("info-circled", "About...", (Command)null);
  	fileMenuBar.addItem(aboutItem);
@@ -145,7 +254,7 @@
  
  	verticalPanel.getElement().addClassName("verticalPanel");
  	verticalPanel.getElement().setId("painel");
-@@ -521,6 +574,8 @@
+@@ -523,6 +651,8 @@
  	sidePanelCheckbox.setId("trigger");
  	sidePanelCheckboxLabel.setAttribute("for", "trigger" );
  	sidePanelCheckbox.addClassName("trigger");
@@ -154,38 +263,32 @@
  	Element topPanelCheckbox = DOM.createInputCheck(); 
  	Element topPanelCheckboxLabel = DOM.createLabel();
  	topPanelCheckbox.setId("toptrigger");
-@@ -563,9 +618,29 @@
+@@ -565,9 +695,9 @@
  	m.addItem(combineAllItem = iconMenuItem("object-group", "Combine All", new MyCommand("scopes", "combineAll")));
  	m.addItem(separateAllItem = iconMenuItem("object-ungroup", "Separate All", new MyCommand("scopes", "separateAll")));
  	menuBar.addItem(Locale.LS("Scopes"), m);
 -
-+	/*m.addItem(fullscreenCheckItem = new CheckboxMenuItem(LS("Fullscreen Mode"),
-+	 		new Command() { public void execute(){
-+	 		    	if (fullscreenCheckItem.getState()) {
-+	 		    	ScriptInjector.fromString("nw.Window.get().enterFullscreen();")
-+	 		    	  .setRemoveTag(false)
-+	 		    	  .setWindow(ScriptInjector.TOP_WINDOW)
-+	 		    	  .inject();
-+	 		    	}
-+	 		    	else {
-+		 		ScriptInjector.fromString("nw.Window.get().leaveFullscreen();")
-+		 		  .setRemoveTag(false)
-+		 		  .setWindow(ScriptInjector.TOP_WINDOW)
-+		 		  .inject();
-+	 		    	}*/
-+	 		    /*  (new CheckboxAlignedMenuItem)
-+	 		    String fullscreenScript = "nw.Window.get().toggleFullscreen();";
-+	 		    ScriptInjector.fromString(fullscreenScript).inject();
-+	 		    */
-+	 		  /*  }
-+	 		}));*/
  	optionsMenuBar = m = new MenuBar(true );
  	menuBar.addItem(Locale.LS("Options"), optionsMenuBar);
 +
  	m.addItem(dotsCheckItem = new CheckboxMenuItem(Locale.LS("Show Current")));
  	dotsCheckItem.setState(true);
  	m.addItem(voltsCheckItem = new CheckboxMenuItem(Locale.LS("Show Voltage"),
-@@ -678,6 +753,7 @@
+@@ -646,6 +776,8 @@
+ 
+ 	m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Shortcuts..."), new MyCommand("options", "shortcuts")));
+ 	m.addItem(optionsItem = new CheckboxAlignedMenuItem(Locale.LS("Other Options..."), new MyCommand("options","other")));
++	m.addItem(modItem = new CheckboxAlignedMenuItem("Modification Setup...", new MyCommand("options","modsetup")));
++	modItem.addStyleName("modItem");
+ 	if (isElectron())
+ 	    m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Toggle Dev Tools"), new MyCommand("options","devtools")));
+ 
+@@ -677,9 +809,12 @@
+ 	    return;
+ 	}
+ 
++	modSetDefault();
++
  	Window.addResizeHandler(new ResizeHandler() {
  	    public void onResize(ResizeEvent event) {
  		repaint();
@@ -193,7 +296,7 @@
  	    }
  	});
  
-@@ -685,6 +761,7 @@
+@@ -687,6 +822,7 @@
  	setCanvasSize();
  	layoutPanel.add(cv);
  	verticalPanel.add(buttonPanel);
@@ -201,9 +304,9 @@
  	buttonPanel.add(resetButton = new Button(Locale.LS("Reset")));
  	resetButton.addClickHandler(new ClickHandler() {
  	    public void onClick(ClickEvent event) {
-@@ -706,40 +783,63 @@
- 	verticalPanel.add(dumpMatrixButton);// IES for debugging
- 	 */
+@@ -710,40 +846,63 @@
+ */
+ 	
  
 -	if (LoadFile.isSupported())
 +	if (LoadFile.isSupported()){
@@ -270,7 +373,7 @@
  
  	setGrid();
  	elmList = new Vector<CircuitElm>();
-@@ -809,8 +909,8 @@
+@@ -813,8 +972,8 @@
  	    if (stopMessage == null && startCircuitLink!=null) {
  		readCircuit("");
  		getSetupList(false);
@@ -281,7 +384,7 @@
  	    } else {
  		readCircuit("");
  		if (stopMessage == null && startCircuit != null) {
-@@ -827,7 +927,7 @@
+@@ -831,7 +990,7 @@
  
  	enableUndoRedo();
  	enablePaste();
@@ -290,7 +393,7 @@
  	cv.addMouseDownHandler(this);
  	cv.addMouseMoveHandler(this);
  	cv.addMouseOutHandler(this);
-@@ -1281,22 +1381,20 @@
+@@ -1291,22 +1450,20 @@
  	    sb.addItem(mi);
      }
      
@@ -317,7 +420,7 @@
      }
      
  
-@@ -1777,6 +1875,10 @@
+@@ -1787,6 +1944,10 @@
  	return getNthScopeElm(scopeMenuSelected-scopeCount).elmScope == s; 
      }
      
@@ -328,7 +431,7 @@
      void setupScopes() {
      	int i;
  
-@@ -1810,7 +1912,9 @@
+@@ -1820,7 +1981,9 @@
      	int iw = infoWidth;
      	if (colct <= 2)
      		iw = iw*3/2;
@@ -339,18 +442,22 @@
      	int marg = 10;
      	if (w < marg*2)
      		w = marg*2;
-@@ -3226,6 +3330,10 @@
+@@ -3238,8 +3401,14 @@
  	    Window.alert(Locale.LS("Editing disabled.  Re-enable from the Options menu."));
  	    return;
  	}
 +    	if (item=="help")
 +    	helpDialog = new HelpDialog();
 +    	if (item=="license")
-+        licenseDialog = new LicenseDialog();
++    	    licenseDialog = new LicenseDialog();
      	if (item=="about")
      		aboutBox = new AboutBox(circuitjs1.versionString);
++    	if (item=="modsetup")
++    	    modDialog = new ModDialog();
      	if (item=="importfromlocalfile") {
-@@ -3245,9 +3353,9 @@
+     		pushUndo();
+     		if (isElectron())
+@@ -3257,9 +3426,9 @@
      	if (item=="importfromtext") {
      		dialogShowing = new ImportFromTextDialog(this);
      	}
@@ -362,7 +469,7 @@
      	if (item=="exportasurl") {
      		doExportAsUrl();
      		unsavedChanges = false;
-@@ -3500,11 +3608,15 @@
+@@ -3517,11 +3686,15 @@
      		tempMouseMode = mouseMode;
      	}
      	if (item=="fullscreen") {
@@ -380,7 +487,7 @@
      	}
      
  	repaint();
-@@ -3775,6 +3887,37 @@
+@@ -3805,6 +3978,33 @@
      	currentMenuBar=new MenuBar(true);
      	currentMenuBar.setAutoOpen(true);
      	menuBar.addItem(Locale.LS("Circuits"), currentMenuBar);
@@ -397,19 +504,15 @@
 +		aboutItem.setScheduledCommand(new MyCommand("file","about"));
 +		h.addSeparator();
 +		h.addItem(aboutCircuitsItem = iconMenuItem("link", "About Circuits",
-+		new Command() { public void execute(){
-+				ScriptInjector.fromString("nw.Shell.openExternal('https://www.falstad.com/circuit/e-index.html');")
-+				.setRemoveTag(false)
-+				.setWindow(ScriptInjector.TOP_WINDOW)
-+				.inject();
++		new Command() {
++			public void execute(){
++				executeJS("nw.Shell.openExternal('https://www.falstad.com/circuit/e-index.html')");
 +			}
 +		}));
 +		h.addItem(aboutCircuitsPLItem = iconMenuItem("link", "About Circuits (Polish ver.)",
-+		new Command() { public void execute(){
-+				ScriptInjector.fromString("nw.Shell.openExternal('https://www.falstad.com/circuit/polish/e-index.html');")
-+				.setRemoveTag(false)
-+				.setWindow(ScriptInjector.TOP_WINDOW)
-+				.inject();
++		new Command() {
++			public void execute(){
++				executeJS("nw.Shell.openExternal('https://www.falstad.com/circuit/polish/e-index.html');");
 +			}
 +		}));
 +
@@ -418,7 +521,7 @@
      	stack[stackptr++] = currentMenuBar;
      	int p;
      	for (p = 0; p < len; ) {
-@@ -3808,6 +3951,7 @@
+@@ -3838,6 +4038,7 @@
      				if (file.equals(startCircuit) && startLabel == null) {
      				    startLabel = title;
      				    titleLabel.setText(title);
@@ -426,7 +529,7 @@
      				}
      				if (first && startCircuit == null) {
      					startCircuit = file;
-@@ -3825,16 +3969,19 @@
+@@ -3855,16 +4056,19 @@
  	readCircuit(text.getBytes(), flags);
  	if ((flags & RC_KEEP_TITLE) == 0)
  	    titleLabel.setText(null);
@@ -446,7 +549,7 @@
      }
      
  	void readSetupFile(String str, String title) {
-@@ -3844,6 +3991,7 @@
+@@ -3874,6 +4078,7 @@
  		loadFileFromURL(url);
  		if (title != null)
  		    titleLabel.setText(title);
@@ -454,7 +557,7 @@
  		unsavedChanges = false;
  	}
  	
-@@ -5320,6 +5468,10 @@
+@@ -5350,6 +5555,12 @@
      		return true;
      	if (aboutBox !=null && aboutBox.isShowing())
      		return true;
@@ -462,10 +565,21 @@
 +    		return true;
 +    	if (licenseDialog !=null && licenseDialog.isShowing())
 +    		return true;
++    	if (modDialog !=null && modDialog.isShowing())
++    		return true;
      	return false;
      }
      
-@@ -5607,16 +5759,13 @@
+@@ -5461,7 +5672,7 @@
+ 				menuPerformed("key", "print");
+ 				e.cancel();
+ 			}
+-    			if (code==KEY_N && isElectron()) {
++    			if (code==KEY_N) {
+ 				menuPerformed("key", "newwindow");
+ 				e.cancel();
+ 			}
+@@ -5637,16 +5848,13 @@
      	if (iFrame!=null) {
      		int i=verticalPanel.getWidgetIndex(iFrame);
      		verticalPanel.insert(w, i);
@@ -484,14 +598,36 @@
      }
      
      public static CircuitElm createCe(int tint, int x1, int y1, int x2, int y2, int f, StringTokenizer st) {
-@@ -6440,7 +6589,9 @@
+@@ -6131,13 +6339,14 @@
+     }
+     
+ 	native void printCanvas(CanvasElement cv) /*-{
+-	    var img    = cv.toDataURL("image/png");
+-	    var win = window.open("", "print", "height=500,width=500,status=yes,location=no");
+-	    win.document.title = "Print Circuit";
+-	    win.document.open();
+-	    win.document.write('<img src="'+img+'"/>');
+-	    win.document.close();
+-	    setTimeout(function(){win.print();},1000);
++		var img    = cv.toDataURL("image/png");
++		var iframe = $doc.createElement("iframe");
++		iframe.src = img;
++		iframe.style = "display:none";
++		$doc.body.appendChild(iframe);
++		var contentWindow = iframe.contentWindow;
++		contentWindow.print();
++		contentWindow.addEventListener('afterprint', function(){iframe.remove()});
+ 	}-*/;
+ 
+ 	void doDCAnalysis() {
+@@ -6488,7 +6697,9 @@
  	        getElements: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::getJSElements()(); } ),
  	        getCircuitAsSVG: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::doExportAsSVGFromAPI()(); } ),
  	        exportCircuit: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::dumpCircuit()(); } ),
 -	        importCircuit: $entry(function(circuit, subcircuitsOnly) { return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly); })
 +	        importCircuit: $entry(function(circuit, subcircuitsOnly) { return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly); }),
 +			setupScopes: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::setupScopes()(); } ),
-+			resetAction: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::resetAction()(); } )
++			redrawCanvasSize: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::redrawCanvasSize()(); } )
  	    };
  	    var hook = $wnd.oncircuitjsloaded;
  	    if (hook)

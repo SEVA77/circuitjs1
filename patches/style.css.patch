@@ -1,6 +1,6 @@
---- /dev/null	
+--- /dev/null
 +++ src/main/java/com/lushprojects/circuitjs1/public/style.css
-@@ -1,123 +1,91 @@
+@@ -1,123 +1,92 @@
  @charset "UTF-8";
  
 -/*Hide all mobile elements when in desktop usage*/
@@ -54,6 +54,7 @@
 +	right: 0;
 +	z-index: 1;
 +	transition: right 1s;
++	cursor: pointer;
 +}
 +.triggerLabel:before {
 +	content: "\25C0";
@@ -203,4 +204,4 @@
  	}
 -}
 +}
-\ В конце файла нет новой строки
+\ No newline at end of file
