@@ -20,7 +20,7 @@ Source code: https://github.com/sharpie7/circuitjs1
 
 ## Downloads:
 
-You can download this program for Windows (x32, x64), Linux (x32, x64) and Mac OS X (x64):
+You can download this program for Windows (x32, x64), Linux (x32, x64) and Mac OS X (x64, arm64):
 - [Latest release](https://github.com/SEVA77/circuitjs1/releases/latest)
 - [All Releases](https://github.com/SEVA77/circuitjs1/releases)
 
