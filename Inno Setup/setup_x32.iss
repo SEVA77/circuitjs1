@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "CircuitJS1 Desktop Mod"
-#define MyAppVersion "1.2.5"
+#define MyAppVersion "1.3.0"
 #define MyAppPublisher "Usevalad Khatkevich"
 #define MyAppURL "https://github.com/SEVA77/circuitjs1"
 #define MyAppExeName "CircuitSimulator.exe"
@@ -42,8 +42,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "..\CircuitJS1 Desktop Mod\CircuitSimulator.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\CircuitJS1 Desktop Mod\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\out\win-ia32\CircuitJS1 Desktop Mod\CircuitSimulator.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\out\win-ia32\CircuitJS1 Desktop Mod\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
