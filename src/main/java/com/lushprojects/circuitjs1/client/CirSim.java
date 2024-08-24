@@ -596,16 +596,16 @@ MouseOutHandler, MouseWheelHandler {
 	fileMenuBar.addItem(importFromTextItem);
 	//importFromDropboxItem = iconMenuItem("dropbox", "Import From Dropbox...", new MyCommand("file", "importfromdropbox"));
 	//fileMenuBar.addItem(importFromDropboxItem);
-	if (isElectron()) {
+	//if (isElectron()) {
 	    saveFileItem = fileMenuBar.addItem(menuItemWithShortcut("floppy", "Save", Locale.LS(ctrlMetaKey + "S"),
 		    new MyCommand("file", "save")));
-	    fileMenuBar.addItem(iconMenuItem("floppy", "Save As...", new MyCommand("file", "saveas")));
-	} else {
+	    fileMenuBar.addItem(iconMenuItem("floppy", "Save As...", new MyCommand("file", "exportaslocalfile")));
+	/*} else {
 	    exportAsLocalFileItem = menuItemWithShortcut("floppy", "Save As...", Locale.LS(ctrlMetaKey + "S"),
 		    new MyCommand("file","exportaslocalfile"));
 	    exportAsLocalFileItem.setEnabled(ExportAsLocalFileDialog.downloadIsSupported());
 	    fileMenuBar.addItem(exportAsLocalFileItem);
-	}
+	}*/
 	exportAsUrlItem = iconMenuItem("export", "Export As Link...", new MyCommand("file","exportasurl"));
 	fileMenuBar.addItem(exportAsUrlItem);
 	exportAsTextItem = iconMenuItem("export", "Export As Text...", new MyCommand("file","exportastext"));
@@ -3341,6 +3341,16 @@ MouseOutHandler, MouseWheelHandler {
 		scopes[i].resetGraph(true);
     	repaint();
     }
+
+	static native void nodeSave(String path, String dump) /*-{
+		var fs = $wnd.nw.require('fs');
+		fs.writeFile(path, dump, function(err) {
+			if(err) {
+						return console.log(err);
+					}
+			console.log("The file was saved!");
+			});
+    }-*/;
     
     static void electronSaveAsCallback(String s) {
 	s = s.substring(s.lastIndexOf('/')+1);
@@ -3413,16 +3423,14 @@ MouseOutHandler, MouseWheelHandler {
     	    modDialog = new ModDialog();
     	if (item=="importfromlocalfile") {
     		pushUndo();
-    		if (isElectron())
-    		    electronOpenFile();
-    		else
-    		    loadFileInput.click();
+    		loadFileInput.click();
+    		allowSave(true);
     	}
     	if (item=="newwindow") {
     	    Window.open(Document.get().getURL(), "_blank", "");
     	}
     	if (item=="save")
-    	    electronSave(dumpCircuit());
+    	    nodeSave(filePath,dumpCircuit());
     	if (item=="saveas")
     	    electronSaveAs(dumpCircuit());
     	if (item=="importfromtext") {
@@ -3434,6 +3442,7 @@ MouseOutHandler, MouseWheelHandler {
     	if (item=="exportasurl") {
     		doExportAsUrl();
     		unsavedChanges = false;
+			filePath = null;
     	}
     	if (item=="exportaslocalfile") {
     		doExportAsLocalFile();
@@ -3442,6 +3451,7 @@ MouseOutHandler, MouseWheelHandler {
     	if (item=="exportastext") {
     		doExportAsText();
     		unsavedChanges = false;
+			filePath = null;
     	}
     	if (item=="exportasimage")
 		doExportAsImage();
@@ -4082,6 +4092,7 @@ MouseOutHandler, MouseWheelHandler {
 		    titleLabel.setText(title);
 		    setSlidersPanelHeight();
 		unsavedChanges = false;
+		filePath = null;
 	}
 	
 	void loadFileFromURL(String url) {
@@ -4100,6 +4111,7 @@ MouseOutHandler, MouseWheelHandler {
 			    readCircuit(text, RC_KEEP_TITLE);
 			    allowSave(false);
 			    unsavedChanges = false;
+				filePath = null;
 			}
 			else { 
 			    Window.alert(Locale.LS("Can't load circuit!"));
@@ -5679,9 +5691,7 @@ MouseOutHandler, MouseWheelHandler {
 				e.cancel();
 			}
     			if (code==KEY_S) {
-    			    	String cmd = "exportaslocalfile";
-    			    	if (isElectron())
-    			    	    cmd = saveFileItem.isEnabled() ? "save" : "saveas";
+				String cmd = (filePath!=null) ? "save" : "exportaslocalfile";
 				menuPerformed("key", cmd);
 				e.cancel();
 			}
