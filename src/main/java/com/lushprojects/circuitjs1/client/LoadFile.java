@@ -57,6 +57,16 @@ public class LoadFile extends FileUpload implements  ChangeHandler {
 	}
 	
 	
+	public native String getPath() 
+	/*-{
+		return $doc.getElementById("LoadFileElement").value;
+	 }-*/;
+
+	public native String getFileName() 
+	/*-{
+		return $doc.getElementById("LoadFileElement").files[0].name;
+	 }-*/;
+
 	public final native void click() 
 	/*-{
 		$doc.getElementById("LoadFileElement").click();

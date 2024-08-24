@@ -272,6 +272,8 @@ MouseOutHandler, MouseWheelHandler {
     Vector<UndoItem> undoStack, redoStack;
     double transform[];
     boolean unsavedChanges;
+    String filePath;
+    String fileName;
 
     DockLayoutPanel layoutPanel;
     MenuBar menuBar;
@@ -5838,6 +5840,10 @@ MouseOutHandler, MouseWheelHandler {
     	// reloading the same file doesn't create a change event so importing the same file twice
     	// doesn't work unless you destroy the original input element and replace it with a new one
     	int idx=verticalPanel.getWidgetIndex(loadFileInput);
+    	filePath = loadFileInput.getPath();
+    	console("filePath: " + filePath);
+    	fileName = loadFileInput.getFileName();
+    	console("fileName: " + fileName);
     	LoadFile newlf=new LoadFile(this);
     	verticalPanel.insert(newlf, idx);
     	verticalPanel.remove(idx+1);
