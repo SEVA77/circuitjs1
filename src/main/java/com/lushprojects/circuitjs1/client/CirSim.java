@@ -272,8 +272,8 @@ MouseOutHandler, MouseWheelHandler {
     Vector<UndoItem> undoStack, redoStack;
     double transform[];
     boolean unsavedChanges;
-    String filePath;
-    String fileName;
+    static String filePath;
+    static String fileName;
 
     DockLayoutPanel layoutPanel;
     MenuBar menuBar;
@@ -599,7 +599,7 @@ MouseOutHandler, MouseWheelHandler {
 	//if (isElectron()) {
 	    saveFileItem = fileMenuBar.addItem(menuItemWithShortcut("floppy", "Save", Locale.LS(ctrlMetaKey + "S"),
 		    new MyCommand("file", "save")));
-	    fileMenuBar.addItem(iconMenuItem("floppy", "Save As...", new MyCommand("file", "exportaslocalfile")));
+	    fileMenuBar.addItem(iconMenuItem("floppy", "Save As...", new MyCommand("file", "saveas")));
 	/*} else {
 	    exportAsLocalFileItem = menuItemWithShortcut("floppy", "Save As...", Locale.LS(ctrlMetaKey + "S"),
 		    new MyCommand("file","exportaslocalfile"));
@@ -3351,6 +3351,30 @@ MouseOutHandler, MouseWheelHandler {
 			console.log("The file was saved!");
 			});
     }-*/;
+
+	static native void nodeSaveAs(String dump) /*-{
+		var saveasInput = $doc.createElement("input");
+		saveasInput.setAttribute('type', 'file');
+		//todo: add filename template
+		saveasInput.setAttribute('nwsaveas', 'test.txt');
+		saveasInput.style = "display:none";
+		$doc.body.appendChild(saveasInput);
+		saveasInput.click();
+		saveasInput.addEventListener('cancel', function(){
+		// oncancel don't work. The element will not be deleted but we can still work with this
+		// https://github.com/nwjs/nw.js/issues/7658
+			saveasInput.remove()
+		});
+		saveasInput.addEventListener('change', function(){
+			@com.lushprojects.circuitjs1.client.CirSim::filePath = saveasInput.value;
+			@com.lushprojects.circuitjs1.client.CirSim::fileName = saveasInput.files[0].name;
+			@com.lushprojects.circuitjs1.client.CirSim::nodeSave(Ljava/lang/String;Ljava/lang/String;)(saveasInput.value, dump);
+			console.log(saveasInput.value);
+			console.log(saveasInput.files[0].name);
+			saveasInput.remove()
+			//todo: add title changer
+		});
+    }-*/;
     
     static void electronSaveAsCallback(String s) {
 	s = s.substring(s.lastIndexOf('/')+1);
@@ -3429,10 +3453,19 @@ MouseOutHandler, MouseWheelHandler {
     	if (item=="newwindow") {
     	    Window.open(Document.get().getURL(), "_blank", "");
     	}
-    	if (item=="save")
-    	    nodeSave(filePath,dumpCircuit());
-    	if (item=="saveas")
-    	    electronSaveAs(dumpCircuit());
+    	if (item=="save"){
+			nodeSave(filePath,dumpCircuit());
+			unsavedChanges = false;
+			//todo: add title changer
+		}
+    	    
+    	if (item=="saveas"){
+			nodeSaveAs(dumpCircuit());
+    		unsavedChanges = false;
+			allowSave(true);
+			//todo: add title changer
+		}
+
     	if (item=="importfromtext") {
     		dialogShowing = new ImportFromTextDialog(this);
     	}
@@ -5126,6 +5159,7 @@ MouseOutHandler, MouseWheelHandler {
     			circuitChanged = true;
     			writeRecoveryToStorage();
     			unsavedChanges = true;
+    			//todo: add title changer
     		}
     		dragElm = null;
     	}
@@ -5854,6 +5888,7 @@ MouseOutHandler, MouseWheelHandler {
     	console("filePath: " + filePath);
     	fileName = loadFileInput.getFileName();
     	console("fileName: " + fileName);
+		//todo: add title changer
     	LoadFile newlf=new LoadFile(this);
     	verticalPanel.insert(newlf, idx);
     	verticalPanel.remove(idx+1);
