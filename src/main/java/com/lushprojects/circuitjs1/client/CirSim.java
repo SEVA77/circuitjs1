@@ -271,7 +271,7 @@ MouseOutHandler, MouseWheelHandler {
     Rectangle circuitArea;
     Vector<UndoItem> undoStack, redoStack;
     double transform[];
-    boolean unsavedChanges;
+    static boolean unsavedChanges;
     static String filePath;
     static String fileName;
 
@@ -970,6 +970,7 @@ MouseOutHandler, MouseWheelHandler {
 	    getSetupList(false);
 	    readCircuit(startCircuitText);
 	    unsavedChanges = false;
+	    changeWindowTitle(unsavedChanges);
 	} else {
 	    if (stopMessage == null && startCircuitLink!=null) {
 		readCircuit("");
@@ -3342,6 +3343,14 @@ MouseOutHandler, MouseWheelHandler {
     	repaint();
     }
 
+	static native void changeWindowTitle(boolean isCircuitChanged)/*-{
+		var newTitle = "CircuitJS1 Desktop Mod";
+		var filename = @com.lushprojects.circuitjs1.client.CirSim::fileName;
+		var changed = (isCircuitChanged) ? "* " : "";
+		if (filename!=null) $doc.title = changed+filename+" - "+newTitle;
+		else $doc.title = $wnd.nw.App.manifest.window.title;
+	}-*/;
+
 	static native void nodeSave(String path, String dump) /*-{
 		var fs = $wnd.nw.require('fs');
 		fs.writeFile(path, dump, function(err) {
@@ -3371,8 +3380,9 @@ MouseOutHandler, MouseWheelHandler {
 			@com.lushprojects.circuitjs1.client.CirSim::nodeSave(Ljava/lang/String;Ljava/lang/String;)(saveasInput.value, dump);
 			console.log(saveasInput.value);
 			console.log(saveasInput.files[0].name);
-			saveasInput.remove()
-			//todo: add title changer
+			saveasInput.remove();
+			$wnd.CircuitJS1.allowSave(true);
+			@com.lushprojects.circuitjs1.client.CirSim::changeWindowTitle(Z)(false);
 		});
     }-*/;
     
@@ -3456,14 +3466,14 @@ MouseOutHandler, MouseWheelHandler {
     	if (item=="save"){
 			nodeSave(filePath,dumpCircuit());
 			unsavedChanges = false;
-			//todo: add title changer
+			changeWindowTitle(unsavedChanges);
 		}
     	    
     	if (item=="saveas"){
 			nodeSaveAs(dumpCircuit());
     		unsavedChanges = false;
 			allowSave(true);
-			//todo: add title changer
+			changeWindowTitle(unsavedChanges);
 		}
 
     	if (item=="importfromtext") {
@@ -3475,7 +3485,6 @@ MouseOutHandler, MouseWheelHandler {
     	if (item=="exportasurl") {
     		doExportAsUrl();
     		unsavedChanges = false;
-			filePath = null;
     	}
     	if (item=="exportaslocalfile") {
     		doExportAsLocalFile();
@@ -3484,7 +3493,6 @@ MouseOutHandler, MouseWheelHandler {
     	if (item=="exportastext") {
     		doExportAsText();
     		unsavedChanges = false;
-			filePath = null;
     	}
     	if (item=="exportasimage")
 		doExportAsImage();
@@ -3936,6 +3944,9 @@ MouseOutHandler, MouseWheelHandler {
 		if (circuitText != null) {
 			readCircuit(circuitText, flags);
 			allowSave(false);
+			filePath = null;
+			fileName = null;
+			changeWindowTitle(false);
 		}
     }
 
@@ -4126,6 +4137,8 @@ MouseOutHandler, MouseWheelHandler {
 		    setSlidersPanelHeight();
 		unsavedChanges = false;
 		filePath = null;
+		fileName = null;
+		changeWindowTitle(unsavedChanges);
 	}
 	
 	void loadFileFromURL(String url) {
@@ -4145,6 +4158,8 @@ MouseOutHandler, MouseWheelHandler {
 			    allowSave(false);
 			    unsavedChanges = false;
 				filePath = null;
+				fileName = null;
+				changeWindowTitle(unsavedChanges);
 			}
 			else { 
 			    Window.alert(Locale.LS("Can't load circuit!"));
@@ -4458,8 +4473,12 @@ MouseOutHandler, MouseWheelHandler {
     		dragGridY = snapGrid(dragGridY);
     	    }
    	}
-    	if (changed)
+    	if (changed){
     	    writeRecoveryToStorage();
+    	    unsavedChanges = true;
+    	    changeWindowTitle(unsavedChanges);
+		}
+
     	repaint();
     }
     
@@ -5159,7 +5178,7 @@ MouseOutHandler, MouseWheelHandler {
     			circuitChanged = true;
     			writeRecoveryToStorage();
     			unsavedChanges = true;
-    			//todo: add title changer
+    			changeWindowTitle(unsavedChanges);
     		}
     		dragElm = null;
     	}
@@ -5267,6 +5286,8 @@ MouseOutHandler, MouseWheelHandler {
     	UndoItem ui = undoStack.remove(undoStack.size()-1);
     	loadUndoItem(ui);
     	enableUndoRedo();
+    	unsavedChanges = true;
+    	changeWindowTitle(unsavedChanges);
     }
 
     void doRedo() {
@@ -5276,6 +5297,8 @@ MouseOutHandler, MouseWheelHandler {
     	UndoItem ui = redoStack.remove(redoStack.size()-1);
     	loadUndoItem(ui);
     	enableUndoRedo();
+    	unsavedChanges = true;
+    	changeWindowTitle(unsavedChanges);
     }
 
     void loadUndoItem(UndoItem ui) {
@@ -5290,6 +5313,9 @@ MouseOutHandler, MouseWheelHandler {
 	readCircuit(recovery);
 	allowSave(false);
 	recoverItem.setEnabled(false);
+	filePath = null;
+	fileName = null;
+	changeWindowTitle(unsavedChanges);
     }
     
     void enableUndoRedo() {
@@ -5410,6 +5436,8 @@ MouseOutHandler, MouseWheelHandler {
     	    deleteUnusedScopeElms();
     	    needAnalyze();
     	    writeRecoveryToStorage();
+    	    unsavedChanges = true;
+    	    changeWindowTitle(unsavedChanges);
     	}    
     }
     
@@ -5560,6 +5588,8 @@ MouseOutHandler, MouseWheelHandler {
     	}
     	needAnalyze();
     	writeRecoveryToStorage();
+    	unsavedChanges = true;
+    	changeWindowTitle(unsavedChanges);
     }
 
     void clearSelection() {
@@ -5888,7 +5918,7 @@ MouseOutHandler, MouseWheelHandler {
     	console("filePath: " + filePath);
     	fileName = loadFileInput.getFileName();
     	console("fileName: " + fileName);
-		//todo: add title changer
+    	changeWindowTitle(false);
     	LoadFile newlf=new LoadFile(this);
     	verticalPanel.insert(newlf, idx);
     	verticalPanel.remove(idx+1);
@@ -6750,7 +6780,8 @@ MouseOutHandler, MouseWheelHandler {
 	        exportCircuit: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::dumpCircuit()(); } ),
 	        importCircuit: $entry(function(circuit, subcircuitsOnly) { return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly); }),
 			setupScopes: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::setupScopes()(); } ),
-			redrawCanvasSize: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::redrawCanvasSize()(); } )
+			redrawCanvasSize: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::redrawCanvasSize()(); } ),
+			allowSave: $entry(function(b) { return that.@com.lushprojects.circuitjs1.client.CirSim::allowSave(Z)(b);})
 	    };
 	    var hook = $wnd.oncircuitjsloaded;
 	    if (hook)
