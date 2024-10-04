@@ -272,6 +272,8 @@ class EditDialog extends Dialog {
 				adj.setSliderValue(ei.value);
 			}
 		}
+		cframe.unsavedChanges = true;
+		cframe.changeWindowTitle(true);
 		cframe.needAnalyze();
 	}
 

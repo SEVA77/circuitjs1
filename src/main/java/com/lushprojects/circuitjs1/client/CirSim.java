@@ -3346,7 +3346,7 @@ MouseOutHandler, MouseWheelHandler {
 	static native void changeWindowTitle(boolean isCircuitChanged)/*-{
 		var newTitle = "CircuitJS1 Desktop Mod";
 		var filename = @com.lushprojects.circuitjs1.client.CirSim::fileName;
-		var changed = (isCircuitChanged) ? "* " : "";
+		var changed = (isCircuitChanged) ? "*" : "";
 		if (filename!=null) $doc.title = changed+filename+" - "+newTitle;
 		else $doc.title = $wnd.nw.App.manifest.window.title;
 	}-*/;
@@ -3811,6 +3811,8 @@ MouseOutHandler, MouseWheelHandler {
     	scopes[s].position = scopes[s-1].position;
     	for (s++; s < scopeCount; s++)
     		scopes[s].position--;
+    	unsavedChanges = true;
+    	changeWindowTitle(unsavedChanges);
     }
 
     void unstackScope(int s) {
@@ -3823,6 +3825,8 @@ MouseOutHandler, MouseWheelHandler {
     	    s++;
     	for (; s < scopeCount; s++)
     		scopes[s].position++;
+    	unsavedChanges = true;
+    	changeWindowTitle(unsavedChanges);
     }
 
     void combineScope(int s) {
@@ -3833,6 +3837,8 @@ MouseOutHandler, MouseWheelHandler {
     	}
     	scopes[s-1].combine(scopes[s]);
     	scopes[s].setElm(null);
+    	unsavedChanges = true;
+    	changeWindowTitle(unsavedChanges);
     }
     
 
@@ -3842,6 +3848,8 @@ MouseOutHandler, MouseWheelHandler {
     		scopes[i].position = 0;
     		scopes[i].showMax = scopes[i].showMin = false;
     	}
+    	unsavedChanges = true;
+    	changeWindowTitle(unsavedChanges);
     }
 
     void unstackAll() {
@@ -3850,6 +3858,8 @@ MouseOutHandler, MouseWheelHandler {
     		scopes[i].position = i;
     		scopes[i].showMax = true;
     	}
+    	unsavedChanges = true;
+    	changeWindowTitle(unsavedChanges);
     }
 
     void combineAll() {
@@ -3858,6 +3868,8 @@ MouseOutHandler, MouseWheelHandler {
     	    scopes[i].combine(scopes[i+1]);
     	    scopes[i+1].setElm(null);
     	}
+    	unsavedChanges = true;
+    	changeWindowTitle(unsavedChanges);
     }
     
     void separateAll() {
@@ -3868,6 +3880,8 @@ MouseOutHandler, MouseWheelHandler {
     	    ct = scopes[i].separate(newscopes, ct);
 	scopes = newscopes;
 	scopeCount = ct;
+	unsavedChanges = true;
+	changeWindowTitle(unsavedChanges);
     }
 
     void doEdit(Editable eable) {
@@ -4392,6 +4406,8 @@ MouseOutHandler, MouseWheelHandler {
 		    heldSwitchElm = se;
 		if (!(se instanceof LogicInputElm))
 		    needAnalyze();
+		unsavedChanges = true;
+		changeWindowTitle(unsavedChanges);
 		return true;
 	}
 
@@ -5177,14 +5193,14 @@ MouseOutHandler, MouseWheelHandler {
     			dragElm.draggingDone();
     			circuitChanged = true;
     			writeRecoveryToStorage();
-    			unsavedChanges = true;
-    			changeWindowTitle(unsavedChanges);
     		}
     		dragElm = null;
     	}
     	if (circuitChanged) {
     	    needAnalyze();
     	    pushUndo();
+    	    unsavedChanges = true;
+    	    changeWindowTitle(unsavedChanges);
     	}
     	if (dragElm != null)
     		dragElm.delete();
@@ -5256,6 +5272,8 @@ MouseOutHandler, MouseWheelHandler {
     	if (mouseElm!=null && !dialogIsShowing() && scopeSelected == -1)
     		if (mouseElm instanceof ResistorElm || mouseElm instanceof CapacitorElm ||  mouseElm instanceof InductorElm) {
     			scrollValuePopup = new ScrollValuePopup(x, y, deltay, mouseElm, this);
+    			unsavedChanges = true;
+    			changeWindowTitle(unsavedChanges);
     		}
     }
     
