@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.lang.Math;
+import java.util.Date;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.ui.Button;
@@ -103,6 +104,7 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.i18n.client.DateTimeFormat;
 
 public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandler,
 ClickHandler, DoubleClickHandler, ContextMenuHandler, NativePreviewHandler,
@@ -274,6 +276,7 @@ MouseOutHandler, MouseWheelHandler {
     static boolean unsavedChanges;
     static String filePath;
     static String fileName;
+    static String lastFileName;
 
     DockLayoutPanel layoutPanel;
     MenuBar menuBar;
@@ -391,6 +394,29 @@ MouseOutHandler, MouseWheelHandler {
 		ScriptInjector.fromString(js)
 			.setWindow(ScriptInjector.TOP_WINDOW)
 			.inject();
+	}
+
+	// this code is taken from original ExportAsLocalFileDialog.java:
+
+	public static void setLastFileName(String s) {
+	    // remember filename for use when saving a new file.
+	    // if s is null or automatically generated then just clear out old filename.
+	    if (s == null || (s.startsWith("circuit-") && s.contains(".circuitjs")))
+		lastFileName = null;
+	    else
+		lastFileName = s;
+	}
+
+	public String getLastFileName() {
+		Date date = new Date();
+		String fname;
+		if (lastFileName != null)
+		    fname = lastFileName;
+		else {
+		    DateTimeFormat dtf = DateTimeFormat.getFormat("yyyyMMdd-HHmm");
+		    fname = "circuit-"+ dtf.format(date) + ".circuitjs.txt";
+		}
+		return fname;
 	}
 
 	static native float getDefaultScale() /*-{
@@ -3361,11 +3387,10 @@ MouseOutHandler, MouseWheelHandler {
 			});
     }-*/;
 
-	static native void nodeSaveAs(String dump) /*-{
+	static native void nodeSaveAs(String dump, String fileName) /*-{
 		var saveasInput = $doc.createElement("input");
 		saveasInput.setAttribute('type', 'file');
-		//todo: add filename template
-		saveasInput.setAttribute('nwsaveas', 'test.txt');
+		saveasInput.setAttribute('nwsaveas', fileName);
 		saveasInput.style = "display:none";
 		$doc.body.appendChild(saveasInput);
 		saveasInput.click();
@@ -3377,6 +3402,7 @@ MouseOutHandler, MouseWheelHandler {
 		saveasInput.addEventListener('change', function(){
 			@com.lushprojects.circuitjs1.client.CirSim::filePath = saveasInput.value;
 			@com.lushprojects.circuitjs1.client.CirSim::fileName = saveasInput.files[0].name;
+			@com.lushprojects.circuitjs1.client.CirSim::lastFileName = saveasInput.files[0].name;
 			@com.lushprojects.circuitjs1.client.CirSim::nodeSave(Ljava/lang/String;Ljava/lang/String;)(saveasInput.value, dump);
 			console.log(saveasInput.value);
 			console.log(saveasInput.files[0].name);
@@ -3470,8 +3496,8 @@ MouseOutHandler, MouseWheelHandler {
 		}
     	    
     	if (item=="saveas"){
-			nodeSaveAs(dumpCircuit());
-    		unsavedChanges = false;
+			nodeSaveAs(dumpCircuit(), getLastFileName());
+			unsavedChanges = false;
 			allowSave(true);
 			changeWindowTitle(unsavedChanges);
 		}
@@ -3486,10 +3512,10 @@ MouseOutHandler, MouseWheelHandler {
     		doExportAsUrl();
     		unsavedChanges = false;
     	}
-    	if (item=="exportaslocalfile") {
+    	/*if (item=="exportaslocalfile") {
     		doExportAsLocalFile();
     		unsavedChanges = false;
-    	}
+    	}*/
     	if (item=="exportastext") {
     		doExportAsText();
     		unsavedChanges = false;
@@ -3946,13 +3972,13 @@ MouseOutHandler, MouseWheelHandler {
     	dialogShowing = dlg;
     	dialogShowing.show();
     }
-    
+    /*
     void doExportAsLocalFile() {
     	String dump = dumpCircuit();
     	dialogShowing = new ExportAsLocalFileDialog(dump);
     	dialogShowing.show();
     }
-
+*/
     public void importCircuitFromText(String circuitText, boolean subcircuitsOnly) {
 		int flags = subcircuitsOnly ? (CirSim.RC_SUBCIRCUITS | CirSim.RC_RETAIN) : 0;
 		if (circuitText != null) {
@@ -5773,7 +5799,7 @@ MouseOutHandler, MouseWheelHandler {
 				e.cancel();
 			}
     			if (code==KEY_S) {
-				String cmd = (filePath!=null) ? "save" : "exportaslocalfile";
+				String cmd = (filePath!=null) ? "save" : "saveas";
 				menuPerformed("key", cmd);
 				e.cancel();
 			}

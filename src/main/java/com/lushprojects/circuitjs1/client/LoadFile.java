@@ -37,7 +37,7 @@ public class LoadFile extends FileUpload implements  ChangeHandler {
 		sim.readCircuit(s);
 		sim.createNewLoadFile();
 		sim.setCircuitTitle(t);
-		ExportAsLocalFileDialog.setLastFileName(t);
+		sim.setLastFileName(t);
 		sim.unsavedChanges = false;
 	}
 	
