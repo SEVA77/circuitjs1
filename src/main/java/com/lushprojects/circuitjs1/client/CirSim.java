@@ -3406,8 +3406,8 @@ MouseOutHandler, MouseWheelHandler {
 			@com.lushprojects.circuitjs1.client.CirSim::nodeSave(Ljava/lang/String;Ljava/lang/String;)(saveasInput.value, dump);
 			console.log(saveasInput.value);
 			console.log(saveasInput.files[0].name);
+			if (saveasInput.value!=null) $wnd.CircuitJS1.allowSave(true);
 			saveasInput.remove();
-			$wnd.CircuitJS1.allowSave(true);
 			@com.lushprojects.circuitjs1.client.CirSim::changeWindowTitle(Z)(false);
 		});
     }-*/;
@@ -3484,7 +3484,6 @@ MouseOutHandler, MouseWheelHandler {
     	if (item=="importfromlocalfile") {
     		pushUndo();
     		loadFileInput.click();
-    		allowSave(true);
     	}
     	if (item=="newwindow") {
     	    Window.open(Document.get().getURL(), "_blank", "");
@@ -3498,7 +3497,6 @@ MouseOutHandler, MouseWheelHandler {
     	if (item=="saveas"){
 			nodeSaveAs(dumpCircuit(), getLastFileName());
 			unsavedChanges = false;
-			allowSave(true);
 			changeWindowTitle(unsavedChanges);
 		}
 
@@ -5962,6 +5960,8 @@ MouseOutHandler, MouseWheelHandler {
     	console("filePath: " + filePath);
     	fileName = loadFileInput.getFileName();
     	console("fileName: " + fileName);
+    	if (filePath!=null)
+    		allowSave(true);
     	changeWindowTitle(false);
     	LoadFile newlf=new LoadFile(this);
     	verticalPanel.insert(newlf, idx);
