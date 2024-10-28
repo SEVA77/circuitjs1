@@ -346,13 +346,15 @@ MouseOutHandler, MouseWheelHandler {
     }-*/;
     
     public void setCanvasSize(){
+
+    	Storage lstor = Storage.getLocalStorageIfSupported();
+
     	int width, height;
     	width=(int)RootLayoutPanel.get().getOffsetWidth();
     	height=(int)RootLayoutPanel.get().getOffsetHeight();
     	height=height-(hideMenu?0:MENUBARHEIGHT);
 
-    	//not needed on mobile since the width of the canvas' container div is set to 100% in ths CSS file
-    	if (!isMobile(sidePanelCheckboxLabel))
+    	if (isSidePanelCheckboxChecked() && lstor.getItem("MOD_overlayingSidebar")=="false")
     	    width=width-VERTICALPANELWIDTH;
 
     	width = Math.max(width, 0);   // avoid exception when setting negative width
@@ -451,6 +453,7 @@ MouseOutHandler, MouseWheelHandler {
 		String MOD_absBtnTheme=lstor.getItem("MOD_absBtnTheme");
 		String MOD_absBtnIcon=lstor.getItem("MOD_absBtnIcon");
 		String MOD_hideAbsBtns=lstor.getItem("MOD_hideAbsBtns");
+		String MOD_overlayingSidebar=lstor.getItem("MOD_overlayingSidebar");
 		String MOD_showSidebaronStartup=lstor.getItem("MOD_showSidebaronStartup");
 
 		if (MOD_UIScale==null){
@@ -486,6 +489,7 @@ MouseOutHandler, MouseWheelHandler {
 			absRunStopBtn.setVisible(false);
 			absResetBtn.setVisible(false);
 		}
+		if (MOD_overlayingSidebar==null) lstor.setItem("MOD_overlayingSidebar","false");
 		if (MOD_showSidebaronStartup==null) lstor.setItem("MOD_showSidebaronStartup","false");
 		else if (MOD_showSidebaronStartup=="true") executeJS("document.getElementById(\"trigger\").checked = true");
 
@@ -680,7 +684,8 @@ MouseOutHandler, MouseWheelHandler {
 	sidePanelCheckboxLabel.setAttribute("for", "trigger" );
 	sidePanelCheckbox.addClassName("trigger");
 	// addClickHandler does not work for Element but I can use onclick attribute
-	sidePanelCheckbox.setAttribute("onclick", "CircuitJS1.setupScopes();SetBtnsStyle();");
+	sidePanelCheckbox.setAttribute("onclick", "CircuitJS1.setupScopes();"
+	+"SetBtnsStyle();CircuitJS1.setCanvasSize()");
 	Element topPanelCheckbox = DOM.createInputCheck(); 
 	Element topPanelCheckboxLabel = DOM.createLabel();
 	topPanelCheckbox.setId("toptrigger");
@@ -2042,6 +2047,7 @@ MouseOutHandler, MouseWheelHandler {
     	    setCircuitArea();
     	    oldScopeCount = scopeCount;
     	}
+		repaint();
     }
     
     String getHint() {
@@ -6825,7 +6831,8 @@ MouseOutHandler, MouseWheelHandler {
 	        importCircuit: $entry(function(circuit, subcircuitsOnly) { return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly); }),
 			setupScopes: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::setupScopes()(); } ),
 			redrawCanvasSize: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::redrawCanvasSize()(); } ),
-			allowSave: $entry(function(b) { return that.@com.lushprojects.circuitjs1.client.CirSim::allowSave(Z)(b);})
+			allowSave: $entry(function(b) { return that.@com.lushprojects.circuitjs1.client.CirSim::allowSave(Z)(b);}),
+			setCanvasSize: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::setCanvasSize()(); } )
 	    };
 	    var hook = $wnd.oncircuitjsloaded;
 	    if (hook)

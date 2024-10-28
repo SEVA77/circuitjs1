@@ -75,9 +75,8 @@ public class ModDialog extends DialogBox {
 	native boolean CirSimIsRunning()/*-{
 		return $wnd.CircuitJS1.isRunning();
 	}-*/;
-
-	//for "Other:"
 	CheckBox setShowSidebaronStartup;
+	CheckBox setOverlayingSidebar;
 
 
 	Button closeButton;
@@ -339,7 +338,17 @@ public class ModDialog extends DialogBox {
 				}
 			});
 
-		vp.add(new HTML("<hr><big><b>Other:</b></big>"));
+		vp.add(new HTML("<hr><big><b>Sidebar:</b></big>"));
+		vp.add(setOverlayingSidebar = new CheckBox("Sidebar is overlaying"));
+		vp.setCellHorizontalAlignment(setOverlayingSidebar, HasHorizontalAlignment.ALIGN_CENTER);
+		if (lstor.getItem("MOD_overlayingSidebar")=="true") setOverlayingSidebar.setValue(true);
+		setOverlayingSidebar.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					if (setOverlayingSidebar.getValue()){
+						lstor.setItem("MOD_overlayingSidebar", "true");
+					} else {lstor.setItem("MOD_overlayingSidebar", "false");}
+				}
+			});
 		vp.add(setShowSidebaronStartup = new CheckBox("Show sidebar on startup"));
 		vp.setCellHorizontalAlignment(setShowSidebaronStartup, HasHorizontalAlignment.ALIGN_CENTER);
 		if (lstor.getItem("MOD_showSidebaronStartup")=="true") setShowSidebaronStartup.setValue(true);

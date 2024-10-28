@@ -14,7 +14,7 @@
 	top: 50px;
 	right: 0;
 	z-index: 1;
-	transition: right 1s;
+	/*transition: right 1s;*/
 	cursor: pointer;
 }
 .triggerLabel:before {
@@ -53,7 +53,7 @@
 	width: 0 !important;
 	background: white;
 	z-index: 1;
-	transition: width 1s;
+	/*transition: width 1s;*/
 }
 .trigger:checked+.triggerLabel+div {
 	width: 166px !important;
