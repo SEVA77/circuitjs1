@@ -76,6 +76,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -354,8 +355,12 @@ MouseOutHandler, MouseWheelHandler {
     	height=(int)RootLayoutPanel.get().getOffsetHeight();
     	height=height-(hideMenu?0:MENUBARHEIGHT);
 
-    	if (isSidePanelCheckboxChecked() && lstor.getItem("MOD_overlayingSidebar")=="false")
-    	    width=width-VERTICALPANELWIDTH;
+    	if (lstor.getItem("MOD_overlayingSidebar")=="false"){
+			if (isSidePanelCheckboxChecked()){
+				width=width-VERTICALPANELWIDTH;
+				transform[4] -= VERTICALPANELWIDTH/2;
+			} else transform[4] += VERTICALPANELWIDTH/2;
+		}
 
     	width = Math.max(width, 0);   // avoid exception when setting negative width
     	height = Math.max(height, 0);
@@ -683,9 +688,16 @@ MouseOutHandler, MouseWheelHandler {
 	sidePanelCheckbox.setId("trigger");
 	sidePanelCheckboxLabel.setAttribute("for", "trigger" );
 	sidePanelCheckbox.addClassName("trigger");
-	// addClickHandler does not work for Element but I can use onclick attribute
-	sidePanelCheckbox.setAttribute("onclick", "CircuitJS1.setupScopes();"
-	+"SetBtnsStyle();CircuitJS1.setCanvasSize()");
+	Event.sinkEvents(sidePanelCheckbox, Event.ONCLICK);
+	Event.setEventListener(sidePanelCheckbox, new EventListener() {
+		public void onBrowserEvent(Event event) {
+			if(Event.ONCLICK == event.getTypeInt()) {
+				setupScopes();
+				executeJS("SetBtnsStyle();");
+				setCanvasSize();
+			}
+		}
+	});
 	Element topPanelCheckbox = DOM.createInputCheck(); 
 	Element topPanelCheckboxLabel = DOM.createLabel();
 	topPanelCheckbox.setId("toptrigger");
