@@ -348,19 +348,13 @@ MouseOutHandler, MouseWheelHandler {
     
     public void setCanvasSize(){
 
-    	Storage lstor = Storage.getLocalStorageIfSupported();
-
     	int width, height;
     	width=(int)RootLayoutPanel.get().getOffsetWidth();
     	height=(int)RootLayoutPanel.get().getOffsetHeight();
     	height=height-(hideMenu?0:MENUBARHEIGHT);
 
-    	if (lstor.getItem("MOD_overlayingSidebar")=="false"){
-			if (isSidePanelCheckboxChecked()){
-				width=width-VERTICALPANELWIDTH;
-				transform[4] -= VERTICALPANELWIDTH/2;
-			} else transform[4] += VERTICALPANELWIDTH/2;
-		}
+    	if (isSidePanelCheckboxChecked() && lstor.getItem("MOD_overlayingSidebar")=="false")
+			width=width-VERTICALPANELWIDTH;
 
     	width = Math.max(width, 0);   // avoid exception when setting negative width
     	height = Math.max(height, 0);
@@ -448,7 +442,6 @@ MouseOutHandler, MouseWheelHandler {
 	void modSetDefault(){
 		
 		Storage lstor = Storage.getLocalStorageIfSupported();
-		if (lstor == null) return;
 		/* KEYS:
 		MOD_UIScale, MOD_TopMenuBar, MOD_absBtnTheme, MOD_absBtnIcon,
 		MOD_hideAbsBtns, MOD_showSidebaronStartup
@@ -692,9 +685,14 @@ MouseOutHandler, MouseWheelHandler {
 	Event.setEventListener(sidePanelCheckbox, new EventListener() {
 		public void onBrowserEvent(Event event) {
 			if(Event.ONCLICK == event.getTypeInt()) {
+				Storage lstor = Storage.getLocalStorageIfSupported();
 				setupScopes();
 				executeJS("SetBtnsStyle();");
 				setCanvasSize();
+				if (lstor.getItem("MOD_overlayingSidebar")=="false") {
+					if (isSidePanelCheckboxChecked()) transform[4] -= VERTICALPANELWIDTH/2;
+					else transform[4] += VERTICALPANELWIDTH/2;
+				}
 			}
 		}
 	});
