@@ -348,6 +348,8 @@ MouseOutHandler, MouseWheelHandler {
     
     public void setCanvasSize(){
 
+    	Storage lstor = Storage.getLocalStorageIfSupported();
+
     	int width, height;
     	width=(int)RootLayoutPanel.get().getOffsetWidth();
     	height=(int)RootLayoutPanel.get().getOffsetHeight();

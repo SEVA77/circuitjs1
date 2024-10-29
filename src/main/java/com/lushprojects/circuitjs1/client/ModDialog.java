@@ -21,6 +21,8 @@ package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -31,6 +33,10 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.storage.client.Storage;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.ValueBoxBase.TextAlignment;
 
 public class ModDialog extends DialogBox {
 	
@@ -78,6 +84,10 @@ public class ModDialog extends DialogBox {
 	CheckBox setShowSidebaronStartup;
 	CheckBox setOverlayingSidebar;
 
+	HorizontalPanel SBAnimationSettings;
+	TextBox DurationSB;
+	CheckBox setAnimSidebar;
+	ListBox SpeedCurveSB;
 
 	Button closeButton;
 
@@ -340,17 +350,57 @@ public class ModDialog extends DialogBox {
 
 		vp.add(new HTML("<hr><big><b>Sidebar:</b></big>"));
 		vp.add(setOverlayingSidebar = new CheckBox("Sidebar is overlaying"));
-		vp.setCellHorizontalAlignment(setOverlayingSidebar, HasHorizontalAlignment.ALIGN_CENTER);
+		vp.setCellVerticalAlignment(setOverlayingSidebar, HasVerticalAlignment.ALIGN_TOP);
+		//vp.setCellHorizontalAlignment(setOverlayingSidebar, HasHorizontalAlignment.ALIGN_CENTER);
+		
+		vp.add(SBAnimationSettings = new HorizontalPanel());
+		SBAnimationSettings.setWidth("100%");
+		SBAnimationSettings.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		SBAnimationSettings.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		SBAnimationSettings.add(setAnimSidebar = new CheckBox("Animation:"));
+		SBAnimationSettings.setCellHorizontalAlignment(setAnimSidebar, HasHorizontalAlignment.ALIGN_LEFT);
+		SBAnimationSettings.add(new Label("duration is"));
+		SBAnimationSettings.add(DurationSB = new TextBox());
+		DurationSB.setMaxLength(3);DurationSB.setVisibleLength(3);
+		DurationSB.setHeight("0.6em");
+		DurationSB.setAlignment(TextAlignment.CENTER);
+		SBAnimationSettings.add(new Label("ms, speed curve is"));
+		SBAnimationSettings.add(SpeedCurveSB = new ListBox());
+		SpeedCurveSB.addItem("ease");
+		SpeedCurveSB.addItem("linear");
+		SpeedCurveSB.addItem("ease-in");
+		SpeedCurveSB.addItem("ease-out");
+		SpeedCurveSB.addItem("ease-in-out");
+		
+		//btnsPreview.setCellVerticalAlignment(Element, HasVerticalAlignment.ALIGN_MIDDLE);
+
+		vp.add(setShowSidebaronStartup = new CheckBox("Show sidebar on startup"));
+		//vp.setCellHorizontalAlignment(setShowSidebaronStartup, HasHorizontalAlignment.ALIGN_CENTER);
+
 		if (lstor.getItem("MOD_overlayingSidebar")=="true") setOverlayingSidebar.setValue(true);
+		else setAnimSidebar.setEnabled(false);
+
+		DurationSB.addKeyPressHandler(new KeyPressHandler() {
+			public void onKeyPress(KeyPressEvent event) {
+				if (!Character.isDigit(event.getCharCode()) || DurationSB.getValue()=="0") {
+				((TextBox) event.getSource()).cancelKey();
+				}
+			}
+		});
+
+		//TODO: add onchange event
+
 		setOverlayingSidebar.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					if (setOverlayingSidebar.getValue()){
 						lstor.setItem("MOD_overlayingSidebar", "true");
-					} else {lstor.setItem("MOD_overlayingSidebar", "false");}
+						setAnimSidebar.setEnabled(true);
+					} else {
+						lstor.setItem("MOD_overlayingSidebar", "false");
+						setAnimSidebar.setEnabled(false);
+					}
 				}
 			});
-		vp.add(setShowSidebaronStartup = new CheckBox("Show sidebar on startup"));
-		vp.setCellHorizontalAlignment(setShowSidebaronStartup, HasHorizontalAlignment.ALIGN_CENTER);
 		if (lstor.getItem("MOD_showSidebaronStartup")=="true") setShowSidebaronStartup.setValue(true);
 		setShowSidebaronStartup.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
