@@ -23,6 +23,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -88,6 +90,14 @@ public class ModDialog extends DialogBox {
 	TextBox DurationSB;
 	CheckBox setAnimSidebar;
 	ListBox SpeedCurveSB;
+
+	int getSpeedCurveSBIndex(String val){
+		for (int i=0;i<=SpeedCurveSB.getItemCount();i++){
+			if (SpeedCurveSB.getValue(i)==val)
+			return i;
+		}
+		return 1;
+	}
 
 	Button closeButton;
 
@@ -371,14 +381,16 @@ public class ModDialog extends DialogBox {
 		SpeedCurveSB.addItem("ease-in");
 		SpeedCurveSB.addItem("ease-out");
 		SpeedCurveSB.addItem("ease-in-out");
-		
-		//btnsPreview.setCellVerticalAlignment(Element, HasVerticalAlignment.ALIGN_MIDDLE);
 
 		vp.add(setShowSidebaronStartup = new CheckBox("Show sidebar on startup"));
 		//vp.setCellHorizontalAlignment(setShowSidebaronStartup, HasHorizontalAlignment.ALIGN_CENTER);
 
 		if (lstor.getItem("MOD_overlayingSidebar")=="true") setOverlayingSidebar.setValue(true);
 		else setAnimSidebar.setEnabled(false);
+		if (lstor.getItem("MOD_overlayingSBAnimation")=="true") setAnimSidebar.setValue(true);
+
+		DurationSB.setValue(lstor.getItem("MOD_SBAnim_duration"));
+		SpeedCurveSB.setItemSelected(getSpeedCurveSBIndex(lstor.getItem("MOD_SBAnim_SpeedCurve")),true);
 
 		DurationSB.addKeyPressHandler(new KeyPressHandler() {
 			public void onKeyPress(KeyPressEvent event) {
@@ -388,19 +400,47 @@ public class ModDialog extends DialogBox {
 			}
 		});
 
-		//TODO: add onchange event
+		DurationSB.addChangeHandler(new ChangeHandler() {
+				public void onChange(ChangeEvent event) {
+					lstor.setItem("MOD_SBAnim_duration", DurationSB.getValue());
+					if (setOverlayingSidebar.getValue()) CirSim.setSidebarAnimation(DurationSB.getValue(),SpeedCurveSB.getSelectedItemText());
+				}
+			});
+
+		SpeedCurveSB.addChangeHandler(new ChangeHandler() {
+				public void onChange(ChangeEvent event) {
+					lstor.setItem("MOD_SBAnim_SpeedCurve", SpeedCurveSB.getSelectedItemText());
+					if (setOverlayingSidebar.getValue())
+						CirSim.setSidebarAnimation(DurationSB.getValue(),SpeedCurveSB.getSelectedItemText());
+				}
+			});
 
 		setOverlayingSidebar.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					if (setOverlayingSidebar.getValue()){
 						lstor.setItem("MOD_overlayingSidebar", "true");
 						setAnimSidebar.setEnabled(true);
+						if (setAnimSidebar.getValue()) CirSim.setSidebarAnimation(DurationSB.getValue(),SpeedCurveSB.getSelectedItemText());
 					} else {
 						lstor.setItem("MOD_overlayingSidebar", "false");
 						setAnimSidebar.setEnabled(false);
+						CirSim.setSidebarAnimation("none","");
 					}
 				}
 			});
+		setAnimSidebar.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					if (setAnimSidebar.getValue()){
+						lstor.setItem("MOD_overlayingSBAnimation", "true");
+						if (setOverlayingSidebar.getValue())
+							CirSim.setSidebarAnimation(DurationSB.getValue(),SpeedCurveSB.getSelectedItemText());
+					} else {
+						lstor.setItem("MOD_overlayingSBAnimation", "false");
+						CirSim.setSidebarAnimation("none","");
+					}
+				}
+			});
+
 		if (lstor.getItem("MOD_showSidebaronStartup")=="true") setShowSidebaronStartup.setValue(true);
 		setShowSidebaronStartup.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {

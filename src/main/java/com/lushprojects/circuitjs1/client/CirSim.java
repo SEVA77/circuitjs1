@@ -417,7 +417,7 @@ MouseOutHandler, MouseWheelHandler {
 		    fname = lastFileName;
 		else {
 		    DateTimeFormat dtf = DateTimeFormat.getFormat("yyyyMMdd-HHmm");
-		    fname = "circuit-"+ dtf.format(date) + ".circuitjs.txt";
+		    fname = "circuit-" + dtf.format(date) + ".circuitjs.txt";
 		}
 		return fname;
 	}
@@ -441,6 +441,15 @@ MouseOutHandler, MouseWheelHandler {
 		return defaultScale;
 	}-*/;
 
+	public static native void setSidebarAnimation(String duration,String speedcurve) /*-{
+		var triggerLabel = $doc.querySelector(".triggerLabel");
+		var sidebar = $doc.querySelector(".trigger+.triggerLabel+div");
+		// property name | duration | timing function | delay
+		var split = " "+duration+"ms "+speedcurve;
+		triggerLabel.style.transition = (duration=="none") ? duration : "right"+split;
+		sidebar.style.transition = (duration=="none") ? duration : "width"+split;
+	}-*/;
+
 	void modSetDefault(){
 		
 		Storage lstor = Storage.getLocalStorageIfSupported();
@@ -455,6 +464,9 @@ MouseOutHandler, MouseWheelHandler {
 		String MOD_hideAbsBtns=lstor.getItem("MOD_hideAbsBtns");
 		String MOD_overlayingSidebar=lstor.getItem("MOD_overlayingSidebar");
 		String MOD_showSidebaronStartup=lstor.getItem("MOD_showSidebaronStartup");
+		String MOD_overlayingSBAnimation=lstor.getItem("MOD_overlayingSBAnimation");
+		String MOD_SBAnim_duration=lstor.getItem("MOD_SBAnim_duration");
+		String MOD_SBAnim_SpeedCurve=lstor.getItem("MOD_SBAnim_SpeedCurve");
 
 		if (MOD_UIScale==null){
 			lstor.setItem("MOD_UIScale", Float.toString(getDefaultScale()));
@@ -492,7 +504,15 @@ MouseOutHandler, MouseWheelHandler {
 		if (MOD_overlayingSidebar==null) lstor.setItem("MOD_overlayingSidebar","false");
 		if (MOD_showSidebaronStartup==null) lstor.setItem("MOD_showSidebaronStartup","false");
 		else if (MOD_showSidebaronStartup=="true") executeJS("document.getElementById(\"trigger\").checked = true");
-
+		if (MOD_SBAnim_duration==null || MOD_SBAnim_SpeedCurve==null){
+			lstor.setItem("MOD_SBAnim_duration","500");
+			lstor.setItem("MOD_SBAnim_SpeedCurve","ease");
+			//if (lstor.getItem("MOD_overlayingSBAnimation")) setSidebarAnimation("500","ease");
+		}
+		if (MOD_overlayingSBAnimation==null) lstor.setItem("MOD_overlayingSBAnimation","false");
+		if (MOD_overlayingSidebar=="true" && MOD_overlayingSBAnimation=="true"){
+			setSidebarAnimation(lstor.getItem("MOD_SBAnim_duration"),lstor.getItem("MOD_SBAnim_SpeedCurve"));
+		} else setSidebarAnimation("none","");
 	}
 
 //    Circuit applet;
