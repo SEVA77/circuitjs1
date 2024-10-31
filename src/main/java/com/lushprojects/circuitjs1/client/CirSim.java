@@ -2016,7 +2016,7 @@ MouseOutHandler, MouseWheelHandler {
 
     void setupScopes() {
     	int i;
-
+    	Storage lstor = Storage.getLocalStorageIfSupported();
     	// check scopes to make sure the elements still exist, and remove
     	// unused scopes/columns
     	int pos = -1;
@@ -2048,7 +2048,7 @@ MouseOutHandler, MouseWheelHandler {
     	if (colct <= 2)
     		iw = iw*3/2;
     	int w = (canvasWidth-iw) / colct; // Оно!
-    	if (isSidePanelCheckboxChecked())
+    	if (isSidePanelCheckboxChecked() && lstor.getItem("MOD_overlayingSidebar")=="true")
     		w = (canvasWidth-iw-VERTICALPANELWIDTH) / colct;
     	int marg = 10;
     	if (w < marg*2)
