@@ -371,11 +371,13 @@ public class ModDialog extends DialogBox {
 		SBAnimationSettings.setCellHorizontalAlignment(setAnimSidebar, HasHorizontalAlignment.ALIGN_LEFT);
 		SBAnimationSettings.add(new Label("duration is"));
 		SBAnimationSettings.add(DurationSB = new TextBox());
-		DurationSB.setMaxLength(3);DurationSB.setVisibleLength(3);
+		DurationSB.setMaxLength(3);DurationSB.setVisibleLength(1);
 		DurationSB.setHeight("0.6em");
 		DurationSB.setAlignment(TextAlignment.CENTER);
-		SBAnimationSettings.add(new Label("ms, speed curve is"));
+		SBAnimationSettings.add(new Label("ms,"));
+		SBAnimationSettings.add(new Label("speed curve is"));
 		SBAnimationSettings.add(SpeedCurveSB = new ListBox());
+		SpeedCurveSB.getElement().setAttribute("style","appearance:none;padding:1px;");
 		SpeedCurveSB.addItem("ease");
 		SpeedCurveSB.addItem("linear");
 		SpeedCurveSB.addItem("ease-in");
