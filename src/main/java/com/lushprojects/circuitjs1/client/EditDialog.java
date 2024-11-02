@@ -164,7 +164,7 @@ class EditDialog extends Dialog {
 			    }
 				if (ei.isColor){
 				ei.textf.getElement().setAttribute("type", "color");
-				ei.textf.getElement().setAttribute("style", "width:182px;padding:0");
+				ei.textf.getElement().setAttribute("style", "width:178px;padding:0");
 				}
 			}
 			if (vp.getWidgetCount() > 15) {
