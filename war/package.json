@@ -1,10 +1,10 @@
 {
     "app_name": "CircuitSimulator",
     "chromium-args": "--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-drdc --canvas-oop-rasterization --enable-parallel-downloading --back-forward-cache --enable-smooth-scrolling",
-    "description": "CircuitJS1 Desktop Mod version 1.3.0",
+    "description": "CircuitJS1 Desktop Mod version 1.3.1",
     "main": "circuitjs.html",
     "name": "CircuitSimulator",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "webkit": {},
     "window": {
         "exe_icon": "icon.png",
@@ -15,6 +15,6 @@
         "min_height": 480,
         "min_width": 640,
         "position": "center",
-        "title": "CircuitJS1 Desktop Mod 1.3.0"
+        "title": "CircuitJS1 Desktop Mod 1.3.1"
     }
 }
