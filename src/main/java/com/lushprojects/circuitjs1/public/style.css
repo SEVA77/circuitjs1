@@ -6,6 +6,7 @@
 
 .triggerLabel {
 	display: initial;
+	border: 1px solid #bbb;
 	border-radius: 10px 0px 0px 10px;
 	background: #e3e8f3 url(images/hborder.png) repeat-x 0px -2003px;
 	width: 25px;
@@ -54,6 +55,7 @@
 	background: white;
 	z-index: 1;
 	/*transition: width 1s;*/
+	border-left: 1px solid #bbb;
 }
 .trigger:checked+.triggerLabel+div {
 	width: 166px !important;
