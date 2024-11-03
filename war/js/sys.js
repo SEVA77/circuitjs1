@@ -3,6 +3,26 @@
 document.title = nw.App.manifest.window.title;
 nw.Window.get().setMinimumSize(640, 480); // for new windows
 
+let losesFocusPause = false;
+
+nw.Window.get().on('focus', function(){
+  if (losesFocusPause){
+    CircuitJS1.setSimRunning(true);
+    losesFocusPause=false;
+    SetBtnsStyle();
+  }
+})
+nw.Window.get().on('blur', function(){
+  if (CircuitJS1.isRunning()) losesFocusPause=true;
+  CircuitJS1.setSimRunning(false);
+  SetBtnsStyle();
+})
+
+//Activate blur and focus for their normal work:
+//(https://github.com/nwjs/nw.js/issues/7982)
+nw.Window.get().blur();
+nw.Window.get().focus();
+
 
 function setScaleUI(){
   let scale = document.getElementById("scaleUI").value;

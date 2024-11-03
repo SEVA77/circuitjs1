@@ -3524,7 +3524,9 @@ MouseOutHandler, MouseWheelHandler {
     		loadFileInput.click();
     	}
     	if (item=="newwindow") {
-    	    Window.open(Document.get().getURL(), "_blank", "");
+    	    //Window.open(Document.get().getURL(), "_blank", "");
+    	    //Maybe this can help with lags:
+    	    executeJS("nw.Window.open('circuitjs.html', {new_instance: true, mixed_context: false});");
     	}
     	if (item=="save"){
 			nodeSave(filePath,dumpCircuit());
