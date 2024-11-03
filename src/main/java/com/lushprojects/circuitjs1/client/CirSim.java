@@ -467,6 +467,7 @@ MouseOutHandler, MouseWheelHandler {
 		String MOD_overlayingSBAnimation=lstor.getItem("MOD_overlayingSBAnimation");
 		String MOD_SBAnim_duration=lstor.getItem("MOD_SBAnim_duration");
 		String MOD_SBAnim_SpeedCurve=lstor.getItem("MOD_SBAnim_SpeedCurve");
+		String MOD_setPauseWhenWinUnfocused=lstor.getItem("MOD_setPauseWhenWinUnfocused");
 
 		if (MOD_UIScale==null){
 			lstor.setItem("MOD_UIScale", Float.toString(getDefaultScale()));
@@ -513,6 +514,7 @@ MouseOutHandler, MouseWheelHandler {
 		if (MOD_overlayingSidebar=="true" && MOD_overlayingSBAnimation=="true"){
 			setSidebarAnimation(lstor.getItem("MOD_SBAnim_duration"),lstor.getItem("MOD_SBAnim_SpeedCurve"));
 		} else setSidebarAnimation("none","");
+		if (MOD_setPauseWhenWinUnfocused==null) lstor.setItem("MOD_setPauseWhenWinUnfocused","true");
 	}
 
 //    Circuit applet;

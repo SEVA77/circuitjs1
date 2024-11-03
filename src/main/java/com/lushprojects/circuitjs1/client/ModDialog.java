@@ -99,6 +99,8 @@ public class ModDialog extends DialogBox {
 		return 1;
 	}
 
+	CheckBox setPauseWhenWinUnfocused;
+
 	Button closeButton;
 
 	ModDialog() {
@@ -449,6 +451,18 @@ public class ModDialog extends DialogBox {
 					if (setShowSidebaronStartup.getValue()){
 						lstor.setItem("MOD_showSidebaronStartup", "true");
 					} else {lstor.setItem("MOD_showSidebaronStartup", "false");}
+				}
+			});
+
+		vp.add(new HTML("<hr><big><b>Other:</b></big>"));
+		vp.add(setPauseWhenWinUnfocused = new CheckBox("Set pause when window loses focus."));
+		vp.setCellHorizontalAlignment(setPauseWhenWinUnfocused, HasHorizontalAlignment.ALIGN_CENTER);
+		if (lstor.getItem("MOD_setPauseWhenWinUnfocused")=="true") setPauseWhenWinUnfocused.setValue(true);
+		setPauseWhenWinUnfocused.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					if (setPauseWhenWinUnfocused.getValue()){
+						lstor.setItem("MOD_setPauseWhenWinUnfocused", "true");
+					} else {lstor.setItem("MOD_setPauseWhenWinUnfocused", "false");}
 				}
 			});
 		vp.add(new HTML("<br>"));

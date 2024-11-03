@@ -6,16 +6,20 @@ nw.Window.get().setMinimumSize(640, 480); // for new windows
 let losesFocusPause = false;
 
 nw.Window.get().on('focus', function(){
-  if (losesFocusPause){
+  let needPause = localStorage.getItem('MOD_setPauseWhenWinUnfocused');
+  if (losesFocusPause && needPause=="true"){
     CircuitJS1.setSimRunning(true);
     losesFocusPause=false;
     SetBtnsStyle();
   }
 })
 nw.Window.get().on('blur', function(){
-  if (CircuitJS1.isRunning()) losesFocusPause=true;
-  CircuitJS1.setSimRunning(false);
-  SetBtnsStyle();
+  let needPause = localStorage.getItem('MOD_setPauseWhenWinUnfocused');
+  if (needPause=="true"){
+    if (CircuitJS1.isRunning()) losesFocusPause=true;
+      CircuitJS1.setSimRunning(false);
+      SetBtnsStyle();
+  }
 })
 
 //Activate blur and focus for their normal work:
