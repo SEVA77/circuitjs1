@@ -5,6 +5,11 @@ nw.Window.get().setMinimumSize(640, 480); // for new windows
 
 let losesFocusPause = false;
 
+//nw.Window.get().on with 'focus' and 'blur' are not working properly
+//(https://github.com/nwjs/nw.js/issues/7982)
+//Need another method.
+
+/*
 nw.Window.get().on('focus', function(){
   let needPause = localStorage.getItem('MOD_setPauseWhenWinUnfocused');
   if (losesFocusPause && needPause=="true"){
@@ -21,12 +26,32 @@ nw.Window.get().on('blur', function(){
       SetBtnsStyle();
   }
 })
+*/
 
-//Activate blur and focus for their normal work:
-//(https://github.com/nwjs/nw.js/issues/7982)
-nw.Window.get().blur();
-nw.Window.get().focus();
+// New method:
 
+function onWinFocus(){
+  let needPause = localStorage.getItem('MOD_setPauseWhenWinUnfocused');
+  if (losesFocusPause && needPause=="true"){
+    CircuitJS1.setSimRunning(true);
+    losesFocusPause=false;
+    SetBtnsStyle();
+  }
+}
+function onWinBlur(){
+  let needPause = localStorage.getItem('MOD_setPauseWhenWinUnfocused');
+  if (needPause=="true"){
+    if (CircuitJS1.isRunning()) losesFocusPause=true;
+      CircuitJS1.setSimRunning(false);
+      SetBtnsStyle();
+  }
+}
+window.addEventListener("focus", onWinFocus);
+window.addEventListener("blur", onWinBlur);
+
+//but the blur event is triggered when the iframe is clicked
+
+// For modDialog:
 
 function setScaleUI(){
   let scale = document.getElementById("scaleUI").value;
