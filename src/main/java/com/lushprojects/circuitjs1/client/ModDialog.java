@@ -251,7 +251,7 @@ public class ModDialog extends DialogBox {
 		vp2.add(setStopIcon = new CheckBox("Stop"));
 		vp2.add(setPauseIcon = new CheckBox("Pause"));
 
-		vp3.add(hideSRBtns = new CheckBox("HIDE BUTTONS!"));
+		vp3.add(hideSRBtns = new CheckBox("HIDE BUTTONS"));
 
 		if (CirSim.absResetBtn.getElement().hasClassName("modDefaultResetBtn"))
 			setDefaultSRBtns.setValue(true);
@@ -264,7 +264,7 @@ public class ModDialog extends DialogBox {
 		if (lstor.getItem("MOD_absBtnIcon")=="stop") setStopIcon.setValue(true);
 		else setPauseIcon.setValue(true);
 
-		if (!CirSim.absRunStopBtn.isVisible()) hideSRBtns.setValue(true);
+		if (lstor.getItem("MOD_hideAbsBtns")=="true") hideSRBtns.setValue(true);
 
 		setDefaultSRBtns.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
