@@ -1,6 +1,6 @@
 --- /dev/null
 +++ src/main/java/com/lushprojects/circuitjs1/public/style.css
-@@ -1,123 +1,92 @@
+@@ -1,123 +1,94 @@
  @charset "UTF-8";
  
 -/*Hide all mobile elements when in desktop usage*/
@@ -45,6 +45,7 @@
 -	}
 +.triggerLabel {
 +	display: initial;
++	border: 1px solid #bbb;
 +	border-radius: 10px 0px 0px 10px;
 +	background: #e3e8f3 url(images/hborder.png) repeat-x 0px -2003px;
 +	width: 25px;
@@ -53,7 +54,7 @@
 +	top: 50px;
 +	right: 0;
 +	z-index: 1;
-+	transition: right 1s;
++	/*transition: right 1s;*/
 +	cursor: pointer;
 +}
 +.triggerLabel:before {
@@ -122,7 +123,8 @@
 +	width: 0 !important;
 +	background: white;
 +	z-index: 1;
-+	transition: width 1s;
++	/*transition: width 1s;*/
++	border-left: 1px solid #bbb;
 +}
 +.trigger:checked+.triggerLabel+div {
 +	width: 166px !important;

@@ -1,0 +1,22 @@
+--- /dev/null
++++ src/main/java/com/lushprojects/circuitjs1/client/EditDialog.java
+@@ -162,6 +162,10 @@
+ 			    if (ei.text == null) {
+ 				ei.textf.setText(unitString(ei));
+ 			    }
++				if (ei.isColor){
++				ei.textf.getElement().setAttribute("type", "color");
++				ei.textf.getElement().setAttribute("style", "width:178px;padding:0");
++				}
+ 			}
+ 			if (vp.getWidgetCount() > 15) {
+ 			    // start a new column
+@@ -272,6 +276,8 @@
+ 				adj.setSliderValue(ei.value);
+ 			}
+ 		}
++		cframe.unsavedChanges = true;
++		cframe.changeWindowTitle(true);
+ 		cframe.needAnalyze();
+ 	}
+ 

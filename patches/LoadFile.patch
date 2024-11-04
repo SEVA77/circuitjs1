@@ -1,0 +1,28 @@
+--- /dev/null
++++ src/main/java/com/lushprojects/circuitjs1/client/LoadFile.java
+@@ -37,7 +37,7 @@
+ 		sim.readCircuit(s);
+ 		sim.createNewLoadFile();
+ 		sim.setCircuitTitle(t);
+-		ExportAsLocalFileDialog.setLastFileName(t);
++		sim.setLastFileName(t);
+ 		sim.unsavedChanges = false;
+ 	}
+ 	
+@@ -57,6 +57,16 @@
+ 	}
+ 	
+ 	
++	public native String getPath() 
++	/*-{
++		return $doc.getElementById("LoadFileElement").value;
++	 }-*/;
++
++	public native String getFileName() 
++	/*-{
++		return $doc.getElementById("LoadFileElement").files[0].name;
++	 }-*/;
++
+ 	public final native void click() 
+ 	/*-{
+ 		$doc.getElementById("LoadFileElement").click();
