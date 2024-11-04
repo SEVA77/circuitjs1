@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "CircuitJS1 Desktop Mod"
-#define MyAppVersion "1.3.0"
+#define MyAppVersion "1.3.1"
 #define MyAppPublisher "Usevalad Khatkevich"
 #define MyAppURL "https://github.com/SEVA77/circuitjs1"
 #define MyAppExeName "CircuitSimulator.exe"
