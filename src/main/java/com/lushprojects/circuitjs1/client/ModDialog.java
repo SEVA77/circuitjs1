@@ -455,7 +455,7 @@ public class ModDialog extends DialogBox {
 			});
 
 		vp.add(new HTML("<hr><big><b>Other:</b></big>"));
-		vp.add(setPauseWhenWinUnfocused = new CheckBox("Set pause when window loses focus."));
+		vp.add(setPauseWhenWinUnfocused = new CheckBox("Pause simulation when window loses focus<br>(recommended for optimal performance)",true));
 		vp.setCellHorizontalAlignment(setPauseWhenWinUnfocused, HasHorizontalAlignment.ALIGN_CENTER);
 		if (lstor.getItem("MOD_setPauseWhenWinUnfocused")=="true") setPauseWhenWinUnfocused.setValue(true);
 		setPauseWhenWinUnfocused.addClickHandler(new ClickHandler() {
