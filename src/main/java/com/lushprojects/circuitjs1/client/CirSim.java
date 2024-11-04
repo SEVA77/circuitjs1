@@ -453,10 +453,7 @@ MouseOutHandler, MouseWheelHandler {
 	void modSetDefault(){
 		
 		Storage lstor = Storage.getLocalStorageIfSupported();
-		/* KEYS:
-		MOD_UIScale, MOD_TopMenuBar, MOD_absBtnTheme, MOD_absBtnIcon,
-		MOD_hideAbsBtns, MOD_showSidebaronStartup
-		*/
+		// KEYS:
 		String MOD_UIScale=lstor.getItem("MOD_UIScale");
 		String MOD_TopMenuBar=lstor.getItem("MOD_TopMenuBar");
 		String MOD_absBtnTheme=lstor.getItem("MOD_absBtnTheme");
