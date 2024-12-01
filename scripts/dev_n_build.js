@@ -228,7 +228,7 @@ async function getBin(platform, arch){
         flavor: "normal",
         downloadUrl: "https://github.com/SEVA77/nw.js_mod/releases/download",
         manifestUrl: "https://raw.githubusercontent.com/SEVA77/nw.js_mod/main/versions.json",
-        cacheDir: "./nwjs_cache",
+        cacheDir: "./out/nwjs_cache",
         srcDir: "target/site"
     }).catch((err)=>{console.error("ERROR: The archive "+archivePath.slice(13)+" is damaged. Remove it and try again.")})
     .then(()=>{console.log("Download for "+platform+" "+arch+" has been completed!")})
@@ -251,7 +251,7 @@ async function buildRelease(platform, arch){
         platform: platform,
         arch: arch,
         flavor: "normal",
-        cacheDir: "./nwjs_cache",
+        cacheDir: "./out/nwjs_cache",
         manifestUrl: "https://raw.githubusercontent.com/SEVA77/nw.js_mod/main/versions.json",
         srcDir: "target/site",
         outDir: "./out/"+platform+"-"+arch+"/CircuitJS1 Desktop Mod",
