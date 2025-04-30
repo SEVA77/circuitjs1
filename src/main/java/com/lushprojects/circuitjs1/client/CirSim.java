@@ -1565,9 +1565,11 @@ MouseOutHandler, MouseWheelHandler {
     		}
     	}
     	int ih=RootLayoutPanel.get().getOffsetHeight()-MENUBARHEIGHT-cumheight;
+    	if (toolbarCheckItem.getState())
+    		ih-=TOOLBARHEIGHT;
     	if (ih<0)
     		ih=0;
-	   	slidersPanel.setHeight(ih+"px");
+    	slidersPanel.setHeight(ih+"px");
     }
     
 
