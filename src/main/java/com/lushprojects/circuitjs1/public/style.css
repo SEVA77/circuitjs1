@@ -1,6 +1,6 @@
 @charset "UTF-8";
 
-.trigger, .toptrigger, .triggerLabel, .toptriggerlabel {
+.trigger, .toptrigger, .triggerLabel, toptriggerlabel {
 	display: none;
 }
 
@@ -63,6 +63,11 @@
 
 /* selects the div containing the canvas */
 .trigger+.triggerLabel+div+div {
+	width: 100% !important;
+}
+
+/* added extra div for toolbar */
+.trigger+.triggerLabel+div+div+div {
 	width: 100% !important;
 }
 

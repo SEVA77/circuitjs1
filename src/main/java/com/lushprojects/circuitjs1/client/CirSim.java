@@ -126,7 +126,7 @@ MouseOutHandler, MouseWheelHandler {
     MenuItem importFromLocalFileItem, importFromTextItem, exportAsUrlItem, exportAsLocalFileItem, exportAsTextItem,
             printItem, recoverItem, saveFileItem;
     //MenuItem importFromDropboxItem;
-    MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem, modItem;
+    MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem, flipXItem, flipYItem, flipXYItem, modItem;
     MenuBar optionsMenuBar;
     CheckboxMenuItem dotsCheckItem;
     CheckboxMenuItem voltsCheckItem;
@@ -141,6 +141,7 @@ MouseOutHandler, MouseWheelHandler {
     CheckboxMenuItem conventionCheckItem;
     CheckboxMenuItem noEditCheckItem;
     CheckboxMenuItem mouseWheelEditCheckItem;
+    CheckboxMenuItem toolbarCheckItem;
     private Label powerLabel;
     private Label titleLabel;
     private Scrollbar speedBar;
@@ -154,15 +155,16 @@ MouseOutHandler, MouseWheelHandler {
     MenuItem elmScopeMenuItem;
     MenuItem elmFloatScopeMenuItem;
     MenuItem elmAddScopeMenuItem;
-    MenuItem elmFlipMenuItem;
     MenuItem elmSplitMenuItem;
     MenuItem elmSliderMenuItem;
+    MenuItem elmFlipXMenuItem, elmFlipYMenuItem, elmFlipXYMenuItem;
+    MenuItem elmSwapMenuItem;
     MenuItem stackAllItem;
     MenuItem unstackAllItem;
     MenuItem combineAllItem;
     MenuItem separateAllItem;
     MenuBar mainMenuBar;
-	boolean hideMenu = false;
+    boolean hideMenu = false;
     MenuBar selectScopeMenuBar;
     Vector<MenuItem> selectScopeMenuItems;
     MenuBar subcircuitMenuBar[];
@@ -219,6 +221,8 @@ MouseOutHandler, MouseWheelHandler {
     // converging)
     double maxTimeStep;
     double minTimeStep;
+
+    double wheelSensitivity = 1;
 
     // accumulated time since we incremented timeStepCount
     double timeStepAccum;
@@ -278,6 +282,8 @@ MouseOutHandler, MouseWheelHandler {
     static String filePath;
     static String fileName;
     static String lastFileName;
+    HashMap<String, String> classToLabelMap;
+    Toolbar toolbar;
 
     DockLayoutPanel layoutPanel;
     MenuBar menuBar;
@@ -305,6 +311,7 @@ MouseOutHandler, MouseWheelHandler {
     int canvasWidth, canvasHeight;
 
     static int MENUBARHEIGHT = 30;
+    static final int TOOLBARHEIGHT = 40;
     static int VERTICALPANELWIDTH = 166; // default
     static final int POSTGRABSQ = 25;
     static final int MINPOSTGRABSIZE = 256;
@@ -356,7 +363,9 @@ MouseOutHandler, MouseWheelHandler {
     	height=height-(hideMenu?0:MENUBARHEIGHT);
 
     	if (isSidePanelCheckboxChecked() && lstor.getItem("MOD_overlayingSidebar")=="false")
-			width=width-VERTICALPANELWIDTH;
+    	    width=width-VERTICALPANELWIDTH;
+	if (toolbarCheckItem.getState())
+	    height -= TOOLBARHEIGHT;
 
     	width = Math.max(width, 0);   // avoid exception when setting negative width
     	height = Math.max(height, 0);
@@ -404,7 +413,7 @@ MouseOutHandler, MouseWheelHandler {
 	public static void setLastFileName(String s) {
 	    // remember filename for use when saving a new file.
 	    // if s is null or automatically generated then just clear out old filename.
-	    if (s == null || (s.startsWith("circuit-") && s.contains(".circuitjs")))
+	    if (s == null || s.startsWith("circuitjs-"))
 		lastFileName = null;
 	    else
 		lastFileName = s;
@@ -416,8 +425,8 @@ MouseOutHandler, MouseWheelHandler {
 		if (lastFileName != null)
 		    fname = lastFileName;
 		else {
-		    DateTimeFormat dtf = DateTimeFormat.getFormat("yyyyMMdd-HHmm");
-		    fname = "circuit-" + dtf.format(date) + ".circuitjs.txt";
+		    DateTimeFormat dtf = DateTimeFormat.getFormat("yyyyMMdd-HHmmss");
+		    fname = "circuitjs-" + dtf.format(date) + ".txt";
 		}
 		return fname;
 	}
@@ -659,9 +668,9 @@ MouseOutHandler, MouseWheelHandler {
 	fileMenuBar.addItem(exportAsUrlItem);
 	exportAsTextItem = iconMenuItem("export", "Export As Text...", new MyCommand("file","exportastext"));
 	fileMenuBar.addItem(exportAsTextItem);
-	fileMenuBar.addItem(iconMenuItem("export", "Export As Image...", new MyCommand("file","exportasimage")));
-	fileMenuBar.addItem(iconMenuItem("export", "Copy Circuit Image to Clipboard", new MyCommand("file","copypng")));
-	fileMenuBar.addItem(iconMenuItem("export", "Export As SVG...", new MyCommand("file","exportassvg")));    	
+	fileMenuBar.addItem(iconMenuItem("image", "Export As Image...", new MyCommand("file","exportasimage")));
+	fileMenuBar.addItem(iconMenuItem("image", "Copy Circuit Image to Clipboard", new MyCommand("file","copypng")));
+	fileMenuBar.addItem(iconMenuItem("image", "Export As SVG...", new MyCommand("file","exportassvg")));    	
 	fileMenuBar.addItem(iconMenuItem("microchip", "Create Subcircuit...", new MyCommand("file","createsubcircuit")));
 	fileMenuBar.addItem(iconMenuItem("magic", "Find DC Operating Point", new MyCommand("file", "dcanalysis")));
 	recoverItem = iconMenuItem("back-in-time", "Recover Auto-Save", new MyCommand("file","recover"));
@@ -746,6 +755,9 @@ MouseOutHandler, MouseWheelHandler {
 	m.addItem(menuItemWithShortcut("zoom-11", "Zoom 100%", "0", new MyCommand("zoom", "zoom100")));
 	m.addItem(menuItemWithShortcut("zoom-in", "Zoom In", "+", new MyCommand("zoom", "zoomin")));
 	m.addItem(menuItemWithShortcut("zoom-out", "Zoom Out", "-", new MyCommand("zoom", "zoomout")));
+	m.addItem(flipXItem = iconMenuItem("flip-x", "Flip X", new MyCommand("edit", "flipx")));
+	m.addItem(flipYItem = iconMenuItem("flip-y", "Flip Y", new MyCommand("edit", "flipy")));
+	m.addItem(flipXYItem = iconMenuItem("flip-x-y", "Flip XY", new MyCommand("edit", "flipxy")));
 	menuBar.addItem(Locale.LS("Edit"),m);
 
 	MenuBar drawMenuBar = new MenuBar(true);
@@ -759,9 +771,9 @@ MouseOutHandler, MouseWheelHandler {
 	m.addItem(combineAllItem = iconMenuItem("object-group", "Combine All", new MyCommand("scopes", "combineAll")));
 	m.addItem(separateAllItem = iconMenuItem("object-ungroup", "Separate All", new MyCommand("scopes", "separateAll")));
 	menuBar.addItem(Locale.LS("Scopes"), m);
+
 	optionsMenuBar = m = new MenuBar(true );
 	menuBar.addItem(Locale.LS("Options"), optionsMenuBar);
-
 	m.addItem(dotsCheckItem = new CheckboxMenuItem(Locale.LS("Show Current")));
 	dotsCheckItem.setState(true);
 	m.addItem(voltsCheckItem = new CheckboxMenuItem(Locale.LS("Show Voltage"),
@@ -787,6 +799,12 @@ MouseOutHandler, MouseWheelHandler {
 		    setGrid();
 		}
 	}));
+	m.addItem(toolbarCheckItem = new CheckboxMenuItem(Locale.LS("Toolbar"),
+		new Command() { public void execute(){
+		    setToolbar();
+		}
+	}));
+	toolbarCheckItem.setState(!hideMenu && !noEditing && !hideSidebar && startCircuit == null && startCircuitText == null && startCircuitLink == null);
 	m.addItem(crossHairCheckItem = new CheckboxMenuItem(Locale.LS("Show Cursor Cross Hairs"),
 		new Command() { public void execute(){
 		    setOptionInStorage("crossHair", crossHairCheckItem.getState());
@@ -796,6 +814,7 @@ MouseOutHandler, MouseWheelHandler {
 	m.addItem(euroResistorCheckItem = new CheckboxMenuItem(Locale.LS("European Resistors"),
 		new Command() { public void execute(){
 		    setOptionInStorage("euroResistors", euroResistorCheckItem.getState());
+		    toolbar.setEuroResistors(euroResistorCheckItem.getState());
 		}
 	}));
 	euroResistorCheckItem.setState(euroSetting);
@@ -839,6 +858,7 @@ MouseOutHandler, MouseWheelHandler {
 	mouseWheelEditCheckItem.setState(mouseWheelEdit);
 
 	m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Shortcuts..."), new MyCommand("options", "shortcuts")));
+	m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Subcircuits..."), new MyCommand("options", "subcircuits")));
 	m.addItem(optionsItem = new CheckboxAlignedMenuItem(Locale.LS("Other Options..."), new MyCommand("options","other")));
 	m.addItem(modItem = new CheckboxAlignedMenuItem("Modification Setup...", new MyCommand("options","modsetup")));
 	modItem.addStyleName("modItem");
@@ -853,6 +873,9 @@ MouseOutHandler, MouseWheelHandler {
 
 	DOM.appendChild(layoutPanel.getElement(), topPanelCheckbox);
 	DOM.appendChild(layoutPanel.getElement(), topPanelCheckboxLabel);	
+
+	toolbar = new Toolbar();
+	toolbar.setEuroResistors(euroSetting);
 	if (!hideMenu)
 	    layoutPanel.addNorth(menuBar, MENUBARHEIGHT);
 
@@ -863,6 +886,7 @@ MouseOutHandler, MouseWheelHandler {
 		DOM.appendChild(layoutPanel.getElement(), sidePanelCheckboxLabel);
 	    layoutPanel.addEast(verticalPanel, VERTICALPANELWIDTH);
 	}
+	layoutPanel.addNorth(toolbar, TOOLBARHEIGHT);
 	menuBar.getElement().insertFirst(menuBar.getElement().getChild(1));
 	menuBar.getElement().getFirstChildElement().setAttribute("onclick", "document.getElementsByClassName('toptrigger')[0].checked = false");
 	RootLayoutPanel.get().add(layoutPanel);
@@ -883,7 +907,7 @@ MouseOutHandler, MouseWheelHandler {
 	});
 
 	cvcontext=cv.getContext2d();
-	setCanvasSize();
+	setToolbar(); // calls setCanvasSize()
 	layoutPanel.add(cv);
 	verticalPanel.add(buttonPanel);
 	buttonPanel.addStyleName("sidePanelElm");
@@ -1020,13 +1044,17 @@ MouseOutHandler, MouseWheelHandler {
 	elmMenuBar.addItem(elmCopyMenuItem = new MenuItem(Locale.LS("Copy"),new MyCommand("elm","copy")));
 	elmMenuBar.addItem(elmDeleteMenuItem = new MenuItem(Locale.LS("Delete"),new MyCommand("elm","delete")));
 	elmMenuBar.addItem(                    new MenuItem(Locale.LS("Duplicate"),new MyCommand("elm","duplicate")));
-	elmMenuBar.addItem(elmFlipMenuItem = new MenuItem(Locale.LS("Swap Terminals"),new MyCommand("elm","flip")));
+	elmMenuBar.addItem(elmSwapMenuItem = new MenuItem(Locale.LS("Swap Terminals"),new MyCommand("elm","flip")));
+	elmMenuBar.addItem(elmFlipXMenuItem =  new MenuItem(Locale.LS("Flip X"),new MyCommand("elm","flipx")));
+	elmMenuBar.addItem(elmFlipYMenuItem =  new MenuItem(Locale.LS("Flip Y"),new MyCommand("elm","flipy")));
+	elmMenuBar.addItem(elmFlipXYMenuItem =  new MenuItem(Locale.LS("Flip XY"),new MyCommand("elm","flipxy")));
 	elmMenuBar.addItem(elmSplitMenuItem = menuItemWithShortcut("", "Split Wire", Locale.LS(ctrlMetaKey + "click"), new MyCommand("elm","split")));
 	elmMenuBar.addItem(elmSliderMenuItem = new MenuItem(Locale.LS("Sliders..."),new MyCommand("elm","sliders")));
 
 	scopePopupMenu = new ScopePopupMenu();
 
 	setColors(positiveColor, negativeColor, neutralColor, selectColor, currentColor);
+	setWheelSensitivity();
 
 	if (startCircuitText != null) {
 	    getSetupList(false);
@@ -1055,6 +1083,7 @@ MouseOutHandler, MouseWheelHandler {
 
 	enableUndoRedo();
 	enablePaste();
+	enableDisableMenuItems();
 	setSlidersPanelHeight();
 	cv.addMouseDownHandler(this);
 	cv.addMouseMoveHandler(this);
@@ -1122,6 +1151,14 @@ MouseOutHandler, MouseWheelHandler {
 	CircuitElm.setColorScale();
     }
     
+    void setWheelSensitivity() {
+	wheelSensitivity = 1;
+	try {
+	    Storage stor = Storage.getLocalStorageIfSupported();
+	    wheelSensitivity = Double.parseDouble(stor.getItem("wheelSensitivity"));
+	} catch (Exception e) {}
+    }
+
     MenuItem menuItemWithShortcut(String icon, String text, String shortcut, MyCommand cmd) {
 	final String edithtml="<div style=\"white-space:nowrap\"><div style=\"display:inline-block;width:100%;\"><i class=\"cirjsicon-";
 	String nbsp = "&nbsp;";
@@ -1305,17 +1342,17 @@ MouseOutHandler, MouseWheelHandler {
     	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Potentiometer"), "PotElm"));
     	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Transformer"), "TransformerElm"));
     	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Tapped Transformer"), "TappedTransformerElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Custom Transformer"), "CustomTransformerElm"));
     	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Transmission Line"), "TransLineElm"));
     	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Relay"), "RelayElm"));
     	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Relay Coil"), "RelayCoilElm"));
     	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Relay Contact"), "RelayContactElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Photoresistor"), "LDRElm"));
+    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Thermistor"), "ThermistorNTCElm"));
     	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Memristor"), "MemristorElm"));
     	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Spark Gap"), "SparkGapElm"));
     	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Fuse"), "FuseElm"));
-    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Custom Transformer"), "CustomTransformerElm"));
     	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Crystal"), "CrystalElm"));
-    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Photoresistor"), "LDRElm"));
-    	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Thermistor"), "ThermistorNTCElm"));
     	passMenuBar.addItem(getClassCheckItem(Locale.LS("Add Cross Switch"), "CrossSwitchElm"));
     	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+Locale.LS("&nbsp;</div>Passive Components")), passMenuBar);
 
@@ -1347,19 +1384,19 @@ MouseOutHandler, MouseWheelHandler {
     	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Text"), "TextElm"));
     	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Box"), "BoxElm"));
     	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Line"), "LineElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Labeled Node"), "LabeledNodeElm"));
     	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Voltmeter/Scope Probe"), "ProbeElm"));
     	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Ohmmeter"), "OhmMeterElm"));
-    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Labeled Node"), "LabeledNodeElm"));
-    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Test Point"), "TestPointElm"));
     	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Ammeter"), "AmmeterElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Wattmeter"), "WattmeterElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Test Point"), "TestPointElm"));
     	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Decimal Display"), "DecimalDisplayElm"));
+    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add LED Array"), "LEDArrayElm"));
     	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Data Export"), "DataRecorderElm"));
     	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Audio Output"), "AudioOutputElm"));
-    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add LED Array"), "LEDArrayElm"));
     	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Stop Trigger"), "StopTriggerElm"));
     	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add DC Motor"), "DCMotorElm"));
     	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add 3-Phase Motor"), "ThreePhaseMotorElm"));
-    	outputMenuBar.addItem(getClassCheckItem(Locale.LS("Add Wattmeter"), "WattmeterElm"));
     	mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml+Locale.LS("&nbsp;</div>Outputs and Labels")), outputMenuBar);
     	
     	MenuBar activeMenuBar = new MenuBar(true);
@@ -1537,6 +1574,10 @@ MouseOutHandler, MouseWheelHandler {
 
 
     CheckboxMenuItem getClassCheckItem(String s, String t) {
+	if (classToLabelMap == null)
+	    classToLabelMap = new HashMap<String, String>();
+	classToLabelMap.put(t, s);
+
     	// try {
     	//   Class c = Class.forName(t);
     	String shortcut="";
@@ -1692,9 +1733,10 @@ MouseOutHandler, MouseWheelHandler {
         if (needsStamp && simRunning) {
             perfmon.startContext("stampCircuit()");
             try {
-                stampCircuit();
+                preStampAndStampCircuit();
             } catch (Exception e) {
                 stop("Exception in stampCircuit()", null);
+		GWT.log("Exception in stampCircuit", e);
             }
             perfmon.stopContext();
         }
@@ -2158,6 +2200,7 @@ MouseOutHandler, MouseWheelHandler {
     void needAnalyze() {
 	analyzeFlag = true;
     	repaint();
+	enableDisableMenuItems();
     }
     
     Vector<CircuitNode> nodeList;
@@ -2201,7 +2244,6 @@ MouseOutHandler, MouseWheelHandler {
     }
     // map points to node numbers
     HashMap<Point,NodeMapEntry> nodeMap;
-    HashMap<Point,Integer> postCountMap;
     
     class WireInfo {
 	CircuitElm wire;
@@ -2354,7 +2396,7 @@ MouseOutHandler, MouseWheelHandler {
     }
 
     // find or allocate ground node
-    void setGroundNode() {
+    void setGroundNode(boolean subcircuit) {
 	int i;
 	boolean gotGround = false;
 	boolean gotRail = false;
@@ -2379,8 +2421,8 @@ MouseOutHandler, MouseWheelHandler {
 	}
 
 	// if no ground, and no rails, then the voltage elm's first terminal
-	// is ground
-	if (!gotGround && volt != null && !gotRail) {
+	// is ground (but not for subcircuits)
+	if (!subcircuit && !gotGround && volt != null && !gotRail) {
 	    CircuitNode cn = new CircuitNode();
 	    Point pt = volt.getPost(0);
 	    nodeList.addElement(cn);
@@ -2411,8 +2453,6 @@ MouseOutHandler, MouseWheelHandler {
 	    // allocate a node for each post and match posts to nodes
 	    for (j = 0; j != posts; j++) {
 		Point pt = ce.getPost(j);
-		Integer g = postCountMap.get(pt);
-		postCountMap.put(pt, g == null ? 1 : g+1);
 		NodeMapEntry cln = nodeMap.get(pt);
 		
 		// is this node not in map yet?  or is the node number unallocated?
@@ -2589,21 +2629,20 @@ MouseOutHandler, MouseWheelHandler {
 	    }
 	    
 	    // look for shorted caps, or caps w/ voltage but no R
-	    if (ce instanceof CapacitorElm) {
+	    if (ce.isIdealCapacitor()) {
 		FindPathInfo fpi = new FindPathInfo(FindPathInfo.SHORT, ce,
 						    ce.getNode(1));
 		if (fpi.findPath(ce.getNode(0))) {
 		    console(ce + " shorted");
 		    ((CapacitorElm) ce).shorted();
 		} else {
-		    // a capacitor loop used to cause a matrix error. but we changed the capacitor model
-		    // so it works fine now. The only issue is if a capacitor is added in parallel with
-		    // another capacitor with a nonzero voltage; in that case we will get oscillation unless
-		    // we reset both capacitors to have the same voltage. Rather than check for that, we just
-		    // give an error.
 		    fpi = new FindPathInfo(FindPathInfo.CAP_V, ce, ce.getNode(1));
 		    if (fpi.findPath(ce.getNode(0))) {
-			stop("Capacitor loop with no resistance!", ce);
+			// loop of ideal capacitors; set a small series resistance to avoid
+			// oscillation in case one of them has voltage on it
+			((CapacitorElm) ce).setSeriesResistance(.1);
+
+			// return false to re-stamp the circuit
 			return false;
 		    }
 		}
@@ -2612,7 +2651,8 @@ MouseOutHandler, MouseWheelHandler {
 	return true;
     }
     
-    // analyze the circuit when something changes, so it can be simulated
+    // analyze the circuit when something changes, so it can be simulated.
+    // Most of this has been moved to preStampCircuit() so it can be avoided if the simulation is stopped.
     void analyzeCircuit() {
 	stopMessage = null;
 	stopElm = null;
@@ -2621,19 +2661,24 @@ MouseOutHandler, MouseWheelHandler {
 	    badConnectionList = new Vector<Point>();
 	    return;
 	}
+	makePostDrawList();
+
+	needsStamp = true;
+    }
+
+    // do the rest of the pre-stamp circuit analysis
+    boolean preStampCircuit(boolean subcircuit) {
 	int i, j;
 	nodeList = new Vector<CircuitNode>();
-	postCountMap = new HashMap<Point,Integer>();
 
 	calculateWireClosure();
-	setGroundNode();
+	setGroundNode(subcircuit);
 
 	// allocate nodes and voltage sources
 	makeNodeList();
 	
-	makePostDrawList();
 	if (!calcWireInfo())
-	    return;
+	    return false;
 	nodeMap = null; // done with this
 	
 	int vscount = 0;
@@ -2668,7 +2713,7 @@ MouseOutHandler, MouseWheelHandler {
 
 	findUnconnectedNodes();
 	if (!validateCircuit())
-	    return;
+	    return false;
 	
 	nodesWithGroundConnectionCount = nodesWithGroundConnection.size();
 	// only need this for validation
@@ -2678,9 +2723,30 @@ MouseOutHandler, MouseWheelHandler {
 	needsStamp = true;
 	
 	callAnalyzeHook();
+	return true;
     }
 
-    // stamp the matrix, meaning populate the matrix as required to simulate the circuit (for all linear elements, at least)
+    // do pre-stamping and then stamp circuit
+    void preStampAndStampCircuit() {
+	int i;
+
+	// preStampCircuit returns false if there's an error.  It can return false if we have capacitor loops
+	// but we just need to try again in that case.  Try again 10 times to avoid infinite loop.
+	for (i = 0; i != 10; i++)
+	    if (preStampCircuit(false) || stopMessage != null)
+		break;
+	if (stopMessage != null)
+	    return;
+	if (i == 10) {
+	    stop("failed to stamp circuit", null);
+	    return;
+	}
+
+	stampCircuit();
+    }
+
+    // stamp the matrix, meaning populate the matrix as required to simulate the circuit (for all linear elements, at least).
+    // this gets called after something changes in the circuit, and also when auto-adjusting timestep
     void stampCircuit() {
 	int i;
 	int matrixSize = nodeList.size()-1 + voltageSourceCount;
@@ -2863,6 +2929,18 @@ MouseOutHandler, MouseWheelHandler {
     // others should be drawn.  We can't use the node list for this purpose anymore because wires
     // have the same node number at both ends.
     void makePostDrawList() {
+        HashMap<Point,Integer> postCountMap = new HashMap<Point,Integer>();
+	int i, j;
+	for (i = 0; i != elmList.size(); i++) {
+	    CircuitElm ce = getElm(i);
+	    int posts = ce.getPostCount();
+	    for (j = 0; j != posts; j++) {
+		Point pt = ce.getPost(j);
+		Integer g = postCountMap.get(pt);
+		postCountMap.put(pt, g == null ? 1 : g+1);
+	    }
+	}
+
 	postDrawList = new Vector<Point>();
 	badConnectionList = new Vector<Point>();
 	for (Map.Entry<Point, Integer> entry : postCountMap.entrySet()) {
@@ -2872,7 +2950,6 @@ MouseOutHandler, MouseWheelHandler {
 	    // look for bad connections, posts not connected to other elements which intersect
 	    // other elements' bounding boxes
 	    if (entry.getValue() == 1) {
-		int j;
 		boolean bad = false;
 		Point cn = entry.getKey();
 		for (j = 0; j != elmList.size() && !bad; j++) {
@@ -2895,7 +2972,6 @@ MouseOutHandler, MouseWheelHandler {
 		    badConnectionList.add(cn);
 	    }
 	}
-	postCountMap = null;
     }
 
     class FindPathInfo {
@@ -2964,7 +3040,7 @@ MouseOutHandler, MouseWheelHandler {
 		    return false;
 		if (type == CAP_V) {
 		    // checking for capacitor/voltage source loops
-		    if (!(ce.isWireEquivalent() || ce instanceof CapacitorElm || ce instanceof VoltageElm))
+		    if (!(ce.isWireEquivalent() || ce.isIdealCapacitor() || ce instanceof VoltageElm))
 			return false;
 		}
 		if (n1 == 0) {
@@ -3581,6 +3657,10 @@ MouseOutHandler, MouseWheelHandler {
     	    	dialogShowing = new ShortcutsDialog(this);
     	    	dialogShowing.show();
     	}
+    	if (menu=="options" && item=="subcircuits") {
+    	    	dialogShowing = new SubcircuitDialog(this);
+    	    	dialogShowing.show();
+    	}
     	if (item=="search") {
     	    	dialogShowing = new SearchDialog(this);
     	    	dialogShowing.show();
@@ -3599,22 +3679,18 @@ MouseOutHandler, MouseWheelHandler {
     	    menuElm = mouseElm;
     	    menu = "elm";
     	}
-    	
+	if (menu != "elm")
+		menuElm = null;
+
     	if (item == "cut") {
-    		if (menu!="elm")
-    			menuElm = null;
     		doCut();
     	}
     	if (item == "copy") {
-    		if (menu!="elm")
-    			menuElm = null;
     		doCopy();
     	}
     	if (item=="paste")
     		doPaste(null);
     	if (item=="duplicate") {
-		if (menu!="elm")
-			menuElm = null;
     	    	doDuplicate();
     	}
     	if (item=="flip")
@@ -3631,6 +3707,18 @@ MouseOutHandler, MouseWheelHandler {
     	if (item=="centrecircuit") {
     		pushUndo();
     		centreCircuit();
+    	}
+    	if (item=="flipx") {
+	    pushUndo();
+	    flipX();
+    	}
+    	if (item=="flipy") {
+	    pushUndo();
+	    flipY();
+    	}
+    	if (item=="flipxy") {
+	    pushUndo();
+	    flipXY();
     	}
     	if (item=="stackAll")
     		stackAll();
@@ -3714,7 +3802,8 @@ MouseOutHandler, MouseWheelHandler {
             		doDelete(false);
     		}
     		if (item=="undock") {
-    	    	    ScopeElm newScope = new ScopeElm(snapGrid(menuElm.x+50), snapGrid(menuElm.y+50));
+		    CircuitElm elm = s.getElm();
+    	    	    ScopeElm newScope = new ScopeElm(snapGrid(elm.x+50), snapGrid(elm.y+50));
     	    	    elmList.addElement(newScope);
     	    	    newScope.setElmScope(scopes[menuScope]);
     	    	    
@@ -3790,6 +3879,9 @@ MouseOutHandler, MouseWheelHandler {
     			setMouseMode(MODE_DRAG_POST);
     		else if (s.compareTo("Select") == 0)
     			setMouseMode(MODE_SELECT);
+
+		updateToolbar();
+
     		//		else if (s.length() > 0) {
     		//			try {
     		//				addingClass = Class.forName(s);
@@ -4076,7 +4168,7 @@ MouseOutHandler, MouseWheelHandler {
     void getSetupList(final boolean openDefault) {
 
     	String url;
-    	url = GWT.getModuleBaseURL()+"setuplist.txt"+"?v="+random.nextInt(); 
+    	url = GWT.getModuleBaseURL()+"setuplist.txt"; // +"?v="+random.nextInt();
 		RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
 		try {
 			requestBuilder.sendRequest(null, new RequestCallback() {
@@ -4206,8 +4298,8 @@ MouseOutHandler, MouseWheelHandler {
     
 	void readSetupFile(String str, String title) {
 		System.out.println(str);
-		// TODO: Maybe think about some better approach to cache management!
-		String url=GWT.getModuleBaseURL()+"circuits/"+str+"?v="+random.nextInt(); 
+		// don't avoid caching here, it's unnecessary and makes offline PWA's not work
+		String url=GWT.getModuleBaseURL()+"circuits/"+str; // +"?v="+random.nextInt(); 
 		loadFileFromURL(url);
 		if (title != null)
 		    titleLabel.setText(title);
@@ -4742,17 +4834,30 @@ MouseOutHandler, MouseWheelHandler {
     		CircuitElm ce = getElm(i);
     		ce.selectRect(selectedArea, add);
     	}
+	enableDisableMenuItems();
     }
 
-//    void setSelectedElm(CircuitElm cs) {
-//    	int i;
-//    	for (i = 0; i != elmList.size(); i++) {
-//    		CircuitElm ce = getElm(i);
-//    		ce.setSelected(ce == cs);
-//    	}
-//    	mouseElm = cs;
-//    }
-    
+    void enableDisableMenuItems() {
+	boolean canFlipX = true;
+	boolean canFlipY = true;
+	boolean canFlipXY = true;
+	int selCount = countSelected();
+	for (CircuitElm elm : elmList)
+	    if (elm.isSelected() || selCount == 0) {
+		if (!elm.canFlipX())
+		    canFlipX = false;
+		if (!elm.canFlipY())
+		    canFlipY = false;
+		if (!elm.canFlipXY())
+		    canFlipXY = false;
+	    }
+	cutItem.setEnabled(selCount > 0);
+	copyItem.setEnabled(selCount > 0);
+	flipXItem.setEnabled(canFlipX);
+	flipYItem.setEnabled(canFlipY);
+	flipXYItem.setEnabled(canFlipXY);
+    }
+
     void setMouseElm(CircuitElm ce) {
     	if (ce!=mouseElm) {
     		if (mouseElm!=null)
@@ -4863,36 +4968,15 @@ MouseOutHandler, MouseWheelHandler {
     		newMouseElm=mouseElm;
     	    } else {
     		int bestDist = 100000000;
-    		int bestArea = 100000000;
     		for (i = 0; i != elmList.size(); i++) {
-    			CircuitElm ce = getElm(i);
-    			if (ce.boundingBox.contains(gx, gy)) {
-    				int j;
-    				int area = ce.boundingBox.width * ce.boundingBox.height;
-    				int jn = ce.getPostCount();
-    				if (jn > 2)
-    					jn = 2;
-    				for (j = 0; j != jn; j++) {
-    					Point pt = ce.getPost(j);
-    					int dist = Graphics.distanceSq(gx, gy, pt.x, pt.y);
-
-    					// if multiple elements have overlapping bounding boxes,
-    					// we prefer selecting elements that have posts close
-    					// to the mouse pointer and that have a small bounding
-    					// box area.
-    					if (dist <= bestDist && area <= bestArea) {
-    						bestDist = dist;
-    						bestArea = area;
-    						newMouseElm = ce;
-    					}
-    				}
-    				// prefer selecting elements that have small bounding box area (for
-    				// elements with no posts)
-    				if (ce.getPostCount() == 0 && area <= bestArea) {
-    				    newMouseElm = ce;
-    				    bestArea = area;
-    				}
-    			}
+		    CircuitElm ce = getElm(i);
+		    if (ce.boundingBox.contains(gx, gy)) {
+			int dist = ce.getMouseDistance(gx, gy);
+			if (dist >= 0 && dist < bestDist) {
+			    bestDist = dist;
+			    newMouseElm = ce;
+			}
+		    }
     		} // for
     	    }
     	}
@@ -4992,9 +5076,24 @@ MouseOutHandler, MouseWheelHandler {
     	    	    	elmAddScopeMenuItem.setEnabled(mouseElm.canViewInScope() );
     	    	    }
     	    	    elmEditMenuItem .setEnabled(mouseElm.getEditInfo(0) != null);
-    	    	    elmFlipMenuItem .setEnabled(mouseElm.getPostCount() == 2);
+		    elmSwapMenuItem .setEnabled(mouseElm.getPostCount() == 2);
     	    	    elmSplitMenuItem.setEnabled(canSplit(mouseElm));
     	    	    elmSliderMenuItem.setEnabled(sliderItemEnabled(mouseElm));
+		    boolean canFlipX = mouseElm.canFlipX();
+		    boolean canFlipY = mouseElm.canFlipY();
+		    boolean canFlipXY = mouseElm.canFlipXY();
+		    for (CircuitElm elm : elmList)
+			if (elm.isSelected()) {
+			    if (!elm.canFlipX())
+				canFlipX = false;
+			    if (!elm.canFlipY())
+				canFlipY = false;
+			    if (!elm.canFlipXY())
+				canFlipXY = false;
+			}
+    	    	    elmFlipXMenuItem.setEnabled(canFlipX);
+    	    	    elmFlipYMenuItem.setEnabled(canFlipY);
+    	    	    elmFlipXYMenuItem.setEnabled(canFlipXY);
     	    	    contextPanel=new PopupPanel(true);
     	    	    contextPanel.add(elmMenuBar);
     	    	    contextPanel.setPopupPosition(menuClientX, menuClientY);
@@ -5291,7 +5390,7 @@ MouseOutHandler, MouseWheelHandler {
     	else if (!dialogIsShowing()) {
     	    mouseCursorX=e.getX();
     	    mouseCursorY=e.getY();
-    	    zoomCircuit(-e.getDeltaY(), false);
+    	    zoomCircuit(-e.getDeltaY()*wheelSensitivity, false);
     	    zoomTime = System.currentTimeMillis();
    	}
     	repaint();
@@ -5347,6 +5446,11 @@ MouseOutHandler, MouseWheelHandler {
 	gridSize = (smallGridCheckItem.getState()) ? 8 : 16;
 	gridMask = ~(gridSize-1);
 	gridRound = gridSize/2-1;
+    }
+
+    void setToolbar() {
+	layoutPanel.setWidgetHidden(toolbar, !toolbarCheckItem.getState());
+	setCanvasSize();
     }
 
     void pushUndo() {
@@ -5430,6 +5534,70 @@ MouseOutHandler, MouseWheelHandler {
     		clearSelection();
     		menuElm.setSelected(true);
     	}
+    }
+
+    int countSelected() {
+	int count = 0;
+	for (CircuitElm ce: elmList)
+	    if (ce.isSelected())
+		count++;
+	return count;
+    }
+
+    class FlipInfo { public int cx, cy, count; }
+
+    FlipInfo prepareFlip() {
+    	int i;
+    	pushUndo();
+    	setMenuSelection();
+    	int minx = 30000, maxx = -30000;
+    	int miny = 30000, maxy = -30000;
+	int count = countSelected();
+    	for (i = 0; i != elmList.size(); i++) {
+	    CircuitElm ce = getElm(i);
+	    if (ce.isSelected() || count == 0) {
+		minx = min(ce.x, min(ce.x2, minx));
+		maxx = max(ce.x, max(ce.x2, maxx));
+		miny = min(ce.y, min(ce.y2, miny));
+		maxy = max(ce.y, max(ce.y2, maxy));
+	    }
+    	}
+	FlipInfo fi = new FlipInfo();
+	fi.cx = (minx+maxx)/2;
+	fi.cy = (miny+maxy)/2;
+	fi.count = count;	
+	return fi;
+    }
+
+    void flipX() {
+	FlipInfo fi = prepareFlip();
+	int center2 = fi.cx*2;
+	for (CircuitElm ce : elmList) {
+	    if (ce.isSelected() || fi.count == 0)
+		ce.flipX(center2, fi.count);
+    	}
+	needAnalyze();
+    }
+
+    void flipY() {
+	FlipInfo fi = prepareFlip();
+	int center2 = fi.cy*2;
+	for (CircuitElm ce : elmList) {
+	    if (ce.isSelected() || fi.count == 0)
+		ce.flipY(center2, fi.count);
+    	}
+	needAnalyze();
+    }
+
+    void flipXY() {
+	FlipInfo fi = prepareFlip();
+	int xmy = snapGrid(fi.cx-fi.cy);
+	console("xmy " + xmy + " grid " + gridSize + " " + fi.cx + " " + fi.cy);
+	for (CircuitElm ce : elmList) {
+	    if (ce.isSelected() || fi.count == 0)
+		ce.flipXY(xmy, fi.count);
+    	}
+	needAnalyze();
     }
 
     void doCut() {
@@ -5679,6 +5847,7 @@ MouseOutHandler, MouseWheelHandler {
 	    CircuitElm ce = getElm(i);
 	    ce.setSelected(false);
 	}
+	enableDisableMenuItems();
     }
     
     void doSelectAll() {
@@ -5687,6 +5856,7 @@ MouseOutHandler, MouseWheelHandler {
     		CircuitElm ce = getElm(i);
     		ce.setSelected(true);
     	}
+	enableDisableMenuItems();
     }
     
     boolean anySelectedButMouse() {
@@ -5794,6 +5964,7 @@ MouseOutHandler, MouseWheelHandler {
     		if (code==KEY_ESCAPE){
     			setMouseMode(MODE_SELECT);
     			mouseModeStr = "Select";
+			updateToolbar();
     			tempMouseMode = mouseMode;
     			e.cancel();
     		}
@@ -5854,17 +6025,28 @@ MouseOutHandler, MouseWheelHandler {
     				return;
     			setMouseMode(MODE_ADD_ELM);
     			mouseModeStr=c;
+			updateToolbar();
     			tempMouseMode = mouseMode;
     		}
     		if (cc==32) {
-			    setMouseMode(MODE_SELECT);
-			    mouseModeStr = "Select";
-			    tempMouseMode = mouseMode;
-			e.cancel();
+		    setMouseMode(MODE_SELECT);
+		    mouseModeStr = "Select";
+		    updateToolbar();
+		    tempMouseMode = mouseMode;
+		    e.cancel();
     		}
     	}
     }
     
+    void updateToolbar() {
+	toolbar.setModeLabel(classToLabelMap.get(mouseModeStr));
+	toolbar.highlightButton(mouseModeStr);
+    }
+
+    String getLabelTextForClass(String cls) {
+	return classToLabelMap.get(cls);
+    }
+
     // factors a matrix into upper and lower triangular matrices by
     // gaussian elimination.  On entry, a[0..n-1][0..n-1] is the
     // matrix to be factored.  ipvt[] returns an integer vector of pivot
@@ -6627,8 +6809,8 @@ MouseOutHandler, MouseWheelHandler {
 	            CircuitElm.whiteColor = Color.white;
 	            CircuitElm.lightGrayColor = Color.lightGray;
 	            g.setColor(Color.black);
-	            g.fillRect(0, 0, w, h);
 	        }
+	        g.fillRect(0, 0, w, h);
 		dotsCheckItem.setState(false);
 
 	    	int wmargin = 140;
@@ -6685,6 +6867,10 @@ MouseOutHandler, MouseWheelHandler {
 	    boolean used[] = new boolean[nodeList.size()];
 	    boolean extnodes[] = new boolean[nodeList.size()];
 	    
+	    // redo node allocation to avoid auto-assigning ground
+	    if (!preStampCircuit(true))
+		return null;
+
 	    // find all the labeled nodes, get a list of them, and create a node number map
 	    for (i = 0; i != elmList.size(); i++) {
 		CircuitElm ce = getElm(i);
@@ -6708,6 +6894,10 @@ MouseOutHandler, MouseWheelHandler {
 		    // create ext list entry for external nodes
                     sideLabels[side].add(lne);
 		    extnodes[ce.getNode(0)] = true;
+		    if (ce.getNode(0) == 0) {
+		        Window.alert("Node \"" + lne.text + "\" can't be connected to ground");
+			return null;
+		    }
 		}
 	    }
 	    
