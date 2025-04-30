@@ -176,11 +176,7 @@ public class ModDialog extends DialogBox {
 					setStandartTopMenu.setValue(true);
 					CirSim.executeJS("CircuitJS1.redrawCanvasSize()");
 					lstor.setItem("MOD_TopMenuBar", "standart");
-					CirSim.absRunStopBtn.removeStyleName("btn-min-top-pos");
-					CirSim.absResetBtn.removeStyleName("btn-min-top-pos");
-					CirSim.absRunStopBtn.addStyleName("btn-top-pos");
-					CirSim.absResetBtn.addStyleName("btn-top-pos");
-					CirSim.executeJS("setTrLabelPos(\"50px\")");
+					CirSim.executeJS("setAllAbsBtnsTopPos(\""+CirSim.getAbsBtnsTopPos()+"px\")");
 				} else {
 					setStandartTopMenu.setValue(true);
 				}
@@ -196,11 +192,7 @@ public class ModDialog extends DialogBox {
 					setSmallTopMenu.setValue(true);
 					CirSim.executeJS("CircuitJS1.redrawCanvasSize()");
 					lstor.setItem("MOD_TopMenuBar", "small");
-					CirSim.absRunStopBtn.removeStyleName("btn-top-pos");
-					CirSim.absResetBtn.removeStyleName("btn-top-pos");
-					CirSim.absRunStopBtn.addStyleName("btn-min-top-pos");
-					CirSim.absResetBtn.addStyleName("btn-min-top-pos");
-					CirSim.executeJS("setTrLabelPos(\"39px\")");
+					CirSim.executeJS("setAllAbsBtnsTopPos(\""+CirSim.getAbsBtnsTopPos()+"px\")");
 				} else {
 					setSmallTopMenu.setValue(true);
 				}

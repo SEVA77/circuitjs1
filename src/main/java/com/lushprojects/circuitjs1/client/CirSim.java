@@ -459,6 +459,14 @@ MouseOutHandler, MouseWheelHandler {
 		sidebar.style.transition = (duration=="none") ? duration : "width"+split;
 	}-*/;
 
+	static int getAbsBtnsTopPos() {
+		Storage lstor = Storage.getLocalStorageIfSupported();
+		int top = 50;
+		if (lstor.getItem("MOD_TopMenuBar")=="small") top -= 11;
+		if (lstor.getItem("toolbar")=="true") top += TOOLBARHEIGHT;
+		return top;
+	}
+
 	void modSetDefault(){
 		
 		Storage lstor = Storage.getLocalStorageIfSupported();
@@ -484,11 +492,6 @@ MouseOutHandler, MouseWheelHandler {
 		else if (MOD_TopMenuBar=="small"){
 			MENUBARHEIGHT = 20;
 			redrawCanvasSize();
-			absRunStopBtn.removeStyleName("btn-top-pos");
-			absResetBtn.removeStyleName("btn-top-pos");
-			absRunStopBtn.addStyleName("btn-min-top-pos");
-			absResetBtn.addStyleName("btn-min-top-pos");
-			executeJS("setTrLabelPos(\"39px\")");
 		}
 		if (MOD_absBtnTheme==null) lstor.setItem("MOD_absBtnTheme","default");
 		else if (MOD_absBtnTheme=="classic"){
@@ -801,10 +804,11 @@ MouseOutHandler, MouseWheelHandler {
 	}));
 	m.addItem(toolbarCheckItem = new CheckboxMenuItem(Locale.LS("Toolbar"),
 		new Command() { public void execute(){
+			setOptionInStorage("toolbar", toolbarCheckItem.getState());
 		    setToolbar();
 		}
 	}));
-	toolbarCheckItem.setState(!hideMenu && !noEditing && !hideSidebar && startCircuit == null && startCircuitText == null && startCircuitLink == null);
+	toolbarCheckItem.setState(getOptionFromStorage("toolbar", true));
 	m.addItem(crossHairCheckItem = new CheckboxMenuItem(Locale.LS("Show Cursor Cross Hairs"),
 		new Command() { public void execute(){
 		    setOptionInStorage("crossHair", crossHairCheckItem.getState());
@@ -5454,6 +5458,8 @@ MouseOutHandler, MouseWheelHandler {
 
     void setToolbar() {
 	layoutPanel.setWidgetHidden(toolbar, !toolbarCheckItem.getState());
+	executeJS("setAllAbsBtnsTopPos(\""+getAbsBtnsTopPos()+"px\")");
+	setSlidersPanelHeight();
 	setCanvasSize();
     }
 

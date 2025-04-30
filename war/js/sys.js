@@ -64,9 +64,25 @@ function getScaleInfo(){
   scaleString.textContent = parseInt(scale*100+100)+"%";
 }
 
-function setTrLabelPos (top) {
+function setAllAbsBtnsTopPos (top) {
   let triggerLabel = document.querySelector(".triggerLabel");
+  //let absBtns = document.querySelectorAll(".btn-top-pos");
   triggerLabel.style.top = top;
+
+  //absBtns[0].style.setProperty('top', top, 'important');
+  //absBtns[1].style.setProperty('top', top, 'important');
+  // it does not work at the first start
+  // attempt 2:
+
+  const stylesheet = document.styleSheets[2];
+  let absBtns;
+  for(let i = 0; i < stylesheet.cssRules.length; i++) {
+    if(stylesheet.cssRules[i].selectorText === '.btn-top-pos') {
+      absBtns = stylesheet.cssRules[i];
+    }
+  }
+  absBtns.style.setProperty('top', top, 'important');
+  // It worked!
 }
 
 
