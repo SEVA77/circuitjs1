@@ -879,6 +879,9 @@ MouseOutHandler, MouseWheelHandler {
 	if (!hideMenu)
 	    layoutPanel.addNorth(menuBar, MENUBARHEIGHT);
 
+	// add toolbar immediately after menuBar
+	layoutPanel.addNorth(toolbar, TOOLBARHEIGHT);
+
 	if (hideSidebar)
 	    VERTICALPANELWIDTH = 0;
 	else {
@@ -886,7 +889,6 @@ MouseOutHandler, MouseWheelHandler {
 		DOM.appendChild(layoutPanel.getElement(), sidePanelCheckboxLabel);
 	    layoutPanel.addEast(verticalPanel, VERTICALPANELWIDTH);
 	}
-	layoutPanel.addNorth(toolbar, TOOLBARHEIGHT);
 	menuBar.getElement().insertFirst(menuBar.getElement().getChild(1));
 	menuBar.getElement().getFirstChildElement().setAttribute("onclick", "document.getElementsByClassName('toptrigger')[0].checked = false");
 	RootLayoutPanel.get().add(layoutPanel);
