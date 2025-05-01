@@ -40,7 +40,7 @@ public class Toolbar extends HorizontalPanel {
 	add(createIconButton("doc-new", "New Blank Circuit", new MyCommand("file", "newblankcircuit")));
 	add(createIconButton("folder",  "Open File...", new MyCommand("file", "importfromlocalfile")));
 	add(createIconButton("floppy", "Save", new MyCommand("file", "save")));
-	add(createIconButton("floppy",  "Save As...", new MyCommand("file", "saveas")));
+	add(createIconButton("download",  "Save As...", new MyCommand("file", "saveas")));
     add(new HTML(SEPARATOR));
 	add(createIconButton("ccw", "Undo", new MyCommand("edit", "undo")));
 	add(createIconButton("cw",  "Redo", new MyCommand("edit", "redo")));
@@ -53,6 +53,7 @@ public class Toolbar extends HorizontalPanel {
 	add(createIconButton("search", "Find Component...", new MyCommand("edit", "search")));
     add(new HTML(SEPARATOR));
 
+	add(createIconButton("target", "Centre Circuit", new MyCommand("edit", "centrecircuit")));
 	add(createIconButton("zoom-11", "Zoom 100%", new MyCommand("zoom", "zoom100")));
 	add(createIconButton("zoom-in", "Zoom In", new MyCommand("zoom", "zoomin")));
 	add(createIconButton("zoom-out", "Zoom Out", new MyCommand("zoom", "zoomout")));
