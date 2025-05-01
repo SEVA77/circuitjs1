@@ -86,7 +86,7 @@ public class Toolbar extends HorizontalPanel {
 	String gateInfo[] = { andIcon, "AndGateElm", nandIcon, "NandGateElm", 
 			      orIcon, "OrGateElm", norIcon, "NorGateElm", xorIcon, "XorGateElm" };
 	add(createButtonSet(gateInfo));
-
+/*
         // Spacer to push the mode label to the right
         HorizontalPanel spacer = new HorizontalPanel();
         //spacer.style.setFlexGrow(1); // Fill remaining space
@@ -96,6 +96,7 @@ public class Toolbar extends HorizontalPanel {
         modeLabel = new Label("");
         styleModeLabel(modeLabel);
         add(modeLabel);
+*/
     }
 
     public void setModeLabel(String text) { modeLabel.setText(Locale.LS("Mode: ") + text); }
