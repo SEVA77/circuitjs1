@@ -3612,7 +3612,8 @@ MouseOutHandler, MouseWheelHandler {
     	    executeJS("nw.Window.open('circuitjs.html', {new_instance: true, mixed_context: false});");
     	}
     	if (item=="save"){
-			nodeSave(filePath,dumpCircuit());
+			if (filePath!=null) nodeSave(filePath,dumpCircuit());
+			else nodeSaveAs(dumpCircuit(), getLastFileName());
 			unsavedChanges = false;
 			changeWindowTitle(unsavedChanges);
 		}

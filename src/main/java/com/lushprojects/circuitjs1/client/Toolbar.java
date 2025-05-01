@@ -13,6 +13,7 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.lushprojects.circuitjs1.client.util.Locale;
+import com.google.gwt.user.client.ui.HTML;
 
 import java.util.HashMap;
 
@@ -21,6 +22,7 @@ public class Toolbar extends HorizontalPanel {
     private Label modeLabel;
     private HashMap<String, Label> highlightableButtons = new HashMap<>();
     private Label activeButton;  // Currently active button
+    private String SEPARATOR = "<div style=\"height:30px;width:0;border-left:2px solid grey;\"></div>";
 
     Label resistorButton;
 
@@ -35,17 +37,26 @@ public class Toolbar extends HorizontalPanel {
         style.setDisplay(Style.Display.FLEX);
 	setVerticalAlignment(ALIGN_MIDDLE);
 
+	add(createIconButton("doc-new", "New Blank Circuit", new MyCommand("file", "newblankcircuit")));
+	add(createIconButton("folder",  "Open File...", new MyCommand("file", "importfromlocalfile")));
+	add(createIconButton("floppy", "Save", new MyCommand("file", "save")));
+	add(createIconButton("floppy",  "Save As...", new MyCommand("file", "saveas")));
+    add(new HTML(SEPARATOR));
 	add(createIconButton("ccw", "Undo", new MyCommand("edit", "undo")));
 	add(createIconButton("cw",  "Redo", new MyCommand("edit", "redo")));
+    add(new HTML(SEPARATOR));
 	add(createIconButton("scissors", "Cut", new MyCommand("edit", "cut")));
 	add(createIconButton("copy", "Copy", new MyCommand("edit", "copy")));
 	add(createIconButton("paste", "Paste", new MyCommand("edit", "paste")));
 	add(createIconButton("clone", "Duplicate", new MyCommand("edit", "duplicate")));
+    add(new HTML(SEPARATOR));
 	add(createIconButton("search", "Find Component...", new MyCommand("edit", "search")));
+    add(new HTML(SEPARATOR));
 
 	add(createIconButton("zoom-11", "Zoom 100%", new MyCommand("zoom", "zoom100")));
 	add(createIconButton("zoom-in", "Zoom In", new MyCommand("zoom", "zoomin")));
 	add(createIconButton("zoom-out", "Zoom Out", new MyCommand("zoom", "zoomout")));
+    add(new HTML(SEPARATOR));
 
 	add(createIconButton(wireIcon, "WireElm"));
 	add(resistorButton = createIconButton(resistorIcon, "ResistorElm"));
@@ -140,7 +151,7 @@ public class Toolbar extends HorizontalPanel {
 
     String makeSvg(String s, int size) {
 	double scale = size/24.0;
-	return "<svg xmlns='http://www.w3.org/2000/svg' width='" + size + "' height='" + size + "'><g transform='scale(" + scale + ")'>" +
+	return "<svg width='" + size + "' height='" + size + "'><g transform='scale(" + scale + ")'>" +
                  s.substring(5, s.length()-5) + "<g></svg>";
     }
 
