@@ -99,7 +99,7 @@ public class Toolbar extends HorizontalPanel {
 */
     }
 
-    public void setModeLabel(String text) { modeLabel.setText(Locale.LS("Mode: ") + text); }
+    //public void setModeLabel(String text) { modeLabel.setText(Locale.LS("Mode: ") + text); }
 
     private Label createIconButton(String icon, String cls) {
 	CirSim sim = CirSim.theSim;
