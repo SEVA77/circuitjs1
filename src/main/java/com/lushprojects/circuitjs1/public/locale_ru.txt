@@ -945,7 +945,7 @@
 "To open a shared Dropbox file from a Dropbox link paste the link below..."="Вставьте ниже ссылку файла из Dropbox."
 "Import From Dropbox Link"="Импорт из ссылки Dropbox"
 "Export as URL"="Экспорт в ссылку"
-"URL for this circuit is..."="Ссылка для этой схемы (откроется в web приложении):"
+"URL for this circuit is..."="Ссылка для этой схемы (откроется в веб приложении):"
 "Warning: this URL is longer than 2000 characters and may not work in some browsers."="Предупреждение: ссылка превысила 2000 символов. Некоторые браузеры не допускают эту длину."
 "To save this URL select it all (eg click in text and type control-A) and copy to your clipboard (eg control-C) before pasting to a suitable place."="Чтобы сохранить этот URL, щелкните по тексту, нажмите Ctrl+A и скопируйте в буфер обмена (Ctrl+С) перед тем, как вставить в подходящее место."
 "Create short URL"="Создать короткую ссылку"
