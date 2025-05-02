@@ -1945,6 +1945,7 @@ MouseOutHandler, MouseWheelHandler {
         }
 
         // Add info about mouse mode in graphics
+        if (printableCheckItem.getState()) g.setColor(Color.black);
         g.drawString(Locale.LS("Mode: ") + classToLabelMap.get(mouseModeStr), 10, 29);
         
         // This should always be the last 
