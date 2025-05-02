@@ -40,7 +40,8 @@ public class Toolbar extends HorizontalPanel {
 	add(createIconButton("doc-new", "New Blank Circuit", new MyCommand("file", "newblankcircuit")));
 	add(createIconButton("folder",  "Open File...", new MyCommand("file", "importfromlocalfile")));
 	add(createIconButton("floppy", "Save", new MyCommand("file", "save")));
-	add(createIconButton("download",  "Save As...", new MyCommand("file", "saveas")));
+	add(createIconButton("floppy",  "Save As...", new MyCommand("file", "saveas")));
+	add(new HTML("<sup style=\"margin-left:-12px;\"><strong>+</strong></sup>")); // add symbol to "Save As" icon
     add(new HTML(SEPARATOR));
 	add(createIconButton("ccw", "Undo", new MyCommand("edit", "undo")));
 	add(createIconButton("cw",  "Redo", new MyCommand("edit", "redo")));
