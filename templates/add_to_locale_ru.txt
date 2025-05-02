@@ -6,3 +6,4 @@
 "About Circuits (Polish ver.)"="Информация о схемах (польск.)"
 "Fullscreen Mode"="Полноэкранный режим"
 "Exit"="Выход"
+"Show Mode"="Отображать режим"
