@@ -9,7 +9,7 @@
  
      static CirSim mysim;
  
-@@ -153,7 +153,7 @@
+@@ -184,7 +184,7 @@
          Window.addResizeHandler(new ResizeHandler() {
              public void onResize(ResizeEvent event) {
                  mysim.setCanvasSize();

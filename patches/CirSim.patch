@@ -47,13 +47,21 @@
      MenuItem importFromLocalFileItem, importFromTextItem, exportAsUrlItem, exportAsLocalFileItem, exportAsTextItem,
              printItem, recoverItem, saveFileItem;
 -    MenuItem importFromDropboxItem;
--    MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem;
+-    MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem, flipXItem, flipYItem, flipXYItem;
 +    //MenuItem importFromDropboxItem;
-+    MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem, modItem;
++    MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem, flipXItem, flipYItem, flipXYItem, modItem;
      MenuBar optionsMenuBar;
      CheckboxMenuItem dotsCheckItem;
      CheckboxMenuItem voltsCheckItem;
-@@ -249,6 +261,9 @@
+@@ -130,6 +142,7 @@
+     CheckboxMenuItem noEditCheckItem;
+     CheckboxMenuItem mouseWheelEditCheckItem;
+     CheckboxMenuItem toolbarCheckItem;
++    CheckboxMenuItem mouseModeCheckItem;
+     private Label powerLabel;
+     private Label titleLabel;
+     private Scrollbar speedBar;
+@@ -253,6 +266,9 @@
      boolean hideInfoBox;
      int scopeColCount[];
      static EditDialog editDialog, customLogicEditDialog, diodeModelEditDialog;
@@ -63,7 +71,7 @@
      static ScrollValuePopup scrollValuePopup;
      static Dialog dialogShowing;
      static AboutBox aboutBox;
-@@ -259,12 +274,17 @@
+@@ -263,7 +279,10 @@
      Rectangle circuitArea;
      Vector<UndoItem> undoStack, redoStack;
      double transform[];
@@ -72,8 +80,10 @@
 +    static String filePath;
 +    static String fileName;
 +    static String lastFileName;
+     HashMap<String, String> classToLabelMap;
+     Toolbar toolbar;
  
-     DockLayoutPanel layoutPanel;
+@@ -271,6 +290,8 @@
      MenuBar menuBar;
      MenuBar fileMenuBar;
      VerticalPanel verticalPanel;
@@ -82,7 +92,7 @@
      CellPanel buttonPanel;
      private boolean mouseDragging;
      double scopeHeightFraction = 0.2;
-@@ -273,7 +293,10 @@
+@@ -279,7 +300,10 @@
      Vector<String> mainMenuItemNames = new Vector<String>();
  
      LoadFile loadFileInput;
@@ -94,16 +104,16 @@
  
      Canvas cv;
      Context2d cvcontext;
-@@ -281,7 +304,7 @@
+@@ -287,7 +311,7 @@
      // canvas width/height in px (before device pixel ratio scaling)
      int canvasWidth, canvasHeight;
  
 -    static final int MENUBARHEIGHT = 30;
 +    static int MENUBARHEIGHT = 30;
+     static final int TOOLBARHEIGHT = 40;
      static int VERTICALPANELWIDTH = 166; // default
      static final int POSTGRABSQ = 25;
-     static final int MINPOSTGRABSIZE = 256;
-@@ -303,6 +326,14 @@
+@@ -310,6 +334,14 @@
          return window.devicePixelRatio;
      }-*/;
  
@@ -118,7 +128,7 @@
      void checkCanvasSize() {
          if (cv.getCoordinateSpaceWidth() != (int) (canvasWidth * devicePixelRatio()))
              setCanvasSize();
-@@ -316,14 +347,16 @@
+@@ -323,13 +355,15 @@
      }-*/;
      
      public void setCanvasSize(){
@@ -132,13 +142,11 @@
  
 -    	//not needed on mobile since the width of the canvas' container div is set to 100% in ths CSS file
 -    	if (!isMobile(sidePanelCheckboxLabel))
--    	    width=width-VERTICALPANELWIDTH;
 +    	if (isSidePanelCheckboxChecked() && lstor.getItem("MOD_overlayingSidebar")=="false")
-+			width=width-VERTICALPANELWIDTH;
- 
-     	width = Math.max(width, 0);   // avoid exception when setting negative width
-     	height = Math.max(height, 0);
-@@ -360,6 +393,127 @@
+     	    width=width-VERTICALPANELWIDTH;
+ 	if (toolbarCheckItem.getState())
+ 	    height -= TOOLBARHEIGHT;
+@@ -369,6 +403,130 @@
          return $wnd.LZString.decompressFromEncodedURIComponent(dump);
      }-*/;
  
@@ -153,7 +161,7 @@
 +	public static void setLastFileName(String s) {
 +	    // remember filename for use when saving a new file.
 +	    // if s is null or automatically generated then just clear out old filename.
-+	    if (s == null || (s.startsWith("circuit-") && s.contains(".circuitjs")))
++	    if (s == null || s.startsWith("circuitjs-"))
 +		lastFileName = null;
 +	    else
 +		lastFileName = s;
@@ -165,8 +173,8 @@
 +		if (lastFileName != null)
 +		    fname = lastFileName;
 +		else {
-+		    DateTimeFormat dtf = DateTimeFormat.getFormat("yyyyMMdd-HHmm");
-+		    fname = "circuit-" + dtf.format(date) + ".circuitjs.txt";
++		    DateTimeFormat dtf = DateTimeFormat.getFormat("yyyyMMdd-HHmmss");
++		    fname = "circuitjs-" + dtf.format(date) + ".txt";
 +		}
 +		return fname;
 +	}
@@ -199,6 +207,14 @@
 +		sidebar.style.transition = (duration=="none") ? duration : "width"+split;
 +	}-*/;
 +
++	static int getAbsBtnsTopPos() {
++		Storage lstor = Storage.getLocalStorageIfSupported();
++		int top = 50;
++		if (lstor.getItem("MOD_TopMenuBar")=="small") top -= 11;
++		if (lstor.getItem("toolbar")=="true") top += TOOLBARHEIGHT;
++		return top;
++	}
++
 +	void modSetDefault(){
 +		
 +		Storage lstor = Storage.getLocalStorageIfSupported();
@@ -224,11 +240,6 @@
 +		else if (MOD_TopMenuBar=="small"){
 +			MENUBARHEIGHT = 20;
 +			redrawCanvasSize();
-+			absRunStopBtn.removeStyleName("btn-top-pos");
-+			absResetBtn.removeStyleName("btn-top-pos");
-+			absRunStopBtn.addStyleName("btn-min-top-pos");
-+			absResetBtn.addStyleName("btn-min-top-pos");
-+			executeJS("setTrLabelPos(\"39px\")");
 +		}
 +		if (MOD_absBtnTheme==null) lstor.setItem("MOD_absBtnTheme","default");
 +		else if (MOD_absBtnTheme=="classic"){
@@ -266,7 +277,7 @@
  //    Circuit applet;
  
      CirSim() {
-@@ -457,13 +611,31 @@
+@@ -466,13 +624,31 @@
  
  	shortcuts = new String[127];
  
@@ -302,7 +313,7 @@
  	fileMenuBar.addItem(iconMenuItem("doc-new", "New Blank Circuit", new MyCommand("file", "newblankcircuit")));
  	importFromLocalFileItem = menuItemWithShortcut("folder", "Open File...", Locale.LS(ctrlMetaKey + "O"),
  		new MyCommand("file","importfromlocalfile"));
-@@ -471,18 +643,18 @@
+@@ -480,18 +656,18 @@
  	fileMenuBar.addItem(importFromLocalFileItem);
  	importFromTextItem = iconMenuItem("doc-text", "Import From Text...", new MyCommand("file","importfromtext"));
  	fileMenuBar.addItem(importFromTextItem);
@@ -326,7 +337,7 @@
  	exportAsUrlItem = iconMenuItem("export", "Export As Link...", new MyCommand("file","exportasurl"));
  	fileMenuBar.addItem(exportAsUrlItem);
  	exportAsTextItem = iconMenuItem("export", "Export As Text...", new MyCommand("file","exportastext"));
-@@ -500,20 +672,27 @@
+@@ -509,20 +685,27 @@
  	fileMenuBar.addSeparator();
  	fileMenuBar.addItem(iconMenuItem("resize-full-alt", "Toggle Full Screen", new MyCommand("view", "fullscreen")));
  	fileMenuBar.addSeparator();
@@ -357,7 +368,7 @@
  
  	verticalPanel.getElement().addClassName("verticalPanel");
  	verticalPanel.getElement().setId("painel");
-@@ -523,6 +702,21 @@
+@@ -532,6 +715,21 @@
  	sidePanelCheckbox.setId("trigger");
  	sidePanelCheckboxLabel.setAttribute("for", "trigger" );
  	sidePanelCheckbox.addClassName("trigger");
@@ -379,27 +390,53 @@
  	Element topPanelCheckbox = DOM.createInputCheck(); 
  	Element topPanelCheckboxLabel = DOM.createLabel();
  	topPanelCheckbox.setId("toptrigger");
-@@ -565,9 +759,9 @@
- 	m.addItem(combineAllItem = iconMenuItem("object-group", "Combine All", new MyCommand("scopes", "combineAll")));
- 	m.addItem(separateAllItem = iconMenuItem("object-ungroup", "Separate All", new MyCommand("scopes", "separateAll")));
- 	menuBar.addItem(Locale.LS("Scopes"), m);
--
- 	optionsMenuBar = m = new MenuBar(true );
- 	menuBar.addItem(Locale.LS("Options"), optionsMenuBar);
-+
- 	m.addItem(dotsCheckItem = new CheckboxMenuItem(Locale.LS("Show Current")));
- 	dotsCheckItem.setState(true);
- 	m.addItem(voltsCheckItem = new CheckboxMenuItem(Locale.LS("Show Voltage"),
-@@ -646,6 +840,8 @@
- 
+@@ -607,10 +805,17 @@
+ 	}));
+ 	m.addItem(toolbarCheckItem = new CheckboxMenuItem(Locale.LS("Toolbar"),
+ 		new Command() { public void execute(){
++			setOptionInStorage("toolbar", toolbarCheckItem.getState());
+ 		    setToolbar();
+ 		}
+ 	}));
+-	toolbarCheckItem.setState(!hideMenu && !noEditing && !hideSidebar && startCircuit == null && startCircuitText == null && startCircuitLink == null);
++	toolbarCheckItem.setState(getOptionFromStorage("toolbar", true));
++	m.addItem(mouseModeCheckItem = new CheckboxMenuItem(Locale.LS("Show Mode"),
++		new Command() { public void execute(){
++			setOptionInStorage("showMouseMode", mouseModeCheckItem.getState());
++		}
++	}));
++	mouseModeCheckItem.setState(getOptionFromStorage("showMouseMode", true));
+ 	m.addItem(crossHairCheckItem = new CheckboxMenuItem(Locale.LS("Show Cursor Cross Hairs"),
+ 		new Command() { public void execute(){
+ 		    setOptionInStorage("crossHair", crossHairCheckItem.getState());
+@@ -666,6 +871,8 @@
  	m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Shortcuts..."), new MyCommand("options", "shortcuts")));
+ 	m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Subcircuits..."), new MyCommand("options", "subcircuits")));
  	m.addItem(optionsItem = new CheckboxAlignedMenuItem(Locale.LS("Other Options..."), new MyCommand("options","other")));
 +	m.addItem(modItem = new CheckboxAlignedMenuItem("Modification Setup...", new MyCommand("options","modsetup")));
 +	modItem.addStyleName("modItem");
  	if (isElectron())
  	    m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Toggle Dev Tools"), new MyCommand("options","devtools")));
  
-@@ -677,9 +873,12 @@
+@@ -683,6 +890,9 @@
+ 	if (!hideMenu)
+ 	    layoutPanel.addNorth(menuBar, MENUBARHEIGHT);
+ 
++	// add toolbar immediately after menuBar
++	layoutPanel.addNorth(toolbar, TOOLBARHEIGHT);
++
+ 	if (hideSidebar)
+ 	    VERTICALPANELWIDTH = 0;
+ 	else {
+@@ -690,7 +900,6 @@
+ 		DOM.appendChild(layoutPanel.getElement(), sidePanelCheckboxLabel);
+ 	    layoutPanel.addEast(verticalPanel, VERTICALPANELWIDTH);
+ 	}
+-	layoutPanel.addNorth(toolbar, TOOLBARHEIGHT);
+ 	menuBar.getElement().insertFirst(menuBar.getElement().getChild(1));
+ 	menuBar.getElement().getFirstChildElement().setAttribute("onclick", "document.getElementsByClassName('toptrigger')[0].checked = false");
+ 	RootLayoutPanel.get().add(layoutPanel);
+@@ -701,9 +910,12 @@
  	    return;
  	}
  
@@ -412,15 +449,15 @@
  	    }
  	});
  
-@@ -687,6 +886,7 @@
- 	setCanvasSize();
+@@ -711,6 +923,7 @@
+ 	setToolbar(); // calls setCanvasSize()
  	layoutPanel.add(cv);
  	verticalPanel.add(buttonPanel);
 +	buttonPanel.addStyleName("sidePanelElm");
  	buttonPanel.add(resetButton = new Button(Locale.LS("Reset")));
  	resetButton.addClickHandler(new ClickHandler() {
  	    public void onClick(ClickEvent event) {
-@@ -710,40 +910,63 @@
+@@ -734,40 +947,63 @@
  */
  	
  
@@ -489,7 +526,7 @@
  
  	setGrid();
  	elmList = new Vector<CircuitElm>();
-@@ -809,12 +1032,13 @@
+@@ -837,12 +1073,13 @@
  	    getSetupList(false);
  	    readCircuit(startCircuitText);
  	    unsavedChanges = false;
@@ -505,16 +542,16 @@
  	    } else {
  		readCircuit("");
  		if (stopMessage == null && startCircuit != null) {
-@@ -831,7 +1055,7 @@
- 
+@@ -860,7 +1097,7 @@
  	enableUndoRedo();
  	enablePaste();
+ 	enableDisableMenuItems();
 -	setiFrameHeight();
 +	setSlidersPanelHeight();
  	cv.addMouseDownHandler(this);
  	cv.addMouseMoveHandler(this);
  	cv.addMouseOutHandler(this);
-@@ -1291,22 +1515,20 @@
+@@ -1328,22 +1565,22 @@
  	    sb.addItem(mi);
      }
      
@@ -534,14 +571,38 @@
      	}
 -    	int ih=RootLayoutPanel.get().getOffsetHeight()-(hideMenu?0:MENUBARHEIGHT)-cumheight;
 +    	int ih=RootLayoutPanel.get().getOffsetHeight()-MENUBARHEIGHT-cumheight;
++    	if (toolbarCheckItem.getState())
++    		ih-=TOOLBARHEIGHT;
      	if (ih<0)
      		ih=0;
 -    	iFrame.setHeight(ih+"px");
-+	   	slidersPanel.setHeight(ih+"px");
++    	slidersPanel.setHeight(ih+"px");
      }
      
  
-@@ -1787,9 +2009,13 @@
+@@ -1697,7 +1934,7 @@
+         perfmon.stopContext(); // updateCircuit
+         
+         if (developerMode) {
+-            int height = 15;
++            int height = 45;
+             int increment = 15;
+             g.drawString("Framerate: " + CircuitElm.showFormat.format(framerate), 10, height);
+             g.drawString("Steprate: " + CircuitElm.showFormat.format(steprate), 10, height += increment);
+@@ -1713,6 +1950,12 @@
+                 g.drawString(splits[x], 10, height + (increment * x));
+             }
+         }
++
++        // Add info about mouse mode in graphics
++        if (mouseModeCheckItem.getState()){
++            if (printableCheckItem.getState()) g.setColor(Color.black);
++            g.drawString(Locale.LS("Mode: ") + classToLabelMap.get(mouseModeStr), 10, 29);
++        }
+         
+         // This should always be the last 
+         // thing called by updateCircuit();
+@@ -1829,9 +2072,13 @@
  	return getNthScopeElm(scopeMenuSelected-scopeCount).elmScope == s; 
      }
      
@@ -556,7 +617,7 @@
      	// check scopes to make sure the elements still exist, and remove
      	// unused scopes/columns
      	int pos = -1;
-@@ -1820,7 +2046,9 @@
+@@ -1862,7 +2109,9 @@
      	int iw = infoWidth;
      	if (colct <= 2)
      		iw = iw*3/2;
@@ -567,7 +628,7 @@
      	int marg = 10;
      	if (w < marg*2)
      		w = marg*2;
-@@ -1850,6 +2078,7 @@
+@@ -1892,6 +2141,7 @@
      	    setCircuitArea();
      	    oldScopeCount = scopeCount;
      	}
@@ -575,7 +636,7 @@
      }
      
      String getHint() {
-@@ -3176,6 +3405,49 @@
+@@ -3252,6 +3502,49 @@
  		scopes[i].resetGraph(true);
      	repaint();
      }
@@ -625,7 +686,7 @@
      
      static void electronSaveAsCallback(String s) {
  	s = s.substring(s.lastIndexOf('/')+1);
-@@ -3238,36 +3510,49 @@
+@@ -3314,36 +3607,50 @@
  	    Window.alert(Locale.LS("Editing disabled.  Re-enable from the Options menu."));
  	    return;
  	}
@@ -657,7 +718,8 @@
 +    	    executeJS("nw.Window.open('circuitjs.html', {new_instance: true, mixed_context: false});");
 +    	}
 +    	if (item=="save"){
-+			nodeSave(filePath,dumpCircuit());
++			if (filePath!=null) nodeSave(filePath,dumpCircuit());
++			else nodeSaveAs(dumpCircuit(), getLastFileName());
 +			unsavedChanges = false;
 +			changeWindowTitle(unsavedChanges);
 +		}
@@ -689,7 +751,7 @@
      	if (item=="exportastext") {
      		doExportAsText();
      		unsavedChanges = false;
-@@ -3517,11 +3802,15 @@
+@@ -3609,11 +3916,15 @@
      		tempMouseMode = mouseMode;
      	}
      	if (item=="fullscreen") {
@@ -707,7 +769,7 @@
      	}
      
  	repaint();
-@@ -3585,6 +3874,8 @@
+@@ -3677,6 +3988,8 @@
      	scopes[s].position = scopes[s-1].position;
      	for (s++; s < scopeCount; s++)
      		scopes[s].position--;
@@ -716,7 +778,7 @@
      }
  
      void unstackScope(int s) {
-@@ -3597,6 +3888,8 @@
+@@ -3689,6 +4002,8 @@
      	    s++;
      	for (; s < scopeCount; s++)
      		scopes[s].position++;
@@ -725,7 +787,7 @@
      }
  
      void combineScope(int s) {
-@@ -3607,6 +3900,8 @@
+@@ -3699,6 +4014,8 @@
      	}
      	scopes[s-1].combine(scopes[s]);
      	scopes[s].setElm(null);
@@ -734,7 +796,7 @@
      }
      
  
-@@ -3616,6 +3911,8 @@
+@@ -3708,6 +4025,8 @@
      		scopes[i].position = 0;
      		scopes[i].showMax = scopes[i].showMin = false;
      	}
@@ -743,7 +805,7 @@
      }
  
      void unstackAll() {
-@@ -3624,6 +3921,8 @@
+@@ -3716,6 +4035,8 @@
      		scopes[i].position = i;
      		scopes[i].showMax = true;
      	}
@@ -752,7 +814,7 @@
      }
  
      void combineAll() {
-@@ -3632,6 +3931,8 @@
+@@ -3724,6 +4045,8 @@
      	    scopes[i].combine(scopes[i+1]);
      	    scopes[i+1].setElm(null);
      	}
@@ -761,7 +823,7 @@
      }
      
      void separateAll() {
-@@ -3642,6 +3943,8 @@
+@@ -3734,6 +4057,8 @@
      	    ct = scopes[i].separate(newscopes, ct);
  	scopes = newscopes;
  	scopeCount = ct;
@@ -770,7 +832,7 @@
      }
  
      void doEdit(Editable eable) {
-@@ -3706,18 +4009,21 @@
+@@ -3798,18 +4123,21 @@
      	dialogShowing = dlg;
      	dialogShowing.show();
      }
@@ -794,7 +856,17 @@
  		}
      }
  
-@@ -3805,6 +4111,33 @@
+@@ -3867,8 +4195,7 @@
+ 		try {
+ 			requestBuilder.sendRequest(null, new RequestCallback() {
+ 				public void onError(Request request, Throwable exception) {
+-					if (!hideMenu)
+-					    Window.alert(Locale.LS("Can't load circuit list!"));
++					Window.alert(Locale.LS("Can't load circuit list!"));
+ 					GWT.log("File Error Response", exception);
+ 				}
+ 
+@@ -3898,6 +4225,33 @@
      	currentMenuBar=new MenuBar(true);
      	currentMenuBar.setAutoOpen(true);
      	menuBar.addItem(Locale.LS("Circuits"), currentMenuBar);
@@ -828,7 +900,7 @@
      	stack[stackptr++] = currentMenuBar;
      	int p;
      	for (p = 0; p < len; ) {
-@@ -3838,6 +4171,7 @@
+@@ -3931,6 +4285,7 @@
      				if (file.equals(startCircuit) && startLabel == null) {
      				    startLabel = title;
      				    titleLabel.setText(title);
@@ -836,7 +908,7 @@
      				}
      				if (first && startCircuit == null) {
      					startCircuit = file;
-@@ -3855,16 +4189,19 @@
+@@ -3948,16 +4303,19 @@
  	readCircuit(text.getBytes(), flags);
  	if ((flags & RC_KEEP_TITLE) == 0)
  	    titleLabel.setText(null);
@@ -856,19 +928,20 @@
      }
      
  	void readSetupFile(String str, String title) {
-@@ -3874,7 +4211,11 @@
+@@ -3967,8 +4325,11 @@
  		loadFileFromURL(url);
  		if (title != null)
  		    titleLabel.setText(title);
 +		    setSlidersPanelHeight();
  		unsavedChanges = false;
+-		ExportAsLocalFileDialog.setLastFileName(null);
 +		filePath = null;
 +		fileName = null;
 +		changeWindowTitle(unsavedChanges);
  	}
  	
  	void loadFileFromURL(String url) {
-@@ -3893,6 +4234,9 @@
+@@ -3987,6 +4348,9 @@
  			    readCircuit(text, RC_KEEP_TITLE);
  			    allowSave(false);
  			    unsavedChanges = false;
@@ -878,7 +951,7 @@
  			}
  			else { 
  			    Window.alert(Locale.LS("Can't load circuit!"));
-@@ -4125,6 +4469,8 @@
+@@ -4219,6 +4583,8 @@
  		    heldSwitchElm = se;
  		if (!(se instanceof LogicInputElm))
  		    needAnalyze();
@@ -887,7 +960,7 @@
  		return true;
  	}
  
-@@ -4206,8 +4552,12 @@
+@@ -4300,8 +4666,12 @@
      		dragGridY = snapGrid(dragGridY);
      	    }
     	}
@@ -901,7 +974,7 @@
      	repaint();
      }
      
-@@ -4906,13 +5256,14 @@
+@@ -5007,13 +5377,14 @@
      			dragElm.draggingDone();
      			circuitChanged = true;
      			writeRecoveryToStorage();
@@ -917,7 +990,7 @@
      	}
      	if (dragElm != null)
      		dragElm.delete();
-@@ -4984,6 +5335,8 @@
+@@ -5085,6 +5456,8 @@
      	if (mouseElm!=null && !dialogIsShowing() && scopeSelected == -1)
      		if (mouseElm instanceof ResistorElm || mouseElm instanceof CapacitorElm ||  mouseElm instanceof InductorElm) {
      			scrollValuePopup = new ScrollValuePopup(x, y, deltay, mouseElm, this);
@@ -926,7 +999,16 @@
      		}
      }
      
-@@ -5014,6 +5367,8 @@
+@@ -5099,6 +5472,8 @@
+ 
+     void setToolbar() {
+ 	layoutPanel.setWidgetHidden(toolbar, !toolbarCheckItem.getState());
++	executeJS("setAllAbsBtnsTopPos(\""+getAbsBtnsTopPos()+"px\")");
++	setSlidersPanelHeight();
+ 	setCanvasSize();
+     }
+ 
+@@ -5120,6 +5495,8 @@
      	UndoItem ui = undoStack.remove(undoStack.size()-1);
      	loadUndoItem(ui);
      	enableUndoRedo();
@@ -935,7 +1017,7 @@
      }
  
      void doRedo() {
-@@ -5023,6 +5378,8 @@
+@@ -5129,6 +5506,8 @@
      	UndoItem ui = redoStack.remove(redoStack.size()-1);
      	loadUndoItem(ui);
      	enableUndoRedo();
@@ -944,7 +1026,7 @@
      }
  
      void loadUndoItem(UndoItem ui) {
-@@ -5037,6 +5394,9 @@
+@@ -5143,6 +5522,9 @@
  	readCircuit(recovery);
  	allowSave(false);
  	recoverItem.setEnabled(false);
@@ -954,7 +1036,7 @@
      }
      
      void enableUndoRedo() {
-@@ -5157,6 +5517,8 @@
+@@ -5327,6 +5709,8 @@
      	    deleteUnusedScopeElms();
      	    needAnalyze();
      	    writeRecoveryToStorage();
@@ -963,7 +1045,7 @@
      	}    
      }
      
-@@ -5307,6 +5669,8 @@
+@@ -5477,6 +5861,8 @@
      	}
      	needAnalyze();
      	writeRecoveryToStorage();
@@ -972,7 +1054,7 @@
      }
  
      void clearSelection() {
-@@ -5350,6 +5714,12 @@
+@@ -5522,6 +5908,12 @@
      		return true;
      	if (aboutBox !=null && aboutBox.isShowing())
      		return true;
@@ -985,7 +1067,7 @@
      	return false;
      }
      
-@@ -5461,14 +5831,12 @@
+@@ -5634,14 +6026,12 @@
  				menuPerformed("key", "print");
  				e.cancel();
  			}
@@ -1002,7 +1084,16 @@
  				menuPerformed("key", cmd);
  				e.cancel();
  			}
-@@ -5627,6 +5995,13 @@
+@@ -5673,7 +6063,7 @@
+     }
+     
+     void updateToolbar() {
+-	toolbar.setModeLabel(classToLabelMap.get(mouseModeStr));
++	//toolbar.setModeLabel(classToLabelMap.get(mouseModeStr));
+ 	toolbar.highlightButton(mouseModeStr);
+     }
+ 
+@@ -5811,6 +6201,13 @@
      	// reloading the same file doesn't create a change event so importing the same file twice
      	// doesn't work unless you destroy the original input element and replace it with a new one
      	int idx=verticalPanel.getWidgetIndex(loadFileInput);
@@ -1016,7 +1107,7 @@
      	LoadFile newlf=new LoadFile(this);
      	verticalPanel.insert(newlf, idx);
      	verticalPanel.remove(idx+1);
-@@ -5637,16 +6012,13 @@
+@@ -5821,16 +6218,13 @@
      	if (iFrame!=null) {
      		int i=verticalPanel.getWidgetIndex(iFrame);
      		verticalPanel.insert(w, i);
@@ -1035,7 +1126,7 @@
      }
      
      public static CircuitElm createCe(int tint, int x1, int y1, int x2, int y2, int f, StringTokenizer st) {
-@@ -6131,13 +6503,14 @@
+@@ -6315,13 +6709,14 @@
      }
      
  	native void printCanvas(CanvasElement cv) /*-{
@@ -1057,7 +1148,7 @@
  	}-*/;
  
  	void doDCAnalysis() {
-@@ -6488,7 +6861,9 @@
+@@ -6680,7 +7075,9 @@
  	        getElements: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::getJSElements()(); } ),
  	        getCircuitAsSVG: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::doExportAsSVGFromAPI()(); } ),
  	        exportCircuit: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::dumpCircuit()(); } ),

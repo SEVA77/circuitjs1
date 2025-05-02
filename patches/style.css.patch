@@ -1,11 +1,10 @@
 --- /dev/null
 +++ src/main/java/com/lushprojects/circuitjs1/public/style.css
-@@ -1,123 +1,94 @@
+@@ -1,127 +1,99 @@
  @charset "UTF-8";
  
 -/*Hide all mobile elements when in desktop usage*/
--.trigger, .toptrigger, .triggerLabel, toptriggerlabel {
-+.trigger, .toptrigger, .triggerLabel, .toptriggerlabel {
+ .trigger, .toptrigger, .triggerLabel, toptriggerlabel {
  	display: none;
  }
  
@@ -175,6 +174,18 @@
 +.trigger+.triggerLabel+div+div {
 +	width: 100% !important;
 +}
+ 
+-	/* selects the div containing the canvas */
+-	.trigger+.triggerLabel+div+div {
+-		width: 100% !important;
+-	}
+-	/* added extra div for toolbar */
+-	.trigger+.triggerLabel+div+div+div {
+-		width: 100% !important;
++/* added extra div for toolbar */
++.trigger+.triggerLabel+div+div+div {
++	width: 100% !important;
++}
 +
 +/*
 +for triggerLabel:
@@ -183,10 +194,7 @@
 +for display width < 1000px:
 +	width = 2.5vw (2.5 percent of 1000px and etc.)
 +	height = 6vw
- 
--	/* selects the div containing the canvas */
--	.trigger+.triggerLabel+div+div {
--		width: 100% !important;
++
 ++ font-size=22px => font-size: 2.5vw
 ++ border-radius=10px => border-radius=1vw
 +
@@ -204,6 +212,4 @@
 +		padding-left: 0.3vw;
 +		padding-top: 0.5vw;
  	}
--}
-+}
-\ No newline at end of file
+ }
