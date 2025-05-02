@@ -464,7 +464,7 @@ MouseOutHandler, MouseWheelHandler {
 		Storage lstor = Storage.getLocalStorageIfSupported();
 		int top = 50;
 		if (lstor.getItem("MOD_TopMenuBar")=="small") top -= 11;
-		if (lstor.getItem("toolbar")=="true") top += TOOLBARHEIGHT;
+		if (lstor.getItem("toolbar")!="false") top += TOOLBARHEIGHT;
 		return top;
 	}
 
