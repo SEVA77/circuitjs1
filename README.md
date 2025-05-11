@@ -2,7 +2,7 @@
 
 **Circuit Simulator is renamed CircuitJS1 Desktop Mod**
 
-![](screenshot.PNG)
+![](screenshot.png)
 
 The source code for offline version of the **Circuit Simulator** with minor modifications based on [modified NW.js](https://github.com/SEVA77/nw.js_mod). It was originally written by Paul Falstad as a Java Applet. It was adapted by Iain Sharp to run in the browser using GWT. The program was modified and compiled to offline version for Windows (x32, x64), Linux (x32, x64) and MacOS (x64, arm64) by Usevalad Khatkevich.
 
@@ -93,7 +93,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-© Usevalad Khatkevich 2024
+© Usevalad Khatkevich 2025
 
 ## Credits
 
