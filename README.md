@@ -63,6 +63,29 @@ npm start
 
 *Output folder:* `./target/site/`
 
+## Building the Tauri desktop wrapper
+
+The Tauri wrapper packages the compiled web application; it does not compile
+the Java/GWT sources itself. Build CircuitJS1 first:
+
+```text
+npm install
+npm run buildgwt
+```
+
+Before packaging the `war` directory, copy the complete generated GWT runtime:
+
+```powershell
+Copy-Item -Recurse -Force target\site\circuitjs1 war\circuitjs1
+```
+
+Do not copy only `circuitjs1.nocache.js`; the complete directory, including
+the `*.cache.js` files and resources, is required.
+
+See [tauri/README.md](tauri/README.md) or
+[tauri/README.zh-CN.md](tauri/README.zh-CN.md) for Windows and Linux packaging
+instructions.
+
 ## Development
 
 Various build options, checker and devmod are available in the development menu:

@@ -1,0 +1,14 @@
+{
+  "name": "circuitjs-tauri",
+  "private": true,
+  "version": "1.2.5",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "build:windows": "tauri build --bundles nsis",
+    "build:linux": "tauri build --bundles deb,appimage"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.8.0"
+  }
+}

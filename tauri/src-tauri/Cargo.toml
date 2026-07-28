@@ -1,0 +1,18 @@
+[package]
+name = "circuitjs-tauri"
+version = "1.2.5"
+description = "CircuitJS1 Desktop Mod packaged with Tauri"
+authors = ["CircuitJS1 contributors"]
+edition = "2021"
+license = "GPL-2.0-or-later"
+
+[lib]
+name = "circuitjs_tauri_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+

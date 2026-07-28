@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "CircuitJS1 Desktop Mod",
+  "version": "1.2.5",
+  "identifier": "com.lushprojects.circuitjs1.desktop",
+  "build": {
+    "frontendDist": "../../war"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "CircuitJS1 Desktop Mod",
+        "url": "circuitjs.html",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 640,
+        "minHeight": 480,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Education",
+    "shortDescription": "Interactive electronic circuit simulator",
+    "longDescription": "CircuitJS1 offline interactive electronic circuit simulator.",
+    "icon": [
+      "../../war/icon.png"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      },
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper",
+        "silent": true
+      }
+    },
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    }
+  }
+}
